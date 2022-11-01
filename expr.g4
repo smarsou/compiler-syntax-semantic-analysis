@@ -4,12 +4,13 @@ grammar expr;
 package parser;
 }
 
-program: expr+EOF;
+program: expr+ EOF;
 
+expr: instruction | binary_operation;
 
-expr
-    :    'nil'     
-    |    exp
+instruction
+    :    'nil'  
+    |    INT | ID | STR   
     |    lvalue
     |    '-' expr
     |    lvalue ':=' expr
@@ -17,12 +18,14 @@ expr
     |    '(' expr_seq ?')'
     |    type_id '{' field_list?'}'
     |    type_id '[' expr ']' 'of' expr
-    |    'if' expr 'then' expr expr_prime
+    |    'if' expr 'then' expr expr_prime?
     |    'while' expr 'do' expr
     |    'for' ID ':=' expr 'to' expr 'do' expr
     |    'break'
     |    'let' declaration_list 'in' expr_seq? 'end'
+    |    print
     ;
+    
 expr_prime 
     :           cond2
     |           'else'  expr
@@ -31,29 +34,6 @@ expr_prime
 cond2
     :    'else' expr
     ;
-
-exp 
-:     INT
-|    ID    
-|    STR 
-|    (INT | ID | STR) binary_operator expr 
-;
-
-binary_operator
-:     '+' 
-| '-' 
-| '*' 
-| '/' 
-| '=' 
-| '<>' 
-| '<' 
-| '>' 
-| '<=' 
-| '>=' 
-| '&' 
-| '|' 
-;
-
 
 expr_seq
             :           expr expr_seq_prime
@@ -129,34 +109,61 @@ variable_declaration
 
 function_declaration
 :     'function' ID ( type_fields? ) '=' expr 
-|    'function' ID ( type_fields? ) ':' type_id '=' expr
+|     'function' ID ( type_fields? ) ':' type_id '=' expr
+;
+
+binary_operation: precedence_1 | precedence_2 | precedence_3 | precedence_4;
+
+precedence_1: instruction (binary_operator_1 instruction)*;
+
+precedence_2: instruction (binary_operator_2 (instruction|precedence_1))*;
+
+precedence_3: instruction (binary_operator_3 (instruction|precedence_1|precedence_2))*;
+
+precedence_4: instruction (binary_operator_4 (instruction|precedence_1|precedence_2|precedence_3))*;
+
+binary_operator_1
+: '*' 
+| '/'
+;
+
+binary_operator_2
+: '+' 
+| '-' 
+;
+
+binary_operator_3
+: '=' 
+| '<>' 
+| '<' 
+| '>' 
+| '<=' 
+| '>='
+;
+
+binary_operator_4
+: '&' 
+| '|'
 ;
 
 
+
+print
+    : 'print(' STR|INT|ID ')'
+    ;
 // les Terminaux
 
 ID    :  LETTER ( LETTER | INT | '_' )*
     ;
 fragment LETTER : ('a'..'z' | 'A'..'Z');
 
-INT    : ('0'..'9')+
+INT    : DIGIT+
 ;
 
-STR    : '“' ('0'..'9' | 'a'..'z' | 'A'..'Z'| ESCAPE)+ '“' 
+STR    : '“' (DIGIT | LETTER| '\\'ASCII |' ' | ',' | ';' | '.' | ':'| '!'| '?'| '/'| '-'| '_')+ '“' 
 ;
-fragment ESCAPE : ( '\\n' | '\\t' | '\\”' | '\\' | '\\'CTRL | '\\'ASCII  ) ;
 fragment ASCII: DIGIT DIGIT DIGIT;
 fragment DIGIT: ('0'..'9');
-fragment CTRL    
-:     '@' 
-|     'A'..'Z'
-|     '[' 
-|     '\\'
-|     ']'
-|     '^' 
-|    '_' 
-|    '.'
-;
 
 WS    : [ \n\t\r]+ ->skip
     ;
