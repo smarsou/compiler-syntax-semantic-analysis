@@ -1,0 +1,1 @@
+if L[0]=0 then a:=0 else if L[0]=1 then a:=1

@@ -18,7 +18,7 @@ instruction
     |    '(' expr_seq ?')'
     |    type_id '{' field_list?'}'
     |    type_id '[' expr ']' 'of' expr
-    |    'if' expr 'then' expr expr_prime?
+    |    expr_prime1 | expr_prime2
     |    'while' expr 'do' expr
     |    'for' ID ':=' expr 'to' expr 'do' expr
     |    'break'
@@ -26,9 +26,17 @@ instruction
     |    print
     ;
     
-expr_prime 
-    :           cond2
-    |           'else'  expr
+expr_prime1
+    :    'if' expr 'then' expr 'else'  expr_prime2
+    ;
+
+expr_prime2
+    :    fact_expr expr
+    |    fact_expr expr_prime1 'else' expr_prime2
+    ;
+
+fact_expr
+    :    'if' expr 'then'
     ;
 
 cond2
