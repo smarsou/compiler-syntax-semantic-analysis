@@ -10,22 +10,39 @@ expr: instruction | binary_operation;
 
 instruction
     :    'nil'  
-    |    INT | ID | STR   
-    |    lvalue
+    |    INT 
+    |    ID args_of_id
+    |    STR   
+    |    lvalue lvalue_most_right_member
     |    '-' expr
-    |    lvalue ':=' expr
-    |    ID  '(' expr_list ?')'
     |    '(' expr_seq ?')'
-    |    type_id '{' field_list?'}'
-    |    type_id '[' expr ']' 'of' expr
-    |    expr_prime1 | expr_prime2
+    |    type_id type_id_prime
+    |    expr_prime1 
+    |    expr_prime2
     |    'while' expr 'do' expr
     |    'for' ID ':=' expr 'to' expr 'do' expr
     |    'break'
     |    'let' declaration_list 'in' expr_seq? 'end'
     |    print
     ;
+
+args_of_id 
+    :    '(' expr_list ?')'
+    |
+    ;
+lvalue_most_right_member 
+    :    ':=' expr
+    |     
+    ;
+type_id_prime 
+    :    '{' field_list?'}'
+    |     '[' expr ']' 'of' expr
+    ;
     
+
+
+    
+
 expr_prime1
     :    'if' expr 'then' expr 'else'  expr_prime2
     ;
@@ -39,9 +56,6 @@ fact_expr
     :    'if' expr 'then'
     ;
 
-cond2
-    :    'else' expr
-    ;
 
 expr_seq
             :           expr expr_seq_prime
@@ -78,8 +92,10 @@ lvalue_prime
 
 declaration_list
          :        declaration
-         |        declaration_list declaration
+         |        declaration declaration_list 
          ;
+
+
 declaration
           :       variable_declaration
           |        function_declaration
@@ -89,6 +105,7 @@ declaration
 type_declaration
 :     'type' type_id  '=' type 
 ;
+
 type
 :     type_id 
 |    '{' type_fields? '}'
