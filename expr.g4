@@ -38,10 +38,7 @@ type_id_prime
     :    '{' field_list?'}'
     |     '[' expr ']' 'of' expr
     ;
-    
-
-
-    
+       
 
 expr_prime1
     :    'if' expr 'then' expr 'else'  expr_prime2
@@ -174,8 +171,9 @@ binary_operator_4
 
 
 print
-    : 'print(' STR|INT|ID ')'
+    : 'print' '(' (STR|INT|ID) ')'
     ;
+
 // les Terminaux
 
 ID    :  LETTER ( LETTER | INT | '_' )*
@@ -185,10 +183,15 @@ fragment LETTER : ('a'..'z' | 'A'..'Z');
 INT    : DIGIT+
 ;
 
-STR    : '“' (DIGIT | LETTER| '\\'ASCII |' ' | ',' | ';' | '.' | ':'| '!'| '?'| '/'| '-'| '_')+ '“' 
+STR   : '"' (DIGIT | LETTER | '\\'ASCII | ' ' | ',' | ';' | '.' | ':'| '!'| '?'| '/'| '-'| '_' | [èêéàâîïÏÎç] )+ '"' 
 ;
+
 fragment ASCII: DIGIT DIGIT DIGIT;
 fragment DIGIT: ('0'..'9');
 
 WS    : [ \n\t\r]+ ->skip
     ;
+
+COMMENT
+    : '/*' .*? '*/' -> skip
+;

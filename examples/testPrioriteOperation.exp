@@ -1,4 +1,0 @@
-let
-    var N := 8
-    var N := 8+(2<3)/8+if 4=4 then 1
-in try(0) end

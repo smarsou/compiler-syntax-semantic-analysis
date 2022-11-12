@@ -1,0 +1,24 @@
+if 1 
+then    if 1
+        then 1
+        else 0
+
+if 1 
+then    if 1
+        then 1
+else 0
+
+/*
+
+Problème d'ambiguité résolu par une convention ? 
+
+EN C ET JAVA, la convention est d'associer le else avec le premier if voisin:
+Comme ceci:
+
+if 1 
+then    if 1
+        then 1
+        else 0
+
+
+*/

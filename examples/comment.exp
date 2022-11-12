@@ -1,0 +1,18 @@
+b :=2
+
+/* ceci est un commentaire
+
+    dd
+            dzd
+                    */
+
+/* commentaire /* imbriqué imposssible, c'est lue juste comme un commentaire */ 
+
+
+let
+var a:= 1
+in 0 end
+
+/* zadz */
+
+a := 1
