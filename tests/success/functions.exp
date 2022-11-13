@@ -5,5 +5,6 @@ let
   function b() = 8*2
 in
   print(fortytwo);
+  a(45);/* function call */
   a(a{a = a})
 end

@@ -1,18 +1,19 @@
-b :=2
+/* un premier comm */
+
+1
 
 /* ceci est un commentaire
 
     dd
             dzd
-                    */
+      sadzaddazddzddzazd              */
 
 /* commentaire /* imbriqué imposssible, c'est juste comme un commentaire */ 
 
-
-let
-var a:= 1
-in 0 end
+2
 
 /* zadz */
 
-a := 1
+3
+
+/* azdza /* /* */

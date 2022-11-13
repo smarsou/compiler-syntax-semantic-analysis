@@ -10,9 +10,9 @@ expr: instruction | binary_operation;
 
 instruction
     :    'nil'  
-    |    INT 
+    |    INT
     |    ID args_of_id
-    |    STR   
+    |    STR
     |    lvalue lvalue_most_right_member
     |    '-' expr
     |    '(' expr_seq ?')'
