@@ -6,7 +6,7 @@ b :=2
             dzd
                     */
 
-/* commentaire /* imbriqué imposssible, c'est lue juste comme un commentaire */ 
+/* commentaire /* imbriqué imposssible, c'est juste comme un commentaire */ 
 
 
 let
