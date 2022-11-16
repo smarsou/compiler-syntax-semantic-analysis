@@ -2,6 +2,7 @@ print(3)    /* int */
 print(a)    /* id */
 print("salut je suis fatigué") /* str */
 
+
 /*
 print("salut je suis
 fatigué")

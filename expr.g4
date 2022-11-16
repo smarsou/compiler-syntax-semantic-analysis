@@ -25,7 +25,6 @@ instruction
     |    print
     ;
 
-
 type_id_prime 
     :    '{' field_list?'}'
     |     '[' expr ']' 'of' expr
@@ -86,8 +85,7 @@ lvalue_most_right_member
 
 
 declaration_list
-         :        declaration
-         |        declaration declaration_list 
+         :        declaration+
          ;
 
 declaration
@@ -111,11 +109,11 @@ type_fields
               :         type_field type_fields_prime
               ;
 
+
 type_fields_prime
                :        ',' type_field type_fields_prime
                |         
                ;
-
 
 type_field
 :     ID ':' type_id
@@ -132,7 +130,6 @@ function_declaration
 :     'function' ID '(' type_fields? ')' '=' expr 
 |     'function' ID '(' type_fields? ')' ':' type_id '=' expr
 ;
-
 
 binary_operation: precedence_4;
 
