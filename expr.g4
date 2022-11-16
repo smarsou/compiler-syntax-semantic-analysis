@@ -17,8 +17,8 @@ instruction
     |    '-' expr
     |    '(' expr_seq ?')'
     |    type_id type_id_prime
-    |    expr_prime1 
-    |    expr_prime2
+    |    'if' expr 'then' expr
+    |    'if' expr 'then' expr 'else' expr
     |    'while' expr 'do' expr
     |    'for' ID ':=' expr 'to' expr 'do' expr
     |    'break'
