@@ -11,13 +11,12 @@ expr: instruction | binary_operation;
 instruction
     :    'nil'  
     |    INT
-    |    ID args_of_id
+    |    ID '(' expr_list ?')'
     |    STR
     |    lvalue lvalue_most_right_member
-    |    '-' expr
     |    '(' expr_seq ?')'
     |    type_id type_id_prime
-    |    expr_prime1 
+    |    expr_prime1
     |    expr_prime2
     |    'while' expr 'do' expr
     |    'for' ID ':=' expr 'to' expr 'do' expr
@@ -26,14 +25,7 @@ instruction
     |    print
     ;
 
-args_of_id 
-    :    '(' expr_list ?')'
-    |
-    ;
-lvalue_most_right_member 
-    :    ':=' expr
-    |     
-    ;
+
 type_id_prime 
     :    '{' field_list?'}'
     |     '[' expr ']' 'of' expr
@@ -62,7 +54,7 @@ expr_seq_prime
             |           
             ;
 expr_list
-           :      expr expr_list_prime
+           :       expr expr_list_prime
            ;
 expr_list_prime
            :       ';' expr expr_list_prime
@@ -80,10 +72,16 @@ field_list_prime
 lvalue
          :            ID   lvalue_prime
          ;
+
 lvalue_prime
         :       '.'  ID lvalue_prime
         |         '[' expr ']' lvalue_prime
         |          
+        ;
+
+lvalue_most_right_member 
+        :    ':=' expr
+        |     
         ;
 
 
@@ -92,9 +90,8 @@ declaration_list
          |        declaration declaration_list 
          ;
 
-
 declaration
-          :       variable_declaration
+          :        variable_declaration
           |        function_declaration
           |        type_declaration
           ;
@@ -108,6 +105,8 @@ type
 |    '{' type_fields? '}'
 |    'array' 'of' type_id 
 ;
+
+
 type_fields
               :         type_field type_fields_prime
               ;
@@ -134,15 +133,18 @@ function_declaration
 |     'function' ID '(' type_fields? ')' ':' type_id '=' expr
 ;
 
+
 binary_operation: precedence_4;
 
-precedence_1 : instruction ( binary_operator_1 instruction)*;
+precedence_1 : negate_instruction ( binary_operator_1 negate_instruction)*;
 
 precedence_2 : precedence_1 ( binary_operator_2 precedence_1)*;
 
 precedence_3 : precedence_2 ( binary_operator_3 precedence_2)*;
 
 precedence_4 : precedence_3 ( binary_operator_4 precedence_3)*;
+
+negate_instruction: '-'* instruction ;
 
 //binary_operation : instruction ((binary_operator_1|binary_operator_2|binary_operator_3|binary_operator_4) instruction)*;
 
