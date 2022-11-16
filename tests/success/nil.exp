@@ -1,0 +1,14 @@
+/* nil */
+
+let
+
+var a : rec := nil 
+function f(p: rec) = f(nil)
+
+in 
+
+a := nil;
+if a <> nil then nil;
+if a = nil then nil
+
+end

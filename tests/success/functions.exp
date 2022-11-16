@@ -1,0 +1,10 @@
+let
+  function fortytwo() : int = 42
+  var fortytwo := fortytwo()
+  function a(a : a) : a = a{a = a.a}
+  function b() = 8*2
+in
+  print(fortytwo);
+  a(45);/* function call */
+  a(a{a = a})
+end

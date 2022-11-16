@@ -1,0 +1,11 @@
+if 1 
+then 1
+else    if 1
+        then 1
+
+/* Ce que j'ai écrit n'est pas correcte sémantiquement, problème de types de retour... */ 
+
+/* if L[0]=0 
+    then a:=0 
+    else    if L[0]=1 
+                then a:=1 */
