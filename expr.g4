@@ -32,19 +32,6 @@ type_id_prime
     ;
        
 
-expr_prime1
-    :    'if' expr 'then' expr 'else'  expr_prime2
-    ;
-
-expr_prime2
-    :    fact_expr expr
-    |    fact_expr expr_prime1 'else' expr_prime2
-    ;
-
-fact_expr
-    :    'if' expr 'then'
-    ;
-
 
 expr_seq
             :           expr expr_seq_prime
