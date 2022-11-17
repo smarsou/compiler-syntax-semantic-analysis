@@ -1,0 +1,4 @@
+let
+ type club = {nom: string, sports: sportlist}
+ type sportlist = {football:string, other: othersportlist}
+in () end
