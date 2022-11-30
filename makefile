@@ -1,0 +1,26 @@
+
+parser :
+	java -jar ./lib/antlr-4.9.2-complete.jar ./expr.g4 -no-listener -no-visitor -o ./src/parser
+
+astparser : 
+	java -jar ./lib/antlr-4.9.2-complete.jar ./expr.g4 -no-listener -visitor -o ./src/parser
+
+compile :
+	javac -cp ./lib/antlr-4.9.2-complete.jar:./src ./src/Main.java -d ./bin
+
+astcompile :
+	javac -cp ./lib/antlr-4.9.2-complete.jar:./src ./src/MainAST.java -d ./bin
+
+run :
+	make parser
+	make compile
+	java -cp ./lib/antlr-4.9.2-complete.jar:./bin Main $(target)
+
+runast :
+	make astparser
+	make astcompile
+	make run target=$(target)
+
+clean :
+	rm -rf src/parser/
+	rm -rf bin/

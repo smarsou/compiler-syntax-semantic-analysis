@@ -14,7 +14,7 @@ import org.antlr.v4.runtime.RecognitionException;
 import parser.*;
 import parser.exprParser.ProgramContext;
 
-public class Main {
+public class Main{
 
     public static void main(String[] args){
 
