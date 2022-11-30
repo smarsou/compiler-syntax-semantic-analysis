@@ -29,6 +29,8 @@
     visitString                     ✅
     visitInteger                    ✅
 
+    Les méthodes triviales:
+
     visitProgram
     visitExpr
     visitDeclaration_list
@@ -37,6 +39,8 @@
     visitParenthesis
     visitType_id
     visitNil
+
+    Les méthodes normales:
 
     visitTypeIdCreate
     visitWhile
@@ -59,7 +63,8 @@
     visitDecFunctVoid
     visitDecFunctWithReturnType
     
-    
+    Les méthodes qui traitent les règles qui se comporte comme des listes (Initialisation, ajout, fin de liste):
+
     visitExprSeqInit
     visitExprSeqAdd
     visitExprSeqFinish
@@ -76,6 +81,8 @@
     visitLvalueAdd
     visitLvalueSubscript
     visitLvalueFinish
+
+    Les méthodes pour traiter les opérations (même chose que dans le TP2 avec plus d'opérateurs):
 
     visitBinary_operation
     visitPrecedence_1
