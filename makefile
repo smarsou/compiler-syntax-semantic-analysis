@@ -1,4 +1,3 @@
-
 parser :
 	java -jar ./lib/antlr-4.9.2-complete.jar ./expr.g4 -no-listener -no-visitor -o ./src/parser
 
@@ -16,10 +15,10 @@ run :
 	make compile
 	java -cp ./lib/antlr-4.9.2-complete.jar:./bin Main $(target)
 
-runast :
+astrun :
 	make astparser
 	make astcompile
-	make run target=$(target)
+	java -cp ./lib/antlr-4.9.2-complete.jar:./bin MainAST $(target)
 
 clean :
 	rm -rf src/parser/
