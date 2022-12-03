@@ -79,11 +79,25 @@ public interface AstVisitor<T> {
 
     public T visit(DecFunctWithReturnType ctx);
 
-    public T visit(Binary_operation ctx);
-
     public T visit(Precedence_1 ctx);
 
+    public T visit(Or ctx);
+
     public T visit(Precedence_2 ctx);
+
+    public T visit(Minus ctx);
+
+    public T visit(Divide ctx);
+
+    public T visit(Sup_inf ctx);
+
+    public T visit(Superior ctx);
+
+    public T visit(Inferior ctx);
+
+    public T visit(Sup_equal ctx);
+
+    public T visit(Inf_equal ctx);
 
     public T visit(Precedence_3 ctx);
 
