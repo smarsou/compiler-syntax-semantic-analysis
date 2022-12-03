@@ -65,22 +65,22 @@
     
     Les méthodes qui traitent les règles qui se comporte comme des listes (Initialisation, ajout, fin de liste):
 
-    visitExprSeqInit
-    visitExprSeqAdd
-    visitExprSeqFinish
-    visitExprListInit
-    visitExprListAdd
-    visitExprListFinish
-    visitRecFieldListInit
-    visitRecFieldListAdd
-    visitRecFieldListFinish
-    visitTypeFieldListInit
-    visitTypeFieldListAdd
-    visitTypeFieldListFinish
-    visitLvalueInit
-    visitLvalueAdd
-    visitLvalueSubscript
-    visitLvalueFinish
+    visitExprSeqInit        ✅
+    visitExprSeqAdd         -> None
+    visitExprSeqFinish      -> None
+    visitExprListInit       ✅
+    visitExprListAdd        -> None
+    visitExprListFinish     -> None
+    visitRecFieldListInit   ✅
+    visitRecFieldListAdd    -> None
+    visitRecFieldListFinish ->  None
+    visitTypeFieldListInit  ✅
+    visitTypeFieldListAdd   -> None
+    visitTypeFieldListFinish    -> None
+    visitLvalueInit         ✅
+    visitLvalueAdd          ✅
+    visitLvalueSubscript    ✅
+    visitLvalueFinish       ✅
 
     Les méthodes pour traiter les opérations (même chose que dans le TP2 avec plus d'opérateurs):
 

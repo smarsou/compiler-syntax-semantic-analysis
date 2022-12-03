@@ -49,11 +49,15 @@ expr_list_prime
            |                                    #ExprListFinish
            ;
 
+rec_field
+        :   ID '=' expr #RecField
+        ;
+
 rec_field_list
-           :  ID '=' expr rec_field_list_prime          #RecFieldListInit
+           :  rec_field rec_field_list_prime          #RecFieldListInit
            ;
 rec_field_list_prime
-           :      ',' ID '=' expr rec_field_list_prime  #RecFieldListAdd
+           :      ',' rec_field rec_field_list_prime  #RecFieldListAdd
            |                                            #RecFieldListFinish
            ;
 
