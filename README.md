@@ -78,9 +78,9 @@
     visitTypeFieldListAdd   -> None
     visitTypeFieldListFinish    -> None
     visitLvalueInit         ✅
-    visitLvalueAdd          ✅
-    visitLvalueSubscript    ✅
-    visitLvalueFinish       ✅
+    visitLvalueAdd          -> None
+    visitLvalueSubscript    -> None
+    visitLvalueFinish       -> None
 
     Les méthodes pour traiter les opérations (même chose que dans le TP2 avec plus d'opérateurs):
 
