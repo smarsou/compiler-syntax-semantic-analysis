@@ -1,4 +1,4 @@
-// Generated from expr.g4 by ANTLR 4.9.2
+// Generated from ./expr.g4 by ANTLR 4.9.2
 
 package parser;
 
@@ -178,6 +178,13 @@ public interface exprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitExprListFinish(exprParser.ExprListFinishContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code RecField}
+	 * labeled alternative in {@link exprParser#rec_field}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRecField(exprParser.RecFieldContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code RecFieldListInit}
 	 * labeled alternative in {@link exprParser#rec_field_list}.

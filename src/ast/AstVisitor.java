@@ -7,11 +7,11 @@ public interface AstVisitor<T> {
 
     public T visit(Nil ctx);
 
-    public T visit(Integer ctx);
+    public T visit(IntNode ctx);
 
     public T visit(CallExpr ctx);
 
-    public T visit(String ctx);
+    public T visit(StrNode ctx);
 
     public T visit(LvalueExpr ctx);
 
@@ -37,31 +37,17 @@ public interface AstVisitor<T> {
 
     public T visit(ArrayCreate ctx);
 
-    public T visit(ExprSeqInit ctx);
+    public T visit(ExprSeq ctx);
 
-    public T visit(ExprSeqAdd ctx);
+    public T visit(ExprList ctx);
 
-    public T visit(ExprSeqFinish ctx);
+    public T visit(RecFieldList ctx);
 
-    public T visit(ExprListInit ctx);
-
-    public T visit(ExprListAdd ctx);
-
-    public T visit(ExprListFinish ctx);
-
-    public T visit(RecFieldListInit ctx);
-
-    public T visit(RecFieldListAdd ctx);
-
-    public T visit(RecFieldListFinish ctx);
+    public T visit(RecField ctx);
 
     public T visit(LvalueInit ctx);
 
-    public T visit(LvalueAdd ctx);
-
-    public T visit(LvalueSubscript ctx);
-
-    public T visit(LvalueFinish ctx);
+    public T visit(LvalueSub ctx);
 
     public T visit(LvalueDec ctx);
 
@@ -79,11 +65,7 @@ public interface AstVisitor<T> {
 
     public T visit(ArrayType ctx);
 
-    public T visit(TypeFieldListInit ctx);
-
-    public T visit(TypeFieldListAdd ctx);
-
-    public T visit(TypeFieldListFinish ctx);
+    public T visit(TypeFieldList ctx);
 
     public T visit(TypeField ctx);
 
