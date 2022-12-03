@@ -12,12 +12,19 @@ import parser.exprParser;
 public class AstCreator extends exprBaseVisitor<Ast> {
     @Override
     public Ast visitProgram(exprParser.ProgramContext ctx) {
-        return visitChildren(ctx);
+        
+        Program exprList = new Program();
+
+		for (int i = 0; i<ctx.getChildCount();i++){
+			exprList.addExpr(ctx.getChild(i).accept(this));
+		}
+
+		return exprList;
     }
 
     @Override
     public Ast visitExpr(exprParser.ExprContext ctx) {
-        return visitChildren(ctx);
+        return ctx.getChild(0).accept(this);
     }
 
     @Override
@@ -47,7 +54,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitParenthesis(exprParser.ParenthesisContext ctx) {
-        return visitChildren(ctx);
+        return ctx.getChild(1).accept(this); 
     }
 
     @Override
@@ -67,12 +74,14 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitWhile(exprParser.WhileContext ctx) {
-        return visitChildren(ctx);
+        While tant_que = new While(ctx.getChild(1).accept(this),ctx.getChild(3).accept(this));
+        return tant_que;
     }
 
     @Override
     public Ast visitFor(exprParser.ForContext ctx) {
-        return visitChildren(ctx);
+        For for1 = new For(ctx.getChild(0).toString(),ctx.getChild(3).accept(this),ctx.getChild(5).accept(this),ctx.getChild(7).accept(this));
+        return for1;
     }
 
     @Override
@@ -87,17 +96,18 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitPrint(exprParser.PrintContext ctx) {
-        return visitChildren(ctx);
+        return ctx.getChild(2).accept(this);
     }
 
     @Override
     public Ast visitRecCreate(exprParser.RecCreateContext ctx) {
-        return visitChildren(ctx);
+        return ctx.getChild(1).accept(this);
     }
 
     @Override
     public Ast visitArrayCreate(exprParser.ArrayCreateContext ctx) {
-        return visitChildren(ctx);
+        ArrayCreate arrayCreate = new ArrayCreate(ctx.getChild(1).accept(this), ctx.getChild(4).accept(this));
+        return arrayCreate;
     }
 
     @Override
@@ -256,27 +266,34 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitLvalueDec(exprParser.LvalueDecContext ctx) {
-        return visitChildren(ctx);
+        return ctx.getChild(1).accept(this);
     }
 
     @Override
     public Ast visitLvalueNone(exprParser.LvalueNoneContext ctx) {
-        return visitChildren(ctx);
+        return ctx.accept(this);
     }
 
     @Override
     public Ast visitDeclaration_list(exprParser.Declaration_listContext ctx) {
-        return visitChildren(ctx);
+        Declaration_list declarationList = new Declaration_list();
+
+		for (int i = 0; i<ctx.getChildCount();i++){
+			declarationList.addDeclaration(ctx.getChild(i).accept(this));
+		}
+
+		return declarationList;
     }
 
     @Override
     public Ast visitDeclaration(exprParser.DeclarationContext ctx) {
-        return visitChildren(ctx);
+        return ctx.getChild(0).accept(this);
     }
 
     @Override
     public Ast visitDecType(exprParser.DecTypeContext ctx) {
-        return visitChildren(ctx);
+        DecType decType = new DecType(ctx.getChild(1).toString(), ctx.getChild(3).accept(this));
+        return decType;
     }
 
     @Override

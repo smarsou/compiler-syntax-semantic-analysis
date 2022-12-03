@@ -31,27 +31,27 @@
 
     Les méthodes triviales:
 
-    visitProgram
-    visitExpr
-    visitDeclaration_list
-    visitDeclaration
-    visitBreak
-    visitParenthesis
+    visitProgram                    ✅
+    visitExpr                       ✅
+    visitDeclaration_list           ✅
+    visitDeclaration                ✅
+    visitBreak                      ✅
+    visitParenthesis                ✅
     visitType_id
     visitNil
 
     Les méthodes normales:
 
-    visitTypeIdCreate
-    visitWhile
-    visitFor
+    visitTypeIdCreate               
+    visitWhile                      ✅
+    visitFor                        ✅
     visitLetInEnd
-    visitPrint
+    visitPrint                      ✅
     visitRecCreate
-    visitArrayCreate
-    visitLvalueDec
-    visitLvalueNone
-    visitDecType
+    visitArrayCreate                ✅
+    visitLvalueDec                  ✅
+    visitLvalueNone                 ✅
+    visitDecType                    ✅
     visitTypeId
     visitRecType
     visitArrayType
