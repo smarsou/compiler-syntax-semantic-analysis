@@ -29,7 +29,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitNil(exprParser.NilContext ctx) {
-        return visitChildren(ctx);
+        return ctx.accept(this);
     }
 
     @Override
@@ -39,7 +39,12 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitCallExpr(exprParser.CallExprContext ctx) {
-        return visitChildren(ctx);
+        String idf = ctx.getChild(0).toString();
+        if (ctx.getChildCount()==4){
+            Ast expr_list = ctx.getChild(2).accept(this);
+            return new CallExpr(idf, expr_list);
+        }
+        return new CallExpr(idf);
     }
 
     @Override
@@ -49,7 +54,9 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitLvalueExpr(exprParser.LvalueExprContext ctx) {
-        return visitChildren(ctx);
+        Ast lvalue = ctx.getChild(0).accept(this);
+        Ast lvalue_call_or_declare = ctx.getChild(0).accept(this);
+        return new LvalueExpr(lvalue, lvalue_call_or_declare);
     }
 
     @Override
@@ -86,12 +93,21 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitBreak(exprParser.BreakContext ctx) {
-        return visitChildren(ctx);
+        return ctx.accept(this);
     }
 
     @Override
     public Ast visitLetInEnd(exprParser.LetInEndContext ctx) {
-        return visitChildren(ctx);
+
+        Declaration_list declaration_list = new Declaration_list();
+        for (int i = 0; i<ctx.getChild(1).getChildCount();i++){
+            declaration_list.addDeclaration(ctx.getChild(1).getChild(i).accept(this));
+        }
+        if (ctx.getChildCount()==4){
+            LetInEnd letinend = new LetInEnd(declaration_list, ctx.getChild(3).accept(this));
+            return letinend;
+        }
+        return new LetInEnd(declaration_list);
     }
 
     @Override
@@ -101,7 +117,10 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitRecCreate(exprParser.RecCreateContext ctx) {
-        return ctx.getChild(1).accept(this);
+        if (ctx.getChildCount()==3){
+            return ctx.getChild(1).accept(this);
+        }
+        return ctx.accept(this);
     }
 
     @Override
@@ -209,7 +228,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
                     String typeOfLast = list.get(list.size() - 1).getClass().getName();
                     if (typeOfLast.equals("LvalueSub") ){
-                        LvalueSub lastSubList = (LvalueSub) list.get(list.size() -1);
+                        LvalueSub lastSubList = (LvalueSub) list.get(liist.size() -1);
                         lastSubList.successiveSub.add(subscript);     
                     }else{
                     ArrayList<Ast> successiveSub = new ArrayList<>();
@@ -298,17 +317,20 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitTypeId(exprParser.TypeIdContext ctx) {
-        return visitChildren(ctx);
+        return ctx.getChild(0).accept(this);
     }
 
     @Override
     public Ast visitRecType(exprParser.RecTypeContext ctx) {
-        return visitChildren(ctx);
+        if (ctx.getChildCount()==3){
+            return ctx.getChild(1).accept(this);
+        }
+        return ctx.accept(this);
     }
 
     @Override
     public Ast visitArrayType(exprParser.ArrayTypeContext ctx) {
-        return visitChildren(ctx);
+        return ctx.getChild(2).accept(this);
     }
 
     @Override
@@ -336,7 +358,9 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitTypeField(exprParser.TypeFieldContext ctx) {
-        return visitChildren(ctx);
+        String id1 = ctx.getChild(0).toString();
+        String id2 = ctx.getChild(0).getChild(0).toString();
+        return new TypeField(id1, id2);
     }
 
     @Override
@@ -346,22 +370,45 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitDecVarTypeNotSpec(exprParser.DecVarTypeNotSpecContext ctx) {
-        return visitChildren(ctx);
+        String idf = ctx.getChild(1).toString();
+        Ast expr = ctx.getChild(3).accept(this);
+        return new DecVarTypeNotSpec(idf,expr);
+
     }
 
     @Override
     public Ast visitDecVarTypeSpec(exprParser.DecVarTypeSpecContext ctx) {
-        return visitChildren(ctx);
+        String idf1 = ctx.getChild(1).toString();
+        String idf2 = ctx.getChild(0).getChild(0).toString();
+        Ast expr = ctx.getChild(5).accept(this);
+        return new DecVarTypeSpec(idf1, idf2, expr);
     }
 
     @Override
     public Ast visitDecFunctVoid(exprParser.DecFunctVoidContext ctx) {
-        return visitChildren(ctx);
+        String idf = ctx.getChild(1).toString();
+        if (ctx.getChildCount()==7){
+            Ast type_field_list = ctx.getChild(3).accept(this);
+            Ast expr = ctx.getChild(6).accept(this);
+            return new DecFunctVoid(idf, type_field_list, expr);
+        }
+        Ast expr = ctx.getChild(5).accept(this);
+        return new DecFunctVoid(idf, expr);
+
     }
 
     @Override
     public Ast visitDecFunctWithReturnType(exprParser.DecFunctWithReturnTypeContext ctx) {
-        return visitChildren(ctx);
+        String idf1 = ctx.getChild(1).toString();
+        if (ctx.getChildCount()==9){
+            Ast type_field_list = ctx.getChild(3).accept(this);
+            String idf2 = ctx.getChild(6).getChild(0).toString();
+            Ast expr = ctx.getChild(8).accept(this);
+            return new DecFunctWithReturnType(idf1, type_field_list, idf2, expr);
+        }
+        String idf2 = ctx.getChild(5).getChild(0).toString();
+        Ast expr = ctx.getChild(7).accept(this);
+        return new DecFunctWithReturnType(idf1, expr, idf2, expr);
     }
 
     @Override

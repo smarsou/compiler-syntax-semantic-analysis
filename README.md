@@ -37,31 +37,31 @@
     visitDeclaration                ✅
     visitBreak                      ✅
     visitParenthesis                ✅
-    visitType_id
-    visitNil
+    visitTypeid                     ✅
+    visitNil                        ✅
 
     Les méthodes normales:
 
     visitTypeIdCreate               
     visitWhile                      ✅
     visitFor                        ✅
-    visitLetInEnd
+    visitLetInEnd                   ✅
     visitPrint                      ✅
-    visitRecCreate
+    visitRecCreate                  ✅
     visitArrayCreate                ✅
     visitLvalueDec                  ✅
     visitLvalueNone                 ✅
     visitDecType                    ✅
-    visitTypeId
-    visitRecType
-    visitArrayType
-    visitLvalueExpr 
-    visitCallExpr
-    visitTypeField
-    visitDecVarTypeNotSpec
-    visitDecVarTypeSpec
-    visitDecFunctVoid
-    visitDecFunctWithReturnType
+    visitTypeId                     ✅
+    visitRecType                    ✅
+    visitArrayType                  ✅
+    visitLvalueExpr                 ✅
+    visitCallExpr                   ✅
+    visitTypeField                  ✅
+    visitDecVarTypeNotSpec          ✅
+    visitDecVarTypeSpec             ✅
+    visitDecFunctVoid               ✅
+    visitDecFunctWithReturnType     ✅
     
     Les méthodes qui traitent les règles qui se comporte comme des listes (Initialisation, ajout, fin de liste):
 
