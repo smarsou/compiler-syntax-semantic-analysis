@@ -5,4 +5,11 @@ public class Negate_instruction implements Ast {
         return visitor.visit(this);
     }
 
+    public Ast instruction;
+
+    public Negate_instruction(Ast instrs) {
+        this.instruction = instrs;
+
+    }
+
 }

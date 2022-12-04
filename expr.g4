@@ -125,17 +125,17 @@ function_declaration
 
 binary_operation: precedence_4;
 
-precedence_1 : negate_instruction ( BINARY_OPERATOR_1 negate_instruction)*;
+precedence_1 : negate_instruction ( binary_operator_1 negate_instruction)*;
 
-precedence_2 : precedence_1 ( BINARY_OPERATOR_2 precedence_1)*;
+precedence_2 : precedence_1 ( binary_operator_2 precedence_1)*;
 
-precedence_3 : precedence_2 ( BINARY_OPERATOR_3 precedence_2)*;
+precedence_3 : precedence_2 ( binary_operator_3 precedence_2)*;
 
-precedence_4 : precedence_3 ( BINARY_OPERATOR_4 precedence_3)*;
+precedence_4 : precedence_3 ( binary_operator_4 precedence_3)*;
 
-negate_instruction: '-'* instruction ;
+negate_instruction:  '-' negate_instruction | instruction ;
 
-//binary_operation : instruction ((BINARY_OPERATOR_1|BINARY_OPERATOR_2|BINARY_OPERATOR_3|BINARY_OPERATOR_4) instruction)*;
+//binary_operation : instruction ((binary_operator_1|binary_operator_2|binary_operator_3|binary_operator_4) instruction)*;
 
 // les Terminaux
 
@@ -151,17 +151,17 @@ STR   : '"' (DIGIT | LETTER | ' ' | ',' | ';' | '.' | ':'| '!'| '?'| '/'| '\\' |
 
 fragment DIGIT: ('0'..'9');
 
-BINARY_OPERATOR_1
+binary_operator_1
 : '*' 
 | '/'
 ;
 
-BINARY_OPERATOR_2
+binary_operator_2
 : '+' 
 | '-' 
 ;
 
-BINARY_OPERATOR_3
+binary_operator_3
 : '=' 
 | '<>' 
 | '<' 
@@ -170,7 +170,7 @@ BINARY_OPERATOR_3
 | '>='
 ;
 
-BINARY_OPERATOR_4
+binary_operator_4
 : '&' 
 | '|'
 ;
