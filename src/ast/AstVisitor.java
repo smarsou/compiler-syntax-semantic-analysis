@@ -13,7 +13,7 @@ public interface AstVisitor<T> {
 
     public T visit(StrNode ctx);
 
-    public T visit(LvalueExpr ctx);
+    public T visit(LvalueAffect ctx);
 
     // public T visit(Parenthesis ctx);
 

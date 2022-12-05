@@ -235,19 +235,11 @@ public interface exprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLvalueFinish(exprParser.LvalueFinishContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code LvalueDec}
-	 * labeled alternative in {@link exprParser#lvalue_call_or_declare}.
+	 * Visit a parse tree produced by {@link exprParser#lvalue_call_or_declare}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitLvalueDec(exprParser.LvalueDecContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code LvalueNone}
-	 * labeled alternative in {@link exprParser#lvalue_call_or_declare}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLvalueNone(exprParser.LvalueNoneContext ctx);
+	T visitLvalue_call_or_declare(exprParser.Lvalue_call_or_declareContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link exprParser#declaration_list}.
 	 * @param ctx the parse tree
@@ -386,4 +378,28 @@ public interface exprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitNegate_instruction(exprParser.Negate_instructionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link exprParser#binary_operator_1}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBinary_operator_1(exprParser.Binary_operator_1Context ctx);
+	/**
+	 * Visit a parse tree produced by {@link exprParser#binary_operator_2}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBinary_operator_2(exprParser.Binary_operator_2Context ctx);
+	/**
+	 * Visit a parse tree produced by {@link exprParser#binary_operator_3}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBinary_operator_3(exprParser.Binary_operator_3Context ctx);
+	/**
+	 * Visit a parse tree produced by {@link exprParser#binary_operator_4}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBinary_operator_4(exprParser.Binary_operator_4Context ctx);
 }

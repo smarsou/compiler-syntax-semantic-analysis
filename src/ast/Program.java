@@ -13,7 +13,4 @@ public class Program implements Ast{
         this.exprList = new ArrayList<>();
     }
 
-    public void addExpr(Ast expr){
-        this.exprList.add(expr);
-    }
 }

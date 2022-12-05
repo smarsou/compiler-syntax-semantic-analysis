@@ -9,15 +9,19 @@ public class LvalueInit implements Ast{
         return visitor.visit(this);
     }
 
-    public ArrayList<Object> lvalue;
+    public ArrayList<Ast> lvalue;
 
-    public LvalueInit(ArrayList<Object> lvalue){
+    public LvalueInit(ArrayList<Ast> lvalue){
         this.lvalue = lvalue;
     }
 
-    public LvalueInit(String str){
+    public LvalueInit(Ast ast){
         lvalue = new ArrayList<>();
-        lvalue.add(str);
+        lvalue.add(ast);
+    }
+
+    public LvalueInit(LvalueInit ast){
+        this.lvalue = ast.lvalue;
     }
     
 

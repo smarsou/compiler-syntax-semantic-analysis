@@ -1,7 +1,7 @@
 package ast;
 
 
-public class LvalueExpr implements Ast {
+public class LvalueAffect implements Ast {
     
     // Utile pour la dernière partie
     public <T> T accept(AstVisitor<T> visitor){
@@ -11,10 +11,9 @@ public class LvalueExpr implements Ast {
     public Ast lvalue;
     public Ast lvalue_call_or_declare;
 
-    public LvalueExpr(Ast lvalue, Ast lvalue_call_or_declare){
+    public LvalueAffect(Ast lvalue, Ast lvalue_call_or_declare){
         this.lvalue = lvalue;
         this.lvalue_call_or_declare = lvalue_call_or_declare;
     }
-
 
 }

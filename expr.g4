@@ -1,4 +1,4 @@
-grammar expr;
+grammar expr    ;
 
 @header{
 package parser;
@@ -72,8 +72,8 @@ lvalue_prime
         ;
 
 lvalue_call_or_declare 
-        :    ':=' expr                      #LvalueDec
-        |                                   #LvalueNone
+        :    ':=' expr                      
+        |                                   
         ;
 
 
@@ -132,7 +132,7 @@ precedence_2 : precedence_1 ( binary_operator_2 precedence_1)*;
 precedence_3 : precedence_2 ( binary_operator_3 precedence_2)*;
 
 precedence_4 : precedence_3 ( binary_operator_4 precedence_3)*;
-
+    
 negate_instruction:  '-' negate_instruction | instruction ;
 
 //binary_operation : instruction ((binary_operator_1|binary_operator_2|binary_operator_3|binary_operator_4) instruction)*;
