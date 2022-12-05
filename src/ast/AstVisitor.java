@@ -3,9 +3,9 @@ package ast;
 public interface AstVisitor<T> {
     public T visit(Program ctx);
 
-    public T visit(Expr ctx);
+    // public T visit(Expr ctx);
 
-    public T visit(Nil ctx);
+    // public T visit(Nil ctx);
 
     public T visit(IntNode ctx);
 
@@ -15,9 +15,9 @@ public interface AstVisitor<T> {
 
     public T visit(LvalueExpr ctx);
 
-    public T visit(Parenthesis ctx);
+    // public T visit(Parenthesis ctx);
 
-    public T visit(TypeIdCreate ctx);
+    // public T visit(TypeIdCreate ctx);
 
     public T visit(IfThen ctx);
 
@@ -27,13 +27,13 @@ public interface AstVisitor<T> {
 
     public T visit(For ctx);
 
-    public T visit(Break ctx);
+    // public T visit(Break ctx);
 
     public T visit(LetInEnd ctx);
 
-    public T visit(Print ctx);
+    // public T visit(Print ctx);
 
-    public T visit(RecCreate ctx);
+    // public T visit(RecCreate ctx);
 
     public T visit(ArrayCreate ctx);
 
@@ -49,27 +49,27 @@ public interface AstVisitor<T> {
 
     public T visit(LvalueSub ctx);
 
-    public T visit(LvalueDec ctx);
+    // public T visit(LvalueDec ctx);
 
-    public T visit(LvalueNone ctx);
+    // public T visit(LvalueNone ctx);
 
     public T visit(Declaration_list ctx);
 
-    public T visit(Declaration ctx);
+    // public T visit(Declaration ctx);
 
     public T visit(DecType ctx);
 
-    public T visit(TypeId ctx);
+    // public T visit(TypeId ctx);
 
-    public T visit(RecType ctx);
+    // public T visit(RecType ctx);
 
-    public T visit(ArrayType ctx);
+    // public T visit(ArrayType ctx);
 
     public T visit(TypeFieldList ctx);
 
     public T visit(TypeField ctx);
 
-    public T visit(Type_id ctx);
+    // public T visit(Type_id ctx);
 
     public T visit(DecVarTypeNotSpec ctx);
 
