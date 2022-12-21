@@ -8,13 +8,11 @@ public class TypeField implements Ast {
         return visitor.visit(this);
     }
     
-    public String idf1;
-    public String idf2;
+    public Ast idf1;
+    public Ast idf2;
 
-    public TypeField(String idf1, String idf2){
+    public TypeField(Ast idf1, Ast idf2){
         this.idf1 = idf1;
         this.idf2 = idf2;
     }
-
-
 }

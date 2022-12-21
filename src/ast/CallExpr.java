@@ -8,15 +8,15 @@ public class CallExpr implements Ast {
         return visitor.visit(this);
     }
     
-    public String idf;
+    public StrNode idf;
     public Ast exprList;
 
-    public CallExpr(String idf, Ast exprList){
+    public CallExpr(StrNode idf, Ast exprList){
         this.idf = idf;
         this.exprList = exprList;
     }
 
-    public CallExpr(String idf){
+    public CallExpr(StrNode idf){
         this.idf = idf;
     }
 

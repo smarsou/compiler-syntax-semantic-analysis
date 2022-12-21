@@ -11,6 +11,8 @@ public interface AstVisitor<T> {
 
     public T visit(CallExpr ctx);
 
+    public T visit(Print ctx);
+
     public T visit(StrNode ctx);
 
     public T visit(LvalueAffect ctx);
@@ -104,5 +106,9 @@ public interface AstVisitor<T> {
     public T visit(Precedence_4 ctx);
 
     public T visit(Negate_instruction ctx);
+
+    public T visit(RecCreate recCreate);
+
+    public T visit(ArrayTypeNode arrayType);
 
 }

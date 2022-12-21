@@ -6,10 +6,10 @@ public class DecType implements Ast{
         return visitor.visit(this);
     }
     
-    public String idf;
+    public Ast idf;
     public Ast type;
 
-    public DecType(String idf, Ast type) {
+    public DecType(Ast idf, Ast type) {
         this.idf = idf;
         this.type = type;
 

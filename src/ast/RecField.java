@@ -9,7 +9,7 @@ public class RecField implements Ast{
 
     public Ast idf;
     public Ast expression;
-
+    
     public RecField(LvalueInit idf, Ast expression){
         this.idf = idf;
         this.expression = expression;

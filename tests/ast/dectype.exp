@@ -1,0 +1,6 @@
+let
+  type int_array = array of int
+  type wow = { w : int, tab : float , tab : voule}
+in
+  
+end

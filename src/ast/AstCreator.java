@@ -3,6 +3,7 @@ package ast;
 import java.util.ArrayList;
 
 import javax.lang.model.type.ArrayType;
+import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 
@@ -41,11 +42,12 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     @Override
     public Ast visitCallExpr(exprParser.CallExprContext ctx) {
         String idf = ctx.getChild(0).toString();
+        StrNode str = new StrNode(idf);
         if (ctx.getChildCount()==4){
             Ast expr_list = ctx.getChild(2).accept(this);
-            return new CallExpr(idf, expr_list);
+            return new CallExpr(str, expr_list);
         }
-        return new CallExpr(idf);
+        return new CallExpr(str);
     }
 
     @Override
@@ -77,7 +79,23 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitTypeIdCreate(exprParser.TypeIdCreateContext ctx) {
-        return visitChildren(ctx);
+        Ast typeid = ctx.getChild(0).accept(this);
+        ParseTree typeidprime = ctx.getChild(1);
+        Ast returnAst = new StrNode("error");
+        switch (typeidprime.getChild(0).toString()){
+            case "{":
+                returnAst = new RecCreate(typeid, typeidprime.accept(this));
+                break;
+            case "[":
+                Ast expr1 = typeidprime.getChild(1).accept(this);
+                Ast expr2 = typeidprime.getChild(4).accept(this);
+                returnAst =  new ArrayCreate(typeid, expr1, expr2);
+                break;
+            default:
+                break;
+        }
+        return returnAst;
+
     }
 
     @Override
@@ -115,7 +133,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
         for (int i = 0; i<ctx.getChild(1).getChildCount();i++){
             declaration_list.addDeclaration(ctx.getChild(1).getChild(i).accept(this));
         }
-        if (ctx.getChildCount()==4){
+        if (ctx.getChildCount()==5){
             LetInEnd letinend = new LetInEnd(declaration_list, ctx.getChild(3).accept(this));
             return letinend;
         }
@@ -124,21 +142,17 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitPrint(exprParser.PrintContext ctx) {
-        return ctx.getChild(2).accept(this);
+        return new Print(new StrNode(ctx.getChild(2).toString()));
     }
 
     @Override
     public Ast visitRecCreate(exprParser.RecCreateContext ctx) {
-        if (ctx.getChildCount()==3){
-            return ctx.getChild(1).accept(this);
-        }
-        return ctx.accept(this);
+        return ctx.getChild(1).accept(this);
     }
 
     @Override
     public Ast visitArrayCreate(exprParser.ArrayCreateContext ctx) {
-        ArrayCreate arrayCreate = new ArrayCreate(ctx.getChild(1).accept(this), ctx.getChild(4).accept(this));
-        return arrayCreate;
+        return visitChildren(ctx);
     }
 
     @Override
@@ -220,6 +234,13 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitLvalueInit(exprParser.LvalueInitContext ctx) {
+        // ParseTree premier = ctx.getChild(0);
+        // ParseTree suivant = ctx.getChild(1);
+        // ArrayList<Ast> list = new ArrayList<>();
+
+        // list.add(new StrNode(premier.toString()));
+        // list.add(new StrNode(suivant.getChild(1).toString()));
+        
         ParseTree premier = ctx.getChild(0);
         ParseTree suivant = ctx.getChild(1);
 
@@ -228,25 +249,34 @@ public class AstCreator extends exprBaseVisitor<Ast> {
         }
 
         ArrayList<Ast> list = new ArrayList<>();
+        boolean printed = false;
         while (suivant.getChildCount() != 0) {
             switch (suivant.getChild(0).toString()) {
                 case ".":
-                    list.add(new StrNode(premier.toString()));
+                    if (!printed){
+                        list.add(new StrNode(premier.toString()));
+                    }
+                    printed = false;
                     premier = suivant.getChild(1);
                     suivant = suivant.getChild(2);
                     break;
                 case "[":
                     Ast subscript = suivant.getChild(1).accept(this);
-
-                    String typeOfLast = list.get(list.size() - 1).getClass().getName();
+                    String typeOfLast;
+                    if (list.size()>0){
+                        typeOfLast = list.get(list.size() - 1).getClass().getName();
+                    }else{
+                        typeOfLast = "None";
+                    }
                     if (typeOfLast.equals("ast.LvalueSub") ){
                         LvalueSub lastSubList = (LvalueSub) list.get(list.size() -1);
-                        lastSubList.successiveSub.add(subscript);     
+                        lastSubList.successiveSub.add(subscript);
                     }else{
-                    ArrayList<Ast> successiveSub = new ArrayList<>();
-                    successiveSub.add(subscript);
-                    LvalueSub sub = new LvalueSub(premier.toString(), successiveSub);
-                    list.add(sub);
+                        ArrayList<Ast> successiveSub = new ArrayList<>();
+                        successiveSub.add(subscript);
+                        LvalueSub sub = new LvalueSub(premier.toString(), successiveSub);
+                        list.add(sub);
+                        printed = true;
                     }
                     suivant = suivant.getChild(3);
                     break;
@@ -254,7 +284,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
                     break;
             }
         }
-
+        list.add(new StrNode(premier.toString()));
         return new LvalueInit(list);
     }
 
@@ -313,7 +343,8 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitDecType(exprParser.DecTypeContext ctx) {
-        DecType decType = new DecType(ctx.getChild(1).toString(), ctx.getChild(3).accept(this));
+
+        DecType decType = new DecType(ctx.getChild(1).accept(this), ctx.getChild(3).accept(this));
         return decType;
     }
 
@@ -332,7 +363,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitArrayType(exprParser.ArrayTypeContext ctx) {
-        return ctx.getChild(2).accept(this);
+        return new ArrayTypeNode(ctx.getChild(2).accept(this));
     }
 
     @Override
@@ -360,14 +391,14 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitTypeField(exprParser.TypeFieldContext ctx) {
-        String id1 = ctx.getChild(0).toString();
-        String id2 = ctx.getChild(0).getChild(0).toString();
+        Ast id1 = new StrNode(ctx.getChild(0).toString());
+        Ast id2 = ctx.getChild(2).accept(this);
         return new TypeField(id1, id2);
     }
 
     @Override
     public Ast visitType_id(exprParser.Type_idContext ctx) {
-        return visitChildren(ctx);
+        return new StrNode(ctx.getChild(0).toString());
     }
 
     @Override

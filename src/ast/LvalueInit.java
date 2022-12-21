@@ -23,6 +23,5 @@ public class LvalueInit implements Ast{
     public LvalueInit(LvalueInit ast){
         this.lvalue = ast.lvalue;
     }
-    
 
 }

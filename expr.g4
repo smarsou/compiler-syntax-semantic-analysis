@@ -22,16 +22,14 @@ instruction
     |    'for' ID ':=' expr 'to' expr 'do' expr #For
     |    'break'                                #Break
     |    'let' declaration_list 'in' expr_seq? 'end' #LetInEnd
-    |    'print' '(' expr ')'                   #Print
+    |    'print' '(' (STR|INT|ID) ')'                   #Print
     ;
-    
+
 
 type_id_prime 
     :    '{' rec_field_list?'}'                 #RecCreate
     |    '[' expr ']' 'of' expr                 #ArrayCreate
     ;
-       
-
 
 expr_seq
             :           expr expr_seq_prime     #ExprSeqInit
@@ -82,9 +80,9 @@ declaration_list
          ;
 
 declaration
-          :        variable_declaration     
-          |        function_declaration     
-          |        type_declaration         
+          :        variable_declaration 
+          |        function_declaration 
+          |        type_declaration
           ;
 
 type_declaration

@@ -5,13 +5,14 @@ public class ArrayCreate implements Ast{
         return visitor.visit(this);
     }
     
+    public Ast typeid;
     public Ast expr1;
     public Ast expr2;
 
-    public ArrayCreate(Ast expr1, Ast expr2) {
+    public ArrayCreate(Ast typeid, Ast expr1, Ast expr2) {
         this.expr1 = expr1;
+        this.typeid = typeid;
         this.expr2 = expr2;
-
     }
 
 }
