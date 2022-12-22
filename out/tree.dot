@@ -4,17 +4,11 @@ digraph "ast"{
 	ranksep=1;
 
 	N0 [label="Program", shape="box"];
-	N1 [label="LetInEnd", shape="box"];
-	N2 [label="DeclarationList", shape="box"];
-	N3 [label="Dec_Var", shape="box"];
-	N4 [label="mady", shape="box"];
-	N6 [label="3", shape="box"];
-	N5 [label="Negate", shape="box"];
+	N2 [label="1", shape="box"];
+	N3 [label="1", shape="box"];
+	N1 [label="IfThen", shape="box"];
 
-	N5 -> N6; 
-	N3 -> N4; 
-	N3 -> N5; 
-	N2 -> N3; 
 	N1 -> N2; 
+	N1 -> N3; 
 	N0 -> N1; 
 }
