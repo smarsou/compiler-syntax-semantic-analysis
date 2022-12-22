@@ -63,7 +63,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitParenthesis(exprParser.ParenthesisContext ctx) {
-        if (ctx.getChildCount() == 3){
+        if (ctx.getChildCount() == 3) {
             return ctx.getChild(1).accept(this);
         }
         return ctx.accept(this);
@@ -118,7 +118,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
         Ast expr1 = ctx.getChild(3).accept(this);
         Ast expr2 = ctx.getChild(5).accept(this);
         Ast expr3 = ctx.getChild(7).accept(this);
-        return new For(str,expr1,expr2,expr3);
+        return new For(str, expr1, expr2, expr3);
     }
 
     @Override
@@ -406,7 +406,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
         String idf = ctx.getChild(1).toString();
         StrNode str = new StrNode(idf);
         Ast expr = ctx.getChild(3).accept(this);
-        return new DecVarTypeNotSpec(idf,expr);
+        return new DecVarTypeNotSpec(idf, expr);
 
     }
 
@@ -423,7 +423,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     @Override
     public Ast visitDecFunctVoid(exprParser.DecFunctVoidContext ctx) {
         String idf = ctx.getChild(1).toString();
-        if (ctx.getChildCount()==7){
+        if (ctx.getChildCount() == 7) {
             Ast type_field_list = ctx.getChild(3).accept(this);
             Ast expr = ctx.getChild(6).accept(this);
             return new DecFunctVoid(str, type_field_list, expr);
@@ -436,7 +436,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     @Override
     public Ast visitDecFunctWithReturnType(exprParser.DecFunctWithReturnTypeContext ctx) {
         String idf1 = ctx.getChild(1).toString();
-        if (ctx.getChildCount()==9){
+        if (ctx.getChildCount() == 9) {
             Ast type_field_list = ctx.getChild(3).accept(this);
             String idf2 = ctx.getChild(6).getChild(0).toString();
             StrNode str2 = new StrNode(idf2);
@@ -582,6 +582,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     @Override
     public Ast visitRec_negate(exprParser.Rec_negateContext ctx) {
         int j = 0;
+
         int size = ctx.getChildCount();
         String g = ctx.getChild(j).toString();
         while ((j < size) && (g.equals("-"))) {
@@ -592,7 +593,9 @@ public class AstCreator extends exprBaseVisitor<Ast> {
         }
         if (j < size) {
 
-            return new Negate_instruction(ctx.accept(this));
+            Negate_instruction p = new Negate_instruction(ctx.getChild(j).accept(this));
+
+            return p;
 
         }
         return null;
