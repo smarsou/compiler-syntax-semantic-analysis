@@ -8,10 +8,10 @@ public class DecVarTypeNotSpec implements Ast {
         return visitor.visit(this);
     }
     
-    public String idf;
+    public StrNode idf;
     public Ast expr;
 
-    public DecVarTypeNotSpec(String idf, Ast expr){
+    public DecVarTypeNotSpec(StrNode idf, Ast expr){
         this.idf = idf;
         this.expr = expr;
     }

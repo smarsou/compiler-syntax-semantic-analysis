@@ -1,0 +1,5 @@
+let
+  type any_record = {any : int}
+  var nil_var : any_record := nil
+in
+end

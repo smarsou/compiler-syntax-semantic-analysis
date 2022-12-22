@@ -8,11 +8,11 @@ public class DecVarTypeSpec implements Ast {
         return visitor.visit(this);
     }
     
-    public String idf1;
-    public String idf2;
+    public StrNode idf1;
+    public StrNode idf2;
     public Ast expr;
 
-    public DecVarTypeSpec(String idf1, String idf2, Ast expr){
+    public DecVarTypeSpec(StrNode idf1, StrNode idf2, Ast expr){
         this.idf1 = idf1;
         this.idf2 = idf2;
         this.expr = expr;

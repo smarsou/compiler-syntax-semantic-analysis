@@ -132,7 +132,12 @@ public class GraphVizVisitor implements AstVisitor<String> {
     public String visit(DecVarTypeSpec dec) {
 
         String nodeIdentifier = this.nextState();
-        this.addNode(nodeIdentifier, "Todo");
+        this.addNode(nodeIdentifier, "Dec_Var_Spec");
+        String idf1 = dec.idf1.accept(this);
+        String idf2 = dec.idf2.accept(this);
+
+        this.addTransition(nodeIdentifier, idf1);
+        this.addTransition(nodeIdentifier, idf2);
         return nodeIdentifier;
 
     }
@@ -141,9 +146,13 @@ public class GraphVizVisitor implements AstVisitor<String> {
     public String visit(DecVarTypeNotSpec dec) {
 
         String nodeIdentifier = this.nextState();
-        this.addNode(nodeIdentifier, "Todo");
-        return nodeIdentifier;
+        this.addNode(nodeIdentifier, "Dec_Var");
+        String idf = dec.idf.accept(this);
+        String expr = dec.expr.accept(this);
 
+        this.addTransition(nodeIdentifier, idf);
+        this.addTransition(nodeIdentifier, expr);
+        return nodeIdentifier;
     }
 
     @Override
@@ -245,10 +254,18 @@ public class GraphVizVisitor implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(For d) {
+    public String visit(For f) {
 
         String nodeIdentifier = this.nextState();
-        this.addNode(nodeIdentifier, "Todo");
+        this.addNode(nodeIdentifier, "For");     
+        String idfState = f.idf.accept(this);
+        this.addTransition(nodeIdentifier, idfState);
+        String expr1State = f.expr1.accept(this);
+        this.addTransition(nodeIdentifier, expr1State);
+        String expr2State = f.expr2.accept(this);
+        this.addTransition(nodeIdentifier, expr2State);
+        String expr3State = f.expr3.accept(this);
+        this.addTransition(nodeIdentifier, expr3State);
         return nodeIdentifier;
 
     }
@@ -257,7 +274,11 @@ public class GraphVizVisitor implements AstVisitor<String> {
     public String visit(While d) {
 
         String nodeIdentifier = this.nextState();
-        this.addNode(nodeIdentifier, "Todo");
+        this.addNode(nodeIdentifier, "While");
+        String expr1 = d.expr1.accept(this);
+        this.addTransition(nodeIdentifier, expr1);
+        String expr2 = d.expr2.accept(this);
+        this.addTransition(nodeIdentifier, expr2);
         return nodeIdentifier;
 
     }

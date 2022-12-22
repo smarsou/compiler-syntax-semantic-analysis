@@ -74,7 +74,10 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitParenthesis(exprParser.ParenthesisContext ctx) {
-        return ctx.getChild(1).accept(this);
+        if (ctx.getChildCount() == 3){
+            return ctx.getChild(1).accept(this);
+        }
+        return ctx.accept(this);
     }
 
     @Override
@@ -100,12 +103,17 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitIfThen(exprParser.IfThenContext ctx) {
-        return visitChildren(ctx);
+        Ast condition = ctx.getChild(1).accept(this);
+        Ast thenBlock = ctx.getChild(3).accept(this);
+        return new IfThen(condition, thenBlock);
     }
 
     @Override
     public Ast visitIfThenElse(exprParser.IfThenElseContext ctx) {
-        return visitChildren(ctx);
+        Ast condition = ctx.getChild(1).accept(this);
+        Ast thenBlock = ctx.getChild(3).accept(this);
+        Ast elseBlock = ctx.getChild(5).accept(this);
+        return new IfThenElse(condition, thenBlock, elseBlock);
     }
 
     @Override
@@ -116,9 +124,12 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitFor(exprParser.ForContext ctx) {
-        For for1 = new For(ctx.getChild(0).toString(), ctx.getChild(3).accept(this), ctx.getChild(5).accept(this),
-                ctx.getChild(7).accept(this));
-        return for1;
+        String idf = ctx.getChild(1).toString();
+        StrNode str = new StrNode(idf);
+        Ast expr1 = ctx.getChild(3).accept(this);
+        Ast expr2 = ctx.getChild(5).accept(this);
+        Ast expr3 = ctx.getChild(7).accept(this);
+        return new For(str,expr1,expr2,expr3);
     }
 
     @Override
@@ -404,44 +415,51 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     @Override
     public Ast visitDecVarTypeNotSpec(exprParser.DecVarTypeNotSpecContext ctx) {
         String idf = ctx.getChild(1).toString();
+        StrNode str = new StrNode(idf);
         Ast expr = ctx.getChild(3).accept(this);
-        return new DecVarTypeNotSpec(idf,expr);
+        return new DecVarTypeNotSpec(str,expr);
 
     }
 
     @Override
     public Ast visitDecVarTypeSpec(exprParser.DecVarTypeSpecContext ctx) {
         String idf1 = ctx.getChild(1).toString();
+        StrNode str1 = new StrNode(idf1);
         String idf2 = ctx.getChild(0).getChild(0).toString();
+        StrNode str2 = new StrNode(idf2);
         Ast expr = ctx.getChild(5).accept(this);
-        return new DecVarTypeSpec(idf1, idf2, expr);
+        return new DecVarTypeSpec(str1, str2, expr);
     }
 
     @Override
     public Ast visitDecFunctVoid(exprParser.DecFunctVoidContext ctx) {
         String idf = ctx.getChild(1).toString();
+        StrNode str = new StrNode(idf);
         if (ctx.getChildCount()==7){
             Ast type_field_list = ctx.getChild(3).accept(this);
             Ast expr = ctx.getChild(6).accept(this);
-            return new DecFunctVoid(idf, type_field_list, expr);
+            return new DecFunctVoid(str, type_field_list, expr);
         }
         Ast expr = ctx.getChild(5).accept(this);
-        return new DecFunctVoid(idf, expr);
+        return new DecFunctVoid(str, expr);
 
     }
 
     @Override
     public Ast visitDecFunctWithReturnType(exprParser.DecFunctWithReturnTypeContext ctx) {
         String idf1 = ctx.getChild(1).toString();
+        StrNode str1 = new StrNode(idf1);
         if (ctx.getChildCount()==9){
             Ast type_field_list = ctx.getChild(3).accept(this);
             String idf2 = ctx.getChild(6).getChild(0).toString();
+            StrNode str2 = new StrNode(idf2);
             Ast expr = ctx.getChild(8).accept(this);
-            return new DecFunctWithReturnType(idf1, type_field_list, idf2, expr);
+            return new DecFunctWithReturnType(str1, type_field_list, str2, expr);
         }
         String idf2 = ctx.getChild(5).getChild(0).toString();
+        StrNode str2 = new StrNode(idf2);
         Ast expr = ctx.getChild(7).accept(this);
-        return new DecFunctWithReturnType(idf1, expr, idf2, expr);
+        return new DecFunctWithReturnType(str1, expr, str2, expr);
     }
 
     @Override

@@ -24,44 +24,44 @@
 3) Ajouter une méthode dans la classe AstVisitor pour chaque nouveau Noeud créée
 ####
     
-    visitIfThen                     ✅
-    visitIfThenElse                 ✅
-    visitString                     ✅
-    visitInteger                    ✅
+    visitIfThen                     ✅O
+    visitIfThenElse                 ✅O
+    visitString                     ✅X
+    visitInteger                    ✅X
 
     Les méthodes triviales:
 
-    visitProgram                    ✅
-    visitExpr                       ✅
-    visitDeclaration_list           ✅
-    visitDeclaration                ✅
-    visitBreak                      ✅
-    visitParenthesis                ✅
-    visitTypeid                     ✅
-    visitNil                        ✅
+    visitProgram                    ✅X
+    visitExpr                       ✅O
+    visitDeclaration_list           ✅X
+    visitDeclaration                ✅X
+    visitBreak                      ✅X
+    visitParenthesis                ✅O
+    visitTypeid                     ✅X
+    visitNil                        ✅X
 
     Les méthodes normales:
 
-    visitTypeIdCreate               
-    visitWhile                      ✅
-    visitFor                        ✅
-    visitLetInEnd                   ✅
-    visitPrint                      ✅
-    visitRecCreate                  ✅
-    visitArrayCreate                ✅
+    visitTypeIdCreate               ✅X
+    visitWhile                      ✅O
+    visitFor                        ✅O
+    visitLetInEnd                   ✅X
+    visitPrint                      ✅X
+    visitRecCreate                  ✅X
+    visitArrayCreate                ✅X
     visitLvalueDec                  ✅
     visitLvalueNone                 ✅
-    visitDecType                    ✅
-    visitTypeId                     ✅
-    visitRecType                    ✅
-    visitArrayType                  ✅
-    visitLvalueExpr                 ✅
-    visitCallExpr                   ✅
-    visitTypeField                  ✅
-    visitDecVarTypeNotSpec          ✅
-    visitDecVarTypeSpec             ✅
-    visitDecFunctVoid               ✅
-    visitDecFunctWithReturnType     ✅
+    visitDecType                    ✅X
+    visitTypeId                     ✅X
+    visitRecType                    ✅X
+    visitArrayType                  ✅X
+    visitLvalueExpr                 ✅X
+    visitCallExpr                   ✅X
+    visitTypeField                  ✅X
+    visitDecVarTypeNotSpec          ✅O
+    visitDecVarTypeSpec             ✅O
+    visitDecFunctVoid               ✅O
+    visitDecFunctWithReturnType     ✅O
     
     Les méthodes qui traitent les règles qui se comporte comme des listes (Initialisation, ajout, fin de liste):
 
