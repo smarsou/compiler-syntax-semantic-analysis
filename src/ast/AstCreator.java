@@ -19,13 +19,8 @@ public class AstCreator extends exprBaseVisitor<Ast> {
         for (int i = 0; i < ctx.getChildCount(); i++) {
             exprList.exprList.add(ctx.getChild(i).accept(this));
         }
-        
-        return exprList;
-    }
 
-    @Override
-    public Ast visitExpr(exprParser.ExprContext ctx) {
-        return ctx.getChild(0).accept(this);
+        return exprList;
     }
 
     @Override
@@ -34,16 +29,10 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitInteger(exprParser.IntegerContext ctx) {
-        int integer = Integer.parseInt(ctx.getChild(0).toString());
-		return new IntNode(integer);
-    }
-
-    @Override
     public Ast visitCallExpr(exprParser.CallExprContext ctx) {
         String idf = ctx.getChild(0).toString();
         StrNode str = new StrNode(idf);
-        if (ctx.getChildCount()==4){
+        if (ctx.getChildCount() == 4) {
             Ast expr_list = ctx.getChild(2).accept(this);
             return new CallExpr(str, expr_list);
         }
@@ -53,19 +42,19 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     @Override
     public Ast visitString(exprParser.StringContext ctx) {
         String idf = ctx.getChild(0).toString();
-		return new StrNode(idf);	
+        return new StrNode(idf);
     }
 
     // @Override
     // public Ast visitLvalue_call_or_declare(exprParser.StringContext ctx) {
-    //     String idf = ctx.getChild(0).toString();
-	// 	return new StrNode(idf);	
+    // String idf = ctx.getChild(0).toString();
+    // return new StrNode(idf);
     // }
-    
+
     @Override
     public Ast visitLvalueExpr(exprParser.LvalueExprContext ctx) {
         Ast lvalue = ctx.getChild(0).accept(this);
-        if (ctx.getChild(1).accept(this) != null){
+        if (ctx.getChild(1).accept(this) != null) {
             Ast lvalue_call_or_declare = ctx.getChild(1).accept(this);
             return new LvalueAffect(lvalue, lvalue_call_or_declare);
         }
@@ -85,14 +74,14 @@ public class AstCreator extends exprBaseVisitor<Ast> {
         Ast typeid = ctx.getChild(0).accept(this);
         ParseTree typeidprime = ctx.getChild(1);
         Ast returnAst = new StrNode("error");
-        switch (typeidprime.getChild(0).toString()){
+        switch (typeidprime.getChild(0).toString()) {
             case "{":
                 returnAst = new RecCreate(typeid, typeidprime.accept(this));
                 break;
             case "[":
                 Ast expr1 = typeidprime.getChild(1).accept(this);
                 Ast expr2 = typeidprime.getChild(4).accept(this);
-                returnAst =  new ArrayCreate(typeid, expr1, expr2);
+                returnAst = new ArrayCreate(typeid, expr1, expr2);
                 break;
             default:
                 break;
@@ -141,10 +130,10 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     public Ast visitLetInEnd(exprParser.LetInEndContext ctx) {
 
         Declaration_list declaration_list = new Declaration_list();
-        for (int i = 0; i<ctx.getChild(1).getChildCount();i++){
+        for (int i = 0; i < ctx.getChild(1).getChildCount(); i++) {
             declaration_list.addDeclaration(ctx.getChild(1).getChild(i).accept(this));
         }
-        if (ctx.getChildCount()==5){
+        if (ctx.getChildCount() == 5) {
             LetInEnd letinend = new LetInEnd(declaration_list, ctx.getChild(3).accept(this));
             return letinend;
         }
@@ -251,12 +240,12 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
         // list.add(new StrNode(premier.toString()));
         // list.add(new StrNode(suivant.getChild(1).toString()));
-        
+
         ParseTree premier = ctx.getChild(0);
         ParseTree suivant = ctx.getChild(1);
 
         if (suivant.getChildCount() == 0) {
-            return new LvalueInit( new StrNode(premier.toString()));
+            return new LvalueInit(new StrNode(premier.toString()));
         }
 
         ArrayList<Ast> list = new ArrayList<>();
@@ -264,7 +253,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
         while (suivant.getChildCount() != 0) {
             switch (suivant.getChild(0).toString()) {
                 case ".":
-                    if (!printed){
+                    if (!printed) {
                         list.add(new StrNode(premier.toString()));
                     }
                     printed = false;
@@ -274,15 +263,15 @@ public class AstCreator extends exprBaseVisitor<Ast> {
                 case "[":
                     Ast subscript = suivant.getChild(1).accept(this);
                     String typeOfLast;
-                    if (list.size()>0){
+                    if (list.size() > 0) {
                         typeOfLast = list.get(list.size() - 1).getClass().getName();
-                    }else{
+                    } else {
                         typeOfLast = "None";
                     }
-                    if (typeOfLast.equals("ast.LvalueSub") ){
-                        LvalueSub lastSubList = (LvalueSub) list.get(list.size() -1);
+                    if (typeOfLast.equals("ast.LvalueSub")) {
+                        LvalueSub lastSubList = (LvalueSub) list.get(list.size() - 1);
                         lastSubList.successiveSub.add(subscript);
-                    }else{
+                    } else {
                         ArrayList<Ast> successiveSub = new ArrayList<>();
                         successiveSub.add(subscript);
                         LvalueSub sub = new LvalueSub(premier.toString(), successiveSub);
@@ -366,7 +355,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitRecType(exprParser.RecTypeContext ctx) {
-        if (ctx.getChildCount()==3){
+        if (ctx.getChildCount() == 3) {
             return ctx.getChild(1).accept(this);
         }
         return ctx.accept(this);
@@ -417,7 +406,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
         String idf = ctx.getChild(1).toString();
         StrNode str = new StrNode(idf);
         Ast expr = ctx.getChild(3).accept(this);
-        return new DecVarTypeNotSpec(str,expr);
+        return new DecVarTypeNotSpec(idf,expr);
 
     }
 
@@ -434,7 +423,6 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     @Override
     public Ast visitDecFunctVoid(exprParser.DecFunctVoidContext ctx) {
         String idf = ctx.getChild(1).toString();
-        StrNode str = new StrNode(idf);
         if (ctx.getChildCount()==7){
             Ast type_field_list = ctx.getChild(3).accept(this);
             Ast expr = ctx.getChild(6).accept(this);
@@ -448,7 +436,6 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     @Override
     public Ast visitDecFunctWithReturnType(exprParser.DecFunctWithReturnTypeContext ctx) {
         String idf1 = ctx.getChild(1).toString();
-        StrNode str1 = new StrNode(idf1);
         if (ctx.getChildCount()==9){
             Ast type_field_list = ctx.getChild(3).accept(this);
             String idf2 = ctx.getChild(6).getChild(0).toString();
@@ -463,11 +450,6 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitBinary_operation(exprParser.Binary_operationContext ctx) {
-        return ctx.getChild(0).accept(this);
-    }
-
-    @Override
     public Ast visitPrecedence_1(exprParser.Precedence_1Context ctx) {
         Ast ntmp = ctx.getChild(0).accept(this);
         for (int i = 0; 2 * i < ctx.getChildCount() - 1; i++) {
@@ -479,6 +461,8 @@ public class AstCreator extends exprBaseVisitor<Ast> {
                     break;
                 case "/":
                     ntmp = new Divide(ntmp, right);
+                    break;
+                default:
                     break;
 
             }
@@ -500,6 +484,8 @@ public class AstCreator extends exprBaseVisitor<Ast> {
                     break;
                 case "-":
                     ntmp = new Minus(ntmp, right);
+                    break;
+                default:
                     break;
 
             }
@@ -535,6 +521,8 @@ public class AstCreator extends exprBaseVisitor<Ast> {
                 case "<=":
                     ntmp = new Inf_equal(ntmp, right);
                     break;
+                default:
+                    break;
 
             }
 
@@ -542,6 +530,29 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
         return ntmp;
 
+    }
+
+    @Override
+    public Ast visitPred_4(exprParser.Pred_4Context ctx) {
+        Ast ntmp = ctx.getChild(0).accept(this);
+        for (int i = 0; 2 * i < ctx.getChildCount() - 1; i++) {
+            String op = ctx.getChild(2 * i + 1).toString();
+            Ast right = ctx.getChild(2 * (i + 1)).accept(this);
+            switch (op) {
+                case "&":
+                    ntmp = new Precedence_4(ntmp, right);
+                    break;
+                case "|":
+                    ntmp = new Or(ntmp, right);
+                    break;
+                default:
+                    break;
+
+            }
+
+        }
+
+        return ntmp;
     }
 
     @Override
@@ -557,6 +568,8 @@ public class AstCreator extends exprBaseVisitor<Ast> {
                 case "|":
                     ntmp = new Or(ntmp, right);
                     break;
+                default:
+                    break;
 
             }
 
@@ -567,17 +580,38 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitNegate_instruction(exprParser.Negate_instructionContext ctx) {
-        Ast instrs;
-        if (ctx.getChildCount() > 1) {
-            instrs = ctx.getChild(1).accept(this);
+    public Ast visitRec_negate(exprParser.Rec_negateContext ctx) {
+        int j = 0;
+        int size = ctx.getChildCount();
+        String g = ctx.getChild(j).toString();
+        while ((j < size) && (g.equals("-"))) {
 
-        } else {
-            instrs = ctx.getChild(0).accept(this);
+            j++;
+            g = ctx.getChild(j).toString();
 
         }
+        if (j < size) {
 
-        return new Negate_instruction(instrs);
+            return new Negate_instruction(ctx.accept(this));
+
+        }
+        return null;
+
+    }
+
+    @Override
+    public Ast visitExpression(exprParser.ExpressionContext ctx) {
+
+        return ctx.getChild(1).accept(this);
+
+    }
+
+    @Override
+    public Ast visitInteger(exprParser.IntegerContext ctx) {
+        int p = Integer.parseInt(ctx.getChild(0).toString());
+        IntNode a = new IntNode(p);
+        return a;
+
     }
 
 }

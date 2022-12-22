@@ -1,4 +1,4 @@
-// Generated from ./expr.g4 by ANTLR 4.9.2
+// Generated from expr.g4 by ANTLR 4.9.2
 
 package parser;
 
@@ -19,109 +19,103 @@ public interface exprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitProgram(exprParser.ProgramContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link exprParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitExpr(exprParser.ExprContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code Nil}
-	 * labeled alternative in {@link exprParser#instruction}.
+	 * labeled alternative in {@link exprParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitNil(exprParser.NilContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code Integer}
-	 * labeled alternative in {@link exprParser#instruction}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitInteger(exprParser.IntegerContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code CallExpr}
-	 * labeled alternative in {@link exprParser#instruction}.
+	 * labeled alternative in {@link exprParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitCallExpr(exprParser.CallExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code String}
-	 * labeled alternative in {@link exprParser#instruction}.
+	 * labeled alternative in {@link exprParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitString(exprParser.StringContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code LvalueExpr}
-	 * labeled alternative in {@link exprParser#instruction}.
+	 * labeled alternative in {@link exprParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitLvalueExpr(exprParser.LvalueExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Parenthesis}
-	 * labeled alternative in {@link exprParser#instruction}.
+	 * labeled alternative in {@link exprParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitParenthesis(exprParser.ParenthesisContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code TypeIdCreate}
-	 * labeled alternative in {@link exprParser#instruction}.
+	 * labeled alternative in {@link exprParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitTypeIdCreate(exprParser.TypeIdCreateContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code IfThen}
-	 * labeled alternative in {@link exprParser#instruction}.
+	 * labeled alternative in {@link exprParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitIfThen(exprParser.IfThenContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code IfThenElse}
-	 * labeled alternative in {@link exprParser#instruction}.
+	 * labeled alternative in {@link exprParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitIfThenElse(exprParser.IfThenElseContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code While}
-	 * labeled alternative in {@link exprParser#instruction}.
+	 * labeled alternative in {@link exprParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitWhile(exprParser.WhileContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code For}
-	 * labeled alternative in {@link exprParser#instruction}.
+	 * labeled alternative in {@link exprParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitFor(exprParser.ForContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Break}
-	 * labeled alternative in {@link exprParser#instruction}.
+	 * labeled alternative in {@link exprParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitBreak(exprParser.BreakContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code LetInEnd}
-	 * labeled alternative in {@link exprParser#instruction}.
+	 * labeled alternative in {@link exprParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitLetInEnd(exprParser.LetInEndContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Print}
-	 * labeled alternative in {@link exprParser#instruction}.
+	 * labeled alternative in {@link exprParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitPrint(exprParser.PrintContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code Pred_4}
+	 * labeled alternative in {@link exprParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPred_4(exprParser.Pred_4Context ctx);
 	/**
 	 * Visit a parse tree produced by the {@code RecCreate}
 	 * labeled alternative in {@link exprParser#type_id_prime}.
@@ -343,12 +337,6 @@ public interface exprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDecFunctWithReturnType(exprParser.DecFunctWithReturnTypeContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link exprParser#binary_operation}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBinary_operation(exprParser.Binary_operationContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link exprParser#precedence_1}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -373,33 +361,24 @@ public interface exprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPrecedence_4(exprParser.Precedence_4Context ctx);
 	/**
-	 * Visit a parse tree produced by {@link exprParser#negate_instruction}.
+	 * Visit a parse tree produced by the {@code rec_negate}
+	 * labeled alternative in {@link exprParser#negate_instruction}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitNegate_instruction(exprParser.Negate_instructionContext ctx);
+	T visitRec_negate(exprParser.Rec_negateContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link exprParser#binary_operator_1}.
+	 * Visit a parse tree produced by the {@code Integer}
+	 * labeled alternative in {@link exprParser#negate_instruction}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitBinary_operator_1(exprParser.Binary_operator_1Context ctx);
+	T visitInteger(exprParser.IntegerContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link exprParser#binary_operator_2}.
+	 * Visit a parse tree produced by the {@code Expression}
+	 * labeled alternative in {@link exprParser#negate_instruction}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitBinary_operator_2(exprParser.Binary_operator_2Context ctx);
-	/**
-	 * Visit a parse tree produced by {@link exprParser#binary_operator_3}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBinary_operator_3(exprParser.Binary_operator_3Context ctx);
-	/**
-	 * Visit a parse tree produced by {@link exprParser#binary_operator_4}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBinary_operator_4(exprParser.Binary_operator_4Context ctx);
+	T visitExpression(exprParser.ExpressionContext ctx);
 }
