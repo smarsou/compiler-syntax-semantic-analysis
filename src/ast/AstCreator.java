@@ -30,7 +30,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitNil(exprParser.NilContext ctx) {
-        return ctx.accept(this);
+        return ctx.getChild(0).accept(this);
     }
 
     @Override
@@ -578,27 +578,14 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitNegate_instruction(exprParser.Negate_instructionContext ctx) {
-        int j = 0;
-
-        int size = ctx.getChildCount();
-        String g = ctx.getChild(j).toString();
-        if (!g.equals("-")) {
-            return null;
+        Ast instrs;
+        if (ctx.getChildCount() == 2) {
+            instrs = ctx.getChild(1).accept(this);
+            return new Negate_instruction(instrs);
 
         } else {
-            while ((j < size) && (g.equals("-"))) {
-
-                j++;
-                g = ctx.getChild(j).toString();
-
-            }
-            if (j < size) {
-
-                Negate_instruction p = new Negate_instruction(ctx.getChild(j).accept(this));
-
-                return p;
-            }
-            return null;
+            instrs = ctx.getChild(0).accept(this);
+            return instrs;
 
         }
 
