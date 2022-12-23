@@ -10,13 +10,13 @@ public class DecFunctWithReturnType implements Ast {
     
     public StrNode idf1;
     public Ast type_field_list;
-    public StrNode idf2;
+    public StrNode type_id;
     public Ast expr;
 
-    public DecFunctWithReturnType(StrNode idf1, Ast type_field_list, StrNode idf2, Ast expr){
+    public DecFunctWithReturnType(StrNode idf1, Ast type_field_list, StrNode typeid, Ast expr){
         this.idf1 = idf1;
         this.type_field_list = type_field_list;
-        this.idf2 = idf2;
+        this.type_id = typeid;
         this.expr = expr;
     }
 

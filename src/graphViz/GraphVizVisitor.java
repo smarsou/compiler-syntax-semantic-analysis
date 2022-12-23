@@ -115,9 +115,19 @@ public class GraphVizVisitor implements AstVisitor<String> {
     public String visit(DecFunctWithReturnType dec) {
 
         String nodeIdentifier = this.nextState();
-        this.addNode(nodeIdentifier, "DecFuncWithReturnType");
+        this.addNode(nodeIdentifier, "DecFuncVoid");
+        String idf1 = dec.idf1.accept(this);
+        this.addTransition(nodeIdentifier, idf1);
+        String type_id = dec.type_id.accept(this);
+        String expr = dec.expr.accept(this);
+        this.addTransition(nodeIdentifier, idf1);
+        if (dec.type_field_list != null){
+            String typefield = dec.type_field_list.accept(this);
+            this.addTransition(nodeIdentifier, typefield);
+        }
+        this.addTransition(nodeIdentifier, type_id);
+        this.addTransition(nodeIdentifier, expr);
         return nodeIdentifier;
-
     }
 
     @Override
@@ -125,6 +135,14 @@ public class GraphVizVisitor implements AstVisitor<String> {
 
         String nodeIdentifier = this.nextState();
         this.addNode(nodeIdentifier, "DecFuncVoid");
+        String idf1 = dec.idf.accept(this);
+        String expr = dec.expr.accept(this);
+        this.addTransition(nodeIdentifier, idf1);
+        if (dec.type_field_list != null){
+            String typefield = dec.type_field_list.accept(this);
+            this.addTransition(nodeIdentifier, typefield);
+        }
+        this.addTransition(nodeIdentifier, expr);
         return nodeIdentifier;
 
     }
