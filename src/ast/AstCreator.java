@@ -24,6 +24,11 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     }
 
     @Override
+    public Ast visitExpr(exprParser.ExprContext ctx) {
+        return ctx.getChild(0).accept(this);
+    }
+
+    @Override
     public Ast visitNil(exprParser.NilContext ctx) {
         return ctx.accept(this);
     }
@@ -452,6 +457,11 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     }
 
     @Override
+    public Ast visitBinary_operation(exprParser.Binary_operationContext ctx) {
+        return ctx.getChild(0).accept(this);
+    }
+
+    @Override
     public Ast visitPrecedence_1(exprParser.Precedence_1Context ctx) {
         Ast ntmp = ctx.getChild(0).accept(this);
         for (int i = 0; 2 * i < ctx.getChildCount() - 1; i++) {
@@ -535,29 +545,6 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitPred_4(exprParser.Pred_4Context ctx) {
-        Ast ntmp = ctx.getChild(0).accept(this);
-        for (int i = 0; 2 * i < ctx.getChildCount() - 1; i++) {
-            String op = ctx.getChild(2 * i + 1).toString();
-            Ast right = ctx.getChild(2 * (i + 1)).accept(this);
-            switch (op) {
-                case "&":
-                    ntmp = new Precedence_4(ntmp, right);
-                    break;
-                case "|":
-                    ntmp = new Or(ntmp, right);
-                    break;
-                default:
-                    break;
-
-            }
-
-        }
-
-        return ntmp;
-    }
-
-    @Override
     public Ast visitPrecedence_4(exprParser.Precedence_4Context ctx) {
         Ast ntmp = ctx.getChild(0).accept(this);
         for (int i = 0; 2 * i < ctx.getChildCount() - 1; i++) {
@@ -582,39 +569,38 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitRec_negate(exprParser.Rec_negateContext ctx) {
-        int j = 0;
-
-        int size = ctx.getChildCount();
-        String g = ctx.getChild(j).toString();
-        while ((j < size) && (g.equals("-"))) {
-
-            j++;
-            g = ctx.getChild(j).toString();
-
-        }
-        if (j < size) {
-
-            Negate_instruction p = new Negate_instruction(ctx.getChild(j).accept(this));
-
-            return p;
-        }
-        return null;
-
-    }
-
-    @Override
-    public Ast visitExpression(exprParser.ExpressionContext ctx) {
-
-        return ctx.getChild(1).accept(this);
-
-    }
-
-    @Override
     public Ast visitInteger(exprParser.IntegerContext ctx) {
         int p = Integer.parseInt(ctx.getChild(0).toString());
         IntNode a = new IntNode(p);
         return a;
+
+    }
+
+    @Override
+    public Ast visitNegate_instruction(exprParser.Negate_instructionContext ctx) {
+        int j = 0;
+
+        int size = ctx.getChildCount();
+        String g = ctx.getChild(j).toString();
+        if (!g.equals("-")) {
+            return null;
+
+        } else {
+            while ((j < size) && (g.equals("-"))) {
+
+                j++;
+                g = ctx.getChild(j).toString();
+
+            }
+            if (j < size) {
+
+                Negate_instruction p = new Negate_instruction(ctx.getChild(j).accept(this));
+
+                return p;
+            }
+            return null;
+
+        }
 
     }
 
