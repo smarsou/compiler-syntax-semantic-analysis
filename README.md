@@ -24,8 +24,8 @@
 3) Ajouter une méthode dans la classe AstVisitor pour chaque nouveau Noeud créée
 ####
     
-    visitIfThen                     ✅O
-    visitIfThenElse                 ✅O
+    visitIfThen                     ✅X
+    visitIfThenElse                 ✅X
     visitString                     ✅X
     visitInteger                    ✅X
 
