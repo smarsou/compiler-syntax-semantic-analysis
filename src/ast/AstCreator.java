@@ -406,7 +406,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
         String idf = ctx.getChild(1).toString();
         StrNode str = new StrNode(idf);
         Ast expr = ctx.getChild(3).accept(this);
-        return new DecVarTypeNotSpec(idf, expr);
+        return new DecVarTypeNotSpec(str, expr);
 
     }
 
@@ -423,6 +423,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     @Override
     public Ast visitDecFunctVoid(exprParser.DecFunctVoidContext ctx) {
         String idf = ctx.getChild(1).toString();
+        StrNode str = new StrNode(idf);
         if (ctx.getChildCount() == 7) {
             Ast type_field_list = ctx.getChild(3).accept(this);
             Ast expr = ctx.getChild(6).accept(this);
@@ -436,6 +437,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     @Override
     public Ast visitDecFunctWithReturnType(exprParser.DecFunctWithReturnTypeContext ctx) {
         String idf1 = ctx.getChild(1).toString();
+        StrNode str1 = new StrNode(idf1);
         if (ctx.getChildCount() == 9) {
             Ast type_field_list = ctx.getChild(3).accept(this);
             String idf2 = ctx.getChild(6).getChild(0).toString();
@@ -596,7 +598,6 @@ public class AstCreator extends exprBaseVisitor<Ast> {
             Negate_instruction p = new Negate_instruction(ctx.getChild(j).accept(this));
 
             return p;
-
         }
         return null;
 
