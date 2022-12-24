@@ -6,9 +6,11 @@ package parser;
 
 program: expr+ EOF;
 
+expr: instruction | binary_operation;
 
-expr
+instruction
     :    'nil'                                  #Nil
+    |    INT                                    #Integer
     |    ID '(' expr_list ?')'                  #CallExpr
     |    STR                                    #String
     |    lvalue lvalue_call_or_declare          #LvalueExpr
@@ -21,7 +23,6 @@ expr
     |    'break'                                #Break
     |    'let' declaration_list 'in' expr_seq? 'end' #LetInEnd
     |    'print' '(' (STR|INT|ID) ')'                   #Print
-    |     precedence_4                               #Pred_4
     ;
 
 
@@ -120,6 +121,8 @@ function_declaration
 |     'function' ID '(' type_field_list? ')' ':' type_id '=' expr   #DecFunctWithReturnType
 ;   
 
+binary_operation: precedence_4;
+
 
 precedence_1 : negate_instruction (('*' | '/') negate_instruction)*;
 
@@ -129,17 +132,13 @@ precedence_3 : precedence_2 (('=' | '<>' | '<' | '>' | '<=' | '>=') precedence_2
 
 precedence_4 : precedence_3 (('&' | '|') precedence_3)*;
     
-negate_instruction
-    :  '-' negate_instruction #rec_negate
-    |   INT  #Integer
-    |   '(' expr ')' #Expression
-    ;
+negate_instruction:  '-' negate_instruction | instruction ;
 
 //binary_operation : instruction ((binary_operator_1|binary_operator_2|binary_operator_3|binary_operator_4) instruction)*;
 
 // les Terminaux
 
-ID  :  LETTER ( LETTER | INT | '_' )*
+ID    :  LETTER ( LETTER | INT | '_' )*
     ;
 fragment LETTER : ('a'..'z' | 'A'..'Z');
 
@@ -150,6 +149,7 @@ STR   : '"' (DIGIT | LETTER | ' ' | ',' | ';' | '.' | ':'| '!'| '?'| '/'| '\\' |
 ;
 
 fragment DIGIT: ('0'..'9');
+
 
 
 WS    : [ \n\t\r]+ ->skip

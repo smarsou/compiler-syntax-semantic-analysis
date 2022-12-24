@@ -1,4 +1,4 @@
-// Generated from ./expr.g4 by ANTLR 4.9.2
+// Generated from expr.g4 by ANTLR 4.9.2
 
 package parser;
 
@@ -26,7 +26,21 @@ public class exprBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements e
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitExpr(exprParser.ExprContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitNil(exprParser.NilContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitInteger(exprParser.IntegerContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -111,13 +125,6 @@ public class exprBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements e
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitPrint(exprParser.PrintContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitPred_4(exprParser.Pred_4Context ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -348,6 +355,13 @@ public class exprBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements e
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitBinary_operation(exprParser.Binary_operationContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitPrecedence_1(exprParser.Precedence_1Context ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -376,19 +390,5 @@ public class exprBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements e
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitRec_negate(exprParser.Rec_negateContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitInteger(exprParser.IntegerContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitExpression(exprParser.ExpressionContext ctx) { return visitChildren(ctx); }
+	@Override public T visitNegate_instruction(exprParser.Negate_instructionContext ctx) { return visitChildren(ctx); }
 }
