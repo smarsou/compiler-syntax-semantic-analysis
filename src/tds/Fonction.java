@@ -18,4 +18,5 @@ public class Fonction implements Entry{
         this.infos = infos;
     }
 
+
 }

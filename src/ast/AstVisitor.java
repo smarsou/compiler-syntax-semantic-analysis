@@ -1,8 +1,7 @@
 package ast;
 
-import tds.Fonction;
-import tds.Type;
-import tds.Var;
+import tds.Entry;
+
 
 public interface AstVisitor<T> {
     public T visit(Program ctx);
@@ -115,10 +114,7 @@ public interface AstVisitor<T> {
 
     public T visit(ArrayTypeNode arrayType);
 
-    public T visit(Fonction fonction);
+    public T visit(Entry e);
 
-    public T visit(Var var);
-
-    public T visit(Type type);
 
 }

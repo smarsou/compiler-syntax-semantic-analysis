@@ -2,7 +2,7 @@ package tds;
 
 import ast.AstVisitor;
 
-public class Type{
+public class Type implements Entry{
 
     private String nom;
     private String typeDeType;

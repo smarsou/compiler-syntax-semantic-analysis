@@ -29,6 +29,7 @@ import ast.RecFieldList;
 import ast.StrNode;
 import ast.TypeFieldList;
 import ast.While;
+import tds.Entry;
 import ast.IfThen;
 import ast.IfThenElse;
 
@@ -721,6 +722,13 @@ public class GraphVizVisitor implements AstVisitor<String> {
 
         return nodeIdentifier;
 
+    }
+
+
+    @Override
+    public String visit(Entry e) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
