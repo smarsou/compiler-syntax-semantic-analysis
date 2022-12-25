@@ -3,6 +3,6 @@ let
  type meilleurJoueur = {nom:string}
  type sportlist = {nom_sport:string, other: othersportlist, nom : meilleurJoueur}
 in
-	club.sports.nom_sport = "football";
-	club.sports.nom = "Mady"
+	club.sports.nom_sport := "football";
+	club.sports.nom := "Mady"
  end

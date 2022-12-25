@@ -71,7 +71,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
         if (ctx.getChildCount() == 3) {
             return ctx.getChild(1).accept(this);
         }
-        return ctx.accept(this);
+        return visitChildren(ctx);
     }
 
     @Override
@@ -163,11 +163,15 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     @Override
     public Ast visitExprSeqInit(exprParser.ExprSeqInitContext ctx) {
         ArrayList<Ast> liste = new ArrayList<Ast>();
-        liste.add(ctx.getChild(0).accept(this));
+        if (ctx.getChild(0).accept(this) != null){
+            liste.add(ctx.getChild(0).accept(this));
+        }
         ParseTree suivant = ctx.getChild(1);
         while (suivant.getChildCount() != 0) {
             Ast a = suivant.getChild(1).accept(this);
-            liste.add(a);
+            if (a != null){
+                liste.add(a);
+            }
             suivant = suivant.getChild(2);
         }
         return new ExprSeq(liste);
