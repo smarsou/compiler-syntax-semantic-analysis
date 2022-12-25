@@ -1,11 +1,17 @@
 package tds;
 
+import ast.AstVisitor;
+
 public class Type{
 
     private String nom;
     private String typeDeType;
     private Object Element;
 
+    public <T> T accept(AstVisitor<T> visitor){
+        return visitor.visit(this);
+    }
+    
     public Type(String nom, String typeDeType, Object Element){
         this.nom = nom;
         this.typeDeType = typeDeType;

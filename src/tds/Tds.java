@@ -6,7 +6,9 @@ public class Tds{
     ArrayList<Entry> rows;
     int numRegion;
     int numImbrication;
-    public Tds(){
+    public Tds(int numRegion, int numImbrication){
+        this.numRegion = numRegion;
+        this.numImbrication = numImbrication;
     }
 
     public void addEntry(Tds table, Entry e){

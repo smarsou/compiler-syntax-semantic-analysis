@@ -1,18 +1,7 @@
 package tds;
 
-public class Entry{
-    Var var;
-    Fonction fonc;
-    Type type;
-    public Entry(Var v){
-        this.var = v;
-    }
+import ast.AstVisitor;
 
-    public Entry(Fonction f){
-        this.fonc = f;
-    }
-
-    public Entry(Type t){
-        this.type = t;
-    }
+public interface Entry{
+    public <T> T accept(AstVisitor<T> visitor);
 }
