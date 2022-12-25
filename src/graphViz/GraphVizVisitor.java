@@ -348,10 +348,13 @@ public class GraphVizVisitor implements AstVisitor<String> {
         this.addNode(nodeIdentifier, "CallExpr");
 
         String id = d.idf.accept(this);
-        String exprLst = d.exprList.accept(this);
 
         this.addTransition(nodeIdentifier, id);
-        this.addTransition(nodeIdentifier, exprLst);
+        if (d.exprList != null){
+            String exprLst = d.exprList.accept(this);
+            this.addTransition(nodeIdentifier, exprLst);
+        }
+
         return nodeIdentifier;
 
     }
@@ -729,5 +732,7 @@ public class GraphVizVisitor implements AstVisitor<String> {
         // TODO Auto-generated method stub
         return null;
     }
+
+
 
 }

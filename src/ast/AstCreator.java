@@ -30,7 +30,8 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitNil(exprParser.NilContext ctx) {
-        return ctx.getChild(0).accept(this);
+        String nil = ctx.getChild(0).toString();
+        return new StrNode(nil);
     }
 
     @Override
@@ -71,7 +72,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
         if (ctx.getChildCount() == 3) {
             return ctx.getChild(1).accept(this);
         }
-        return visitChildren(ctx);
+        return ctx.accept(this);
     }
 
     @Override
@@ -163,15 +164,11 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     @Override
     public Ast visitExprSeqInit(exprParser.ExprSeqInitContext ctx) {
         ArrayList<Ast> liste = new ArrayList<Ast>();
-        if (ctx.getChild(0).accept(this) != null){
-            liste.add(ctx.getChild(0).accept(this));
-        }
+        liste.add(ctx.getChild(0).accept(this));
         ParseTree suivant = ctx.getChild(1);
         while (suivant.getChildCount() != 0) {
             Ast a = suivant.getChild(1).accept(this);
-            if (a != null){
-                liste.add(a);
-            }
+            liste.add(a);
             suivant = suivant.getChild(2);
         }
         return new ExprSeq(liste);
