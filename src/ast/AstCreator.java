@@ -420,7 +420,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     public Ast visitDecVarTypeSpec(exprParser.DecVarTypeSpecContext ctx) {
         String idf1 = ctx.getChild(1).toString();
         StrNode str1 = new StrNode(idf1);
-        String idf2 = ctx.getChild(0).getChild(0).toString();
+        String idf2 = ctx.getChild(3).getChild(0).toString();
         StrNode str2 = new StrNode(idf2);
         Ast expr = ctx.getChild(5).accept(this);
         return new DecVarTypeSpec(str1, str2, expr);
@@ -436,7 +436,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
             return new DecFunctVoid(str, type_field_list, expr);
         }
         Ast expr = ctx.getChild(5).accept(this);
-        return new DecFunctVoid(str, expr);
+        return new DecFunctVoid(str, null, expr);
 
     }
 
