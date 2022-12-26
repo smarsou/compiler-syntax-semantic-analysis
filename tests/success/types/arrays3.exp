@@ -1,7 +1,7 @@
 let
   type rec = { val : int }
   type rec_arr = array of rec
-  var  table := rec_arr[2] of nil
+  var  table := rec_arr[2] of rec_arr[2] of nil
 in
   for i := 0 to 1 do
   table[i] := rec { val = 42 };

@@ -7,6 +7,7 @@ import java.util.Deque;
 import java.util.Stack;
 
 import javax.lang.model.type.ArrayType;
+import javax.swing.text.TabExpander;
 
 import org.antlr.v4.parse.ANTLRParser.ruleEntry_return;
 
@@ -157,11 +158,18 @@ public class tdsVisitor implements AstVisitor<Result> {
 
     @Override
     public Result visit(DecVarTypeSpec dec) {
-        //TODO controle sémantique pour vérifier si l'exp correspond au type
+        //TODO controle sémantique pour vérifier si l'exp correspond au type, ie tester si result.typeName == dec.idf2.accept....
         Result result = dec.expr.accept(this);
+        Var var = new Var();
 
         //On créer une nouvelle entrée
-        Var var = new Var(dec.idf1.name, dec.idf2.name);
+        if (result.typeName == "int"){
+            var = new Var(dec.idf1.name, dec.idf2.name, result.intValue);
+        }if (result.typeName == "array"){
+            var = new Var(dec.idf1.name, dec.idf2.name, result.ar);
+        }if (result.typeName == "rec"){
+            var = new Var(dec.idf1.name, dec.idf2.name, result.rc);
+        }
 
         //On ajoute l'entrée à la TDS courante
         Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
@@ -178,7 +186,7 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result result = dec.expr.accept(this);
 
         //On créer une nouvelle entrée
-        Var var = new Var(dec.idf.name, result.typeName);
+        Var var = new Var(dec.idf.name, result.typeName, result);
 
         //On ajoute l'entrée à la TDS courante
         Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
@@ -213,28 +221,69 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public String visit(LvalueSub dec) {
+    public Result visit(LvalueSub dec) {
         // l'index expr doit de type int
         // l'identifiant de la lvalue doit être de type array
         // le résultat doit avoit le même type que les éléments de la lvalue qui est de
         // type array
-        
+        Result r = new Result();
+        r.strValue = dec.id;
+
+        ArrayList<Integer> a = new ArrayList<>();
+        for (Ast d : dec.successiveSub){
+            a.add(d.accept(this).intValue);
+        }
+        r.subscript = a;
+
+        return r;
+
     }
 
     @Override
-    public String visit(ArrayCreate a) {
+    public Result visit(ArrayCreate a) {
+
+        Result res = new Result();
+        res.typeName = "array";
+        Array tableau = new Array();
+        
+        Result second = a.expr2.accept(this);
+        if (second.typeName == "int"){
+            tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.intValue );
+        }
+        if (second.typeName == "array"){
+            tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.ar );
+            res.ar = tableau;
+        }
+        if (second.typeName == "rec"){
+            tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.rc);
+        }
+
+        res.ar = tableau;
+
+        return res;
+
         // The type of the Id must refer to an array type.
         // The expression in square brackets must be int, and
         // the expression after of must match the element
         // type of the array. The result type is the array type.
+
+        
     }
 
     @Override
-    public String visit(RecCreate a) {
+    public Result visit(RecCreate a) {
+        
+        Result res = new Result();
+        res.typeName = "array";
+    
+        Rec rc = new Rec();
+        rc.type_id = a.typeid.accept(this).name;
+        //TODO ajouter les élements, mais flemme...
+        res.rc = rc;
+        return res;
         // The tyId(type of the id) must refer to a record type,
         // and the order, names, and types of fields must
         // match. The result type is the record type.
-
     }
 
     @Override
@@ -300,8 +349,11 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public String visit(StrNode d) {
-
+    public Result visit(StrNode d) {
+        Result res = new Result();
+        res.strValue = d.name;
+        res.typeName = "String";
+        return res;
     }
 
     @Override
@@ -385,7 +437,7 @@ public class tdsVisitor implements AstVisitor<Result> {
                 System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" +ANSI_RESET);
             }
             if (r.typeName != "int"){
-                System.err.println(ANSI_RED+"\u001B[33m Type Error: Right side of the operation is not of type int"+ANSI_RESET);
+                System.err.println(ANSI_RED+" Type Error: Right side of the operation is not of type int"+ANSI_RESET);
             }
             return n;
         }
@@ -560,9 +612,21 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public String visit(LvalueInit lvalueInit) {
+    public Result visit(LvalueInit lvalueInit) {
         // l'identifiant doit référencer une variable
-        lvalueInit.
+        for (Ast a: lvalueInit.lvalue){
+            Result r = a.accept(this);
+            String idf;
+            ArrayList<Integer> sub;
+            if (r.typeName == "LvalueSub"){
+                idf = r.strValue;
+                sub = r.subscript;
+            }
+            if (r.typeName == "String"){
+                idf = r.strValue;
+            }
+            
+        }
     }
 
     @Override

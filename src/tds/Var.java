@@ -22,5 +22,12 @@ public class Var implements Entry{
         this.type = type;
     }
 
+    public Var(){
+        
+    }
+    public void arrayCreate(int nbr, Object obj){
+
+    }
+
 
 }
