@@ -8,6 +8,8 @@ import java.util.Stack;
 
 import javax.lang.model.type.ArrayType;
 
+import org.antlr.v4.parse.ANTLRParser.ruleEntry_return;
+
 import ast.RecField;
 import ast.ArrayCreate;
 import ast.ArrayTypeNode;
@@ -84,14 +86,14 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public String visit(RecField affect) {
+    public Result visit(RecField affect) {
         // Field names, expression types, and the order thereof must exactly
         // match those of the given record type.
 
     }
 
     @Override
-    public String visit(DecFunctWithReturnType dec) {
+    public Result visit(DecFunctWithReturnType dec) {
         //On créer une nouvelle entrée et on l'ajoute à la TDS du bloc courant
         Fonction func = new Fonction(dec.idf1.name, dec.type_id.name);
         Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
@@ -105,18 +107,18 @@ public class tdsVisitor implements AstVisitor<Result> {
         func.setTds(numRegiontTds);
         
         //On visit le bloc de la fonction
-        String retourDeExpr = dec.expr.accept(this);
+        Result res= dec.expr.accept(this);
  
         //TODO Controle sémantique pour vérifier si l'exp correspond au type de retour
 
         //On revient au père
         pileRO.pop();
         
-        return "NoReturn";
+        return res;
     }
 
     @Override
-    public String visit(DecFunctVoid dec) {
+    public Result visit(DecFunctVoid dec) {
         //On créer une nouvelle entrée et on l'ajoute à la TDS du bloc courant
         Fonction func = new Fonction(dec.idf.name, "void");
         Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
@@ -130,57 +132,61 @@ public class tdsVisitor implements AstVisitor<Result> {
         func.setTds(numRegiontTds);
 
         //On visit le bloc de la fonction
-        dec.expr.accept(this);
+        Result res = dec.expr.accept(this);
  
         //On revient au père
         pileRO.pop();
         
         //La sémantique dit que la déclaration de la fonction ne renvoie rien
-        return "NoReturn";
+        return res;
     }
 
     @Override
-    public String visit(LetInEnd dec) {
+    public Result visit(LetInEnd dec) {
         // On créer une nouvelle TDS pour le nouveau bloc d'environnement
         createNewTds();
 
         //On visit tout le LetInEnd
         dec.declaration_list.accept(this);
-        String retourOfLastInstruction = dec.exprseq.accept(this);
-
+        Result result = dec.exprseq.accept(this);
 
         //Quand on a terminé de visiter le LetInEnd, on revient chez le père
         pileRO.pop();
-        return retourOfLastInstruction;
+        return result;
     }
 
     @Override
-    public String visit(DecVarTypeSpec dec) {
+    public Result visit(DecVarTypeSpec dec) {
         //TODO controle sémantique pour vérifier si l'exp correspond au type
-        String retourOfExpr = dec.expr.accept(this);
+        Result result = dec.expr.accept(this);
 
         //On créer une nouvelle entrée
-        Var var = new Var(dec.idf1.name, dec.idf2.name, retourOfExpr);
+        Var var = new Var(dec.idf1.name, dec.idf2.name);
 
         //On ajoute l'entrée à la TDS courante
         Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
         currentTds.addEntry(var);
 
-        return "NoReturn";
+        Result res = new Result();
+        res.typeName = "void";
+        return res;
     }
 
     @Override
-    public String visit(DecVarTypeNotSpec dec) {
-        String retourOfExpr = dec.expr.accept(this);
+    public Result visit(DecVarTypeNotSpec dec) {
+        //On récupère le resultat de l'expression
+        Result result = dec.expr.accept(this);
 
         //On créer une nouvelle entrée
-        Var var = new Var(dec.idf.name, "NoType", retourOfExpr);
+        Var var = new Var(dec.idf.name, result.typeName);
 
         //On ajoute l'entrée à la TDS courante
         Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
         currentTds.addEntry(var);
         
-        return "NoReturn";
+        Result res = new Result();
+        res.typeName = "void";
+        return res;
     }
 
     @Override
@@ -212,6 +218,7 @@ public class tdsVisitor implements AstVisitor<Result> {
         // l'identifiant de la lvalue doit être de type array
         // le résultat doit avoit le même type que les éléments de la lvalue qui est de
         // type array
+        
     }
 
     @Override
@@ -220,7 +227,6 @@ public class tdsVisitor implements AstVisitor<Result> {
         // The expression in square brackets must be int, and
         // the expression after of must match the element
         // type of the array. The result type is the array type.
-
     }
 
     @Override
@@ -556,7 +562,7 @@ public class tdsVisitor implements AstVisitor<Result> {
     @Override
     public String visit(LvalueInit lvalueInit) {
         // l'identifiant doit référencer une variable
-
+        lvalueInit.
     }
 
     @Override
