@@ -132,7 +132,7 @@ precedence_3 : precedence_2 (('=' | '<>' | '<' | '>' | '<=' | '>=') precedence_2
 
 precedence_4 : precedence_3 (('&' | '|') precedence_3)*;
     
-negate_instruction:  '-' negate_instruction | instruction ;
+negate_instruction:  '-' negate_instruction | instruction;
 
 //binary_operation : instruction ((binary_operator_1|binary_operator_2|binary_operator_3|binary_operator_4) instruction)*;
 

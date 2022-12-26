@@ -130,11 +130,6 @@ public class exprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_program; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitProgram(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ProgramContext program() throws RecognitionException {
@@ -184,11 +179,6 @@ public class exprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_expr; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ExprContext expr() throws RecognitionException {
@@ -244,11 +234,6 @@ public class exprParser extends Parser {
 			return getRuleContext(Type_id_primeContext.class,0);
 		}
 		public TypeIdCreateContext(InstructionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitTypeIdCreate(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class LetInEndContext extends InstructionContext {
 		public Declaration_listContext declaration_list() {
@@ -258,11 +243,6 @@ public class exprParser extends Parser {
 			return getRuleContext(Expr_seqContext.class,0);
 		}
 		public LetInEndContext(InstructionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitLetInEnd(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class ForContext extends InstructionContext {
 		public TerminalNode ID() { return getToken(exprParser.ID, 0); }
@@ -273,28 +253,13 @@ public class exprParser extends Parser {
 			return getRuleContext(ExprContext.class,i);
 		}
 		public ForContext(InstructionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitFor(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class BreakContext extends InstructionContext {
 		public BreakContext(InstructionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitBreak(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class StringContext extends InstructionContext {
 		public TerminalNode STR() { return getToken(exprParser.STR, 0); }
 		public StringContext(InstructionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitString(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class WhileContext extends InstructionContext {
 		public List<ExprContext> expr() {
@@ -304,11 +269,6 @@ public class exprParser extends Parser {
 			return getRuleContext(ExprContext.class,i);
 		}
 		public WhileContext(InstructionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitWhile(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class IfThenContext extends InstructionContext {
 		public List<ExprContext> expr() {
@@ -318,50 +278,25 @@ public class exprParser extends Parser {
 			return getRuleContext(ExprContext.class,i);
 		}
 		public IfThenContext(InstructionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitIfThen(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class NilContext extends InstructionContext {
 		public NilContext(InstructionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitNil(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class IntegerContext extends InstructionContext {
 		public TerminalNode INT() { return getToken(exprParser.INT, 0); }
 		public IntegerContext(InstructionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitInteger(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class PrintContext extends InstructionContext {
 		public TerminalNode STR() { return getToken(exprParser.STR, 0); }
 		public TerminalNode INT() { return getToken(exprParser.INT, 0); }
 		public TerminalNode ID() { return getToken(exprParser.ID, 0); }
 		public PrintContext(InstructionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitPrint(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class ParenthesisContext extends InstructionContext {
 		public Expr_seqContext expr_seq() {
 			return getRuleContext(Expr_seqContext.class,0);
 		}
 		public ParenthesisContext(InstructionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitParenthesis(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class LvalueExprContext extends InstructionContext {
 		public LvalueContext lvalue() {
@@ -371,11 +306,6 @@ public class exprParser extends Parser {
 			return getRuleContext(Lvalue_call_or_declareContext.class,0);
 		}
 		public LvalueExprContext(InstructionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitLvalueExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class CallExprContext extends InstructionContext {
 		public TerminalNode ID() { return getToken(exprParser.ID, 0); }
@@ -383,11 +313,6 @@ public class exprParser extends Parser {
 			return getRuleContext(Expr_listContext.class,0);
 		}
 		public CallExprContext(InstructionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitCallExpr(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class IfThenElseContext extends InstructionContext {
 		public List<ExprContext> expr() {
@@ -397,11 +322,6 @@ public class exprParser extends Parser {
 			return getRuleContext(ExprContext.class,i);
 		}
 		public IfThenElseContext(InstructionContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitIfThenElse(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final InstructionContext instruction() throws RecognitionException {
@@ -652,22 +572,12 @@ public class exprParser extends Parser {
 			return getRuleContext(ExprContext.class,i);
 		}
 		public ArrayCreateContext(Type_id_primeContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitArrayCreate(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class RecCreateContext extends Type_id_primeContext {
 		public Rec_field_listContext rec_field_list() {
 			return getRuleContext(Rec_field_listContext.class,0);
 		}
 		public RecCreateContext(Type_id_primeContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitRecCreate(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Type_id_primeContext type_id_prime() throws RecognitionException {
@@ -748,11 +658,6 @@ public class exprParser extends Parser {
 			return getRuleContext(Expr_seq_primeContext.class,0);
 		}
 		public ExprSeqInitContext(Expr_seqContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitExprSeqInit(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Expr_seqContext expr_seq() throws RecognitionException {
@@ -792,11 +697,6 @@ public class exprParser extends Parser {
 	}
 	public static class ExprSeqFinishContext extends Expr_seq_primeContext {
 		public ExprSeqFinishContext(Expr_seq_primeContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitExprSeqFinish(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class ExprSeqAddContext extends Expr_seq_primeContext {
 		public ExprContext expr() {
@@ -806,11 +706,6 @@ public class exprParser extends Parser {
 			return getRuleContext(Expr_seq_primeContext.class,0);
 		}
 		public ExprSeqAddContext(Expr_seq_primeContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitExprSeqAdd(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Expr_seq_primeContext expr_seq_prime() throws RecognitionException {
@@ -873,11 +768,6 @@ public class exprParser extends Parser {
 			return getRuleContext(Expr_list_primeContext.class,0);
 		}
 		public ExprListInitContext(Expr_listContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitExprListInit(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Expr_listContext expr_list() throws RecognitionException {
@@ -923,19 +813,9 @@ public class exprParser extends Parser {
 			return getRuleContext(Expr_list_primeContext.class,0);
 		}
 		public ExprListAddContext(Expr_list_primeContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitExprListAdd(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class ExprListFinishContext extends Expr_list_primeContext {
 		public ExprListFinishContext(Expr_list_primeContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitExprListFinish(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Expr_list_primeContext expr_list_prime() throws RecognitionException {
@@ -995,11 +875,6 @@ public class exprParser extends Parser {
 			return getRuleContext(ExprContext.class,0);
 		}
 		public RecFieldContext(Rec_fieldContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitRecField(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Rec_fieldContext rec_field() throws RecognitionException {
@@ -1047,11 +922,6 @@ public class exprParser extends Parser {
 			return getRuleContext(Rec_field_list_primeContext.class,0);
 		}
 		public RecFieldListInitContext(Rec_field_listContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitRecFieldListInit(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Rec_field_listContext rec_field_list() throws RecognitionException {
@@ -1091,11 +961,6 @@ public class exprParser extends Parser {
 	}
 	public static class RecFieldListFinishContext extends Rec_field_list_primeContext {
 		public RecFieldListFinishContext(Rec_field_list_primeContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitRecFieldListFinish(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class RecFieldListAddContext extends Rec_field_list_primeContext {
 		public Rec_fieldContext rec_field() {
@@ -1105,11 +970,6 @@ public class exprParser extends Parser {
 			return getRuleContext(Rec_field_list_primeContext.class,0);
 		}
 		public RecFieldListAddContext(Rec_field_list_primeContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitRecFieldListAdd(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Rec_field_list_primeContext rec_field_list_prime() throws RecognitionException {
@@ -1169,11 +1029,6 @@ public class exprParser extends Parser {
 			return getRuleContext(Lvalue_primeContext.class,0);
 		}
 		public LvalueInitContext(LvalueContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitLvalueInit(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final LvalueContext lvalue() throws RecognitionException {
@@ -1219,11 +1074,6 @@ public class exprParser extends Parser {
 			return getRuleContext(Lvalue_primeContext.class,0);
 		}
 		public LvalueSubscriptContext(Lvalue_primeContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitLvalueSubscript(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class LvalueAddContext extends Lvalue_primeContext {
 		public TerminalNode ID() { return getToken(exprParser.ID, 0); }
@@ -1231,19 +1081,9 @@ public class exprParser extends Parser {
 			return getRuleContext(Lvalue_primeContext.class,0);
 		}
 		public LvalueAddContext(Lvalue_primeContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitLvalueAdd(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class LvalueFinishContext extends Lvalue_primeContext {
 		public LvalueFinishContext(Lvalue_primeContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitLvalueFinish(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Lvalue_primeContext lvalue_prime() throws RecognitionException {
@@ -1346,11 +1186,6 @@ public class exprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_lvalue_call_or_declare; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitLvalue_call_or_declare(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Lvalue_call_or_declareContext lvalue_call_or_declare() throws RecognitionException {
@@ -1437,11 +1272,6 @@ public class exprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_declaration_list; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitDeclaration_list(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Declaration_listContext declaration_list() throws RecognitionException {
@@ -1492,11 +1322,6 @@ public class exprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_declaration; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitDeclaration(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final DeclarationContext declaration() throws RecognitionException {
@@ -1561,11 +1386,6 @@ public class exprParser extends Parser {
 			return getRuleContext(TypeContext.class,0);
 		}
 		public DecTypeContext(Type_declarationContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitDecType(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Type_declarationContext type_declaration() throws RecognitionException {
@@ -1612,33 +1432,18 @@ public class exprParser extends Parser {
 			return getRuleContext(Type_idContext.class,0);
 		}
 		public ArrayTypeContext(TypeContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitArrayType(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class TypeIdContext extends TypeContext {
 		public Type_idContext type_id() {
 			return getRuleContext(Type_idContext.class,0);
 		}
 		public TypeIdContext(TypeContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitTypeId(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class RecTypeContext extends TypeContext {
 		public Type_field_listContext type_field_list() {
 			return getRuleContext(Type_field_listContext.class,0);
 		}
 		public RecTypeContext(TypeContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitRecType(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final TypeContext type() throws RecognitionException {
@@ -1723,11 +1528,6 @@ public class exprParser extends Parser {
 			return getRuleContext(Type_field_list_primeContext.class,0);
 		}
 		public TypeFieldListInitContext(Type_field_listContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitTypeFieldListInit(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Type_field_listContext type_field_list() throws RecognitionException {
@@ -1767,11 +1567,6 @@ public class exprParser extends Parser {
 	}
 	public static class TypeFieldListFinishContext extends Type_field_list_primeContext {
 		public TypeFieldListFinishContext(Type_field_list_primeContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitTypeFieldListFinish(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class TypeFieldListAddContext extends Type_field_list_primeContext {
 		public Type_fieldContext type_field() {
@@ -1781,11 +1576,6 @@ public class exprParser extends Parser {
 			return getRuleContext(Type_field_list_primeContext.class,0);
 		}
 		public TypeFieldListAddContext(Type_field_list_primeContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitTypeFieldListAdd(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Type_field_list_primeContext type_field_list_prime() throws RecognitionException {
@@ -1846,11 +1636,6 @@ public class exprParser extends Parser {
 			return getRuleContext(Type_idContext.class,0);
 		}
 		public TypeFieldContext(Type_fieldContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitTypeField(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Type_fieldContext type_field() throws RecognitionException {
@@ -1885,11 +1670,6 @@ public class exprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_type_id; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitType_id(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Type_idContext type_id() throws RecognitionException {
@@ -1933,11 +1713,6 @@ public class exprParser extends Parser {
 			return getRuleContext(ExprContext.class,0);
 		}
 		public DecVarTypeSpecContext(Variable_declarationContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitDecVarTypeSpec(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class DecVarTypeNotSpecContext extends Variable_declarationContext {
 		public TerminalNode ID() { return getToken(exprParser.ID, 0); }
@@ -1945,11 +1720,6 @@ public class exprParser extends Parser {
 			return getRuleContext(ExprContext.class,0);
 		}
 		public DecVarTypeNotSpecContext(Variable_declarationContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitDecVarTypeNotSpec(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Variable_declarationContext variable_declaration() throws RecognitionException {
@@ -2027,11 +1797,6 @@ public class exprParser extends Parser {
 			return getRuleContext(Type_field_listContext.class,0);
 		}
 		public DecFunctWithReturnTypeContext(Function_declarationContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitDecFunctWithReturnType(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 	public static class DecFunctVoidContext extends Function_declarationContext {
 		public TerminalNode ID() { return getToken(exprParser.ID, 0); }
@@ -2042,11 +1807,6 @@ public class exprParser extends Parser {
 			return getRuleContext(Type_field_listContext.class,0);
 		}
 		public DecFunctVoidContext(Function_declarationContext ctx) { copyFrom(ctx); }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitDecFunctVoid(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Function_declarationContext function_declaration() throws RecognitionException {
@@ -2138,11 +1898,6 @@ public class exprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_binary_operation; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitBinary_operation(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Binary_operationContext binary_operation() throws RecognitionException {
@@ -2177,11 +1932,6 @@ public class exprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_precedence_1; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitPrecedence_1(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Precedence_1Context precedence_1() throws RecognitionException {
@@ -2244,11 +1994,6 @@ public class exprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_precedence_2; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitPrecedence_2(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Precedence_2Context precedence_2() throws RecognitionException {
@@ -2311,11 +2056,6 @@ public class exprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_precedence_3; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitPrecedence_3(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Precedence_3Context precedence_3() throws RecognitionException {
@@ -2378,11 +2118,6 @@ public class exprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_precedence_4; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitPrecedence_4(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Precedence_4Context precedence_4() throws RecognitionException {
@@ -2445,21 +2180,16 @@ public class exprParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_negate_instruction; }
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof exprVisitor ) return ((exprVisitor<? extends T>)visitor).visitNegate_instruction(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Negate_instructionContext negate_instruction() throws RecognitionException {
 		Negate_instructionContext _localctx = new Negate_instructionContext(_ctx, getState());
 		enterRule(_localctx, 58, RULE_negate_instruction);
 		try {
-			setState(313);
+			setState(317);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case T__33:
+			switch ( getInterpreter().adaptivePredict(_input,26,_ctx) ) {
+			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(310);
@@ -2468,25 +2198,24 @@ public class exprParser extends Parser {
 				negate_instruction();
 				}
 				break;
-			case T__0:
-			case T__1:
-			case T__3:
-			case T__6:
-			case T__8:
-			case T__11:
-			case T__12:
-			case T__15:
-			case ID:
-			case INT:
-			case STR:
+			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(312);
 				instruction();
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
+			case 3:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(313);
+				match(T__1);
+				setState(314);
+				instruction();
+				setState(315);
+				match(T__2);
+				}
+				break;
 			}
 		}
 		catch (RecognitionException re) {
@@ -2501,7 +2230,7 @@ public class exprParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\60\u013e\4\2\t\2"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\60\u0142\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
 		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
@@ -2524,37 +2253,37 @@ public class exprParser extends Parser {
 		"\5\31\u0115\n\31\3\32\3\32\3\33\3\33\3\33\7\33\u011c\n\33\f\33\16\33\u011f"+
 		"\13\33\3\34\3\34\3\34\7\34\u0124\n\34\f\34\16\34\u0127\13\34\3\35\3\35"+
 		"\3\35\7\35\u012c\n\35\f\35\16\35\u012f\13\35\3\36\3\36\3\36\7\36\u0134"+
-		"\n\36\f\36\16\36\u0137\13\36\3\37\3\37\3\37\5\37\u013c\n\37\3\37\2\2 "+
-		"\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62\64\668:<\2\7\3"+
-		"\2,.\3\2!\"\3\2#$\4\2\32\32%)\3\2*+\2\u0149\2?\3\2\2\2\4G\3\2\2\2\6\u0084"+
-		"\3\2\2\2\b\u0091\3\2\2\2\n\u0093\3\2\2\2\f\u009b\3\2\2\2\16\u009d\3\2"+
-		"\2\2\20\u00a5\3\2\2\2\22\u00a7\3\2\2\2\24\u00ab\3\2\2\2\26\u00b3\3\2\2"+
-		"\2\30\u00b5\3\2\2\2\32\u00c1\3\2\2\2\34\u00c6\3\2\2\2\36\u00c9\3\2\2\2"+
-		" \u00d0\3\2\2\2\"\u00d2\3\2\2\2$\u00e0\3\2\2\2&\u00e2\3\2\2\2(\u00ea\3"+
-		"\2\2\2*\u00ec\3\2\2\2,\u00f0\3\2\2\2.\u00fd\3\2\2\2\60\u0114\3\2\2\2\62"+
-		"\u0116\3\2\2\2\64\u0118\3\2\2\2\66\u0120\3\2\2\28\u0128\3\2\2\2:\u0130"+
-		"\3\2\2\2<\u013b\3\2\2\2>@\5\4\3\2?>\3\2\2\2@A\3\2\2\2A?\3\2\2\2AB\3\2"+
-		"\2\2BC\3\2\2\2CD\7\2\2\3D\3\3\2\2\2EH\5\6\4\2FH\5\62\32\2GE\3\2\2\2GF"+
-		"\3\2\2\2H\5\3\2\2\2I\u0085\7\3\2\2J\u0085\7-\2\2KL\7,\2\2LN\7\4\2\2MO"+
-		"\5\16\b\2NM\3\2\2\2NO\3\2\2\2OP\3\2\2\2P\u0085\7\5\2\2Q\u0085\7.\2\2R"+
-		"S\5\30\r\2ST\5\34\17\2T\u0085\3\2\2\2UW\7\4\2\2VX\5\n\6\2WV\3\2\2\2WX"+
-		"\3\2\2\2XY\3\2\2\2Y\u0085\7\5\2\2Z[\5,\27\2[\\\5\b\5\2\\\u0085\3\2\2\2"+
-		"]^\7\6\2\2^_\5\4\3\2_`\7\7\2\2`a\5\4\3\2a\u0085\3\2\2\2bc\7\6\2\2cd\5"+
-		"\4\3\2de\7\7\2\2ef\5\4\3\2fg\7\b\2\2gh\5\4\3\2h\u0085\3\2\2\2ij\7\t\2"+
-		"\2jk\5\4\3\2kl\7\n\2\2lm\5\4\3\2m\u0085\3\2\2\2no\7\13\2\2op\7,\2\2pq"+
-		"\7\f\2\2qr\5\4\3\2rs\7\r\2\2st\5\4\3\2tu\7\n\2\2uv\5\4\3\2v\u0085\3\2"+
-		"\2\2w\u0085\7\16\2\2xy\7\17\2\2yz\5\36\20\2z|\7\20\2\2{}\5\n\6\2|{\3\2"+
-		"\2\2|}\3\2\2\2}~\3\2\2\2~\177\7\21\2\2\177\u0085\3\2\2\2\u0080\u0081\7"+
-		"\22\2\2\u0081\u0082\7\4\2\2\u0082\u0083\t\2\2\2\u0083\u0085\7\5\2\2\u0084"+
-		"I\3\2\2\2\u0084J\3\2\2\2\u0084K\3\2\2\2\u0084Q\3\2\2\2\u0084R\3\2\2\2"+
-		"\u0084U\3\2\2\2\u0084Z\3\2\2\2\u0084]\3\2\2\2\u0084b\3\2\2\2\u0084i\3"+
-		"\2\2\2\u0084n\3\2\2\2\u0084w\3\2\2\2\u0084x\3\2\2\2\u0084\u0080\3\2\2"+
-		"\2\u0085\7\3\2\2\2\u0086\u0088\7\23\2\2\u0087\u0089\5\24\13\2\u0088\u0087"+
-		"\3\2\2\2\u0088\u0089\3\2\2\2\u0089\u008a\3\2\2\2\u008a\u0092\7\24\2\2"+
-		"\u008b\u008c\7\25\2\2\u008c\u008d\5\4\3\2\u008d\u008e\7\26\2\2\u008e\u008f"+
-		"\7\27\2\2\u008f\u0090\5\4\3\2\u0090\u0092\3\2\2\2\u0091\u0086\3\2\2\2"+
-		"\u0091\u008b\3\2\2\2\u0092\t\3\2\2\2\u0093\u0094\5\4\3\2\u0094\u0095\5"+
-		"\f\7\2\u0095\13\3\2\2\2\u0096\u0097\7\30\2\2\u0097\u0098\5\4\3\2\u0098"+
+		"\n\36\f\36\16\36\u0137\13\36\3\37\3\37\3\37\3\37\3\37\3\37\3\37\5\37\u0140"+
+		"\n\37\3\37\2\2 \2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62"+
+		"\64\668:<\2\7\3\2,.\3\2!\"\3\2#$\4\2\32\32%)\3\2*+\2\u014e\2?\3\2\2\2"+
+		"\4G\3\2\2\2\6\u0084\3\2\2\2\b\u0091\3\2\2\2\n\u0093\3\2\2\2\f\u009b\3"+
+		"\2\2\2\16\u009d\3\2\2\2\20\u00a5\3\2\2\2\22\u00a7\3\2\2\2\24\u00ab\3\2"+
+		"\2\2\26\u00b3\3\2\2\2\30\u00b5\3\2\2\2\32\u00c1\3\2\2\2\34\u00c6\3\2\2"+
+		"\2\36\u00c9\3\2\2\2 \u00d0\3\2\2\2\"\u00d2\3\2\2\2$\u00e0\3\2\2\2&\u00e2"+
+		"\3\2\2\2(\u00ea\3\2\2\2*\u00ec\3\2\2\2,\u00f0\3\2\2\2.\u00fd\3\2\2\2\60"+
+		"\u0114\3\2\2\2\62\u0116\3\2\2\2\64\u0118\3\2\2\2\66\u0120\3\2\2\28\u0128"+
+		"\3\2\2\2:\u0130\3\2\2\2<\u013f\3\2\2\2>@\5\4\3\2?>\3\2\2\2@A\3\2\2\2A"+
+		"?\3\2\2\2AB\3\2\2\2BC\3\2\2\2CD\7\2\2\3D\3\3\2\2\2EH\5\6\4\2FH\5\62\32"+
+		"\2GE\3\2\2\2GF\3\2\2\2H\5\3\2\2\2I\u0085\7\3\2\2J\u0085\7-\2\2KL\7,\2"+
+		"\2LN\7\4\2\2MO\5\16\b\2NM\3\2\2\2NO\3\2\2\2OP\3\2\2\2P\u0085\7\5\2\2Q"+
+		"\u0085\7.\2\2RS\5\30\r\2ST\5\34\17\2T\u0085\3\2\2\2UW\7\4\2\2VX\5\n\6"+
+		"\2WV\3\2\2\2WX\3\2\2\2XY\3\2\2\2Y\u0085\7\5\2\2Z[\5,\27\2[\\\5\b\5\2\\"+
+		"\u0085\3\2\2\2]^\7\6\2\2^_\5\4\3\2_`\7\7\2\2`a\5\4\3\2a\u0085\3\2\2\2"+
+		"bc\7\6\2\2cd\5\4\3\2de\7\7\2\2ef\5\4\3\2fg\7\b\2\2gh\5\4\3\2h\u0085\3"+
+		"\2\2\2ij\7\t\2\2jk\5\4\3\2kl\7\n\2\2lm\5\4\3\2m\u0085\3\2\2\2no\7\13\2"+
+		"\2op\7,\2\2pq\7\f\2\2qr\5\4\3\2rs\7\r\2\2st\5\4\3\2tu\7\n\2\2uv\5\4\3"+
+		"\2v\u0085\3\2\2\2w\u0085\7\16\2\2xy\7\17\2\2yz\5\36\20\2z|\7\20\2\2{}"+
+		"\5\n\6\2|{\3\2\2\2|}\3\2\2\2}~\3\2\2\2~\177\7\21\2\2\177\u0085\3\2\2\2"+
+		"\u0080\u0081\7\22\2\2\u0081\u0082\7\4\2\2\u0082\u0083\t\2\2\2\u0083\u0085"+
+		"\7\5\2\2\u0084I\3\2\2\2\u0084J\3\2\2\2\u0084K\3\2\2\2\u0084Q\3\2\2\2\u0084"+
+		"R\3\2\2\2\u0084U\3\2\2\2\u0084Z\3\2\2\2\u0084]\3\2\2\2\u0084b\3\2\2\2"+
+		"\u0084i\3\2\2\2\u0084n\3\2\2\2\u0084w\3\2\2\2\u0084x\3\2\2\2\u0084\u0080"+
+		"\3\2\2\2\u0085\7\3\2\2\2\u0086\u0088\7\23\2\2\u0087\u0089\5\24\13\2\u0088"+
+		"\u0087\3\2\2\2\u0088\u0089\3\2\2\2\u0089\u008a\3\2\2\2\u008a\u0092\7\24"+
+		"\2\2\u008b\u008c\7\25\2\2\u008c\u008d\5\4\3\2\u008d\u008e\7\26\2\2\u008e"+
+		"\u008f\7\27\2\2\u008f\u0090\5\4\3\2\u0090\u0092\3\2\2\2\u0091\u0086\3"+
+		"\2\2\2\u0091\u008b\3\2\2\2\u0092\t\3\2\2\2\u0093\u0094\5\4\3\2\u0094\u0095"+
+		"\5\f\7\2\u0095\13\3\2\2\2\u0096\u0097\7\30\2\2\u0097\u0098\5\4\3\2\u0098"+
 		"\u0099\5\f\7\2\u0099\u009c\3\2\2\2\u009a\u009c\3\2\2\2\u009b\u0096\3\2"+
 		"\2\2\u009b\u009a\3\2\2\2\u009c\r\3\2\2\2\u009d\u009e\5\4\3\2\u009e\u009f"+
 		"\5\20\t\2\u009f\17\3\2\2\2\u00a0\u00a1\7\31\2\2\u00a1\u00a2\5\4\3\2\u00a2"+
@@ -2605,10 +2334,12 @@ public class exprParser extends Parser {
 		"\u012e\3\2\2\2\u012e9\3\2\2\2\u012f\u012d\3\2\2\2\u0130\u0135\58\35\2"+
 		"\u0131\u0132\t\6\2\2\u0132\u0134\58\35\2\u0133\u0131\3\2\2\2\u0134\u0137"+
 		"\3\2\2\2\u0135\u0133\3\2\2\2\u0135\u0136\3\2\2\2\u0136;\3\2\2\2\u0137"+
-		"\u0135\3\2\2\2\u0138\u0139\7$\2\2\u0139\u013c\5<\37\2\u013a\u013c\5\6"+
-		"\4\2\u013b\u0138\3\2\2\2\u013b\u013a\3\2\2\2\u013c=\3\2\2\2\35AGNW|\u0084"+
-		"\u0088\u0091\u009b\u00a5\u00b3\u00c1\u00c6\u00cb\u00d0\u00da\u00e0\u00ea"+
-		"\u00fd\u0103\u010c\u0114\u011d\u0125\u012d\u0135\u013b";
+		"\u0135\3\2\2\2\u0138\u0139\7$\2\2\u0139\u0140\5<\37\2\u013a\u0140\5\6"+
+		"\4\2\u013b\u013c\7\4\2\2\u013c\u013d\5\6\4\2\u013d\u013e\7\5\2\2\u013e"+
+		"\u0140\3\2\2\2\u013f\u0138\3\2\2\2\u013f\u013a\3\2\2\2\u013f\u013b\3\2"+
+		"\2\2\u0140=\3\2\2\2\35AGNW|\u0084\u0088\u0091\u009b\u00a5\u00b3\u00c1"+
+		"\u00c6\u00cb\u00d0\u00da\u00e0\u00ea\u00fd\u0103\u010c\u0114\u011d\u0125"+
+		"\u012d\u0135\u013f";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

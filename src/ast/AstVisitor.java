@@ -1,6 +1,7 @@
 package ast;
 
 import tds.Entry;
+import tds.Exceptions.TypeErrorException;
 
 
 public interface AstVisitor<T> {
@@ -115,6 +116,5 @@ public interface AstVisitor<T> {
     public T visit(ArrayTypeNode arrayType);
 
     public T visit(Entry e);
-
 
 }

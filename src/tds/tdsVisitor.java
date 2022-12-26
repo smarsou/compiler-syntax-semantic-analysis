@@ -55,8 +55,21 @@ import ast.Superior;
 import ast.TypeField;
 import ast.Inferior;
 import ast.Divide;
+import tds.Result;
 
-public class tdsVisitor implements AstVisitor<String> {
+import tds.Exceptions.*;
+
+
+public class tdsVisitor implements AstVisitor<Result> {
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLACK = "\u001B[30m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_WHITE = "\u001B[37m";
 
     private ArrayList<Tds> tdsGlobal = new ArrayList<>(); // La liste de toutes les TDS
     private Stack<Integer> pileRO = new Stack<>(); // La pile des régions ouverte;
@@ -260,7 +273,7 @@ public class tdsVisitor implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(Program d) {
+    public Object visit(Program d) {
         Tds tds = new Tds(0,0,-1);
         pileRO.push(0);
         tdsGlobal.add(tds);
@@ -268,27 +281,103 @@ public class tdsVisitor implements AstVisitor<String> {
     }
 
     @Override
-    public String visit(Precedence_1 mult) {
+    public Result visit(Precedence_1 mult){
         // les opérands et le résultat doivent être de type int
-
+        Result l = mult.left.accept(this);
+        Result r = mult.right.accept(this);
+        Result n = new Result();
+        n.typeName = "int"; 
+        if (l.typeName == "int" && r.typeName == "int"){
+            return n;
+        }else{
+            if (l.typeName != "int"){
+                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET);
+            }
+            if (r.typeName != "int"){
+                System.err.println(ANSI_RED + "Type Error: Right side of the operation is not of type int" + ANSI_RESET);
+            }
+            return n;
+        }
+        // Result l = mult.left.accept(this);
+        // Result r = mult.right.accept(this);
+        // if (l.typeName == "int" && r.typeName == "int"){
+        //     Result n = new Result();
+        //     n.intValue = l.intValue*r.intValue;
+        //     n.typeName = "int"; 
+        //     n.name = "Precedence_1";
+        //     return n;
+        // }else{
+        //     Result n = new Result();
+        //     int leftSideOfOp=1;
+        //     int rightSideOfOp=1;
+        //     if (l.typeName != "int"){
+        //         System.err.println("Type Error: Left side of the operation is not of type int");
+        //     }else{
+        //         leftSideOfOp = l.intValue;
+        //     }
+        //     if (r.typeName != "int"){
+        //         System.err.println("Type Error: Right side of the operation is not of type int");
+        //     }else{
+        //         leftSideOfOp = r.intValue;
+        //     }
+        //     n.intValue = leftSideOfOp * rightSideOfOp;
+        //     return n;
+        // }
     }
 
     @Override
-    public String visit(Precedence_2 plus) {
+    public Result visit(Precedence_2 plus) {
         // les opérands et le résultat doivent être de type int
-
+        Result l = plus.left.accept(this);
+        Result r = plus.right.accept(this);
+        Result n = new Result();
+        n.typeName = "int"; 
+        if (l.typeName == "int" && r.typeName == "int"){
+            return n;
+        }else{
+            if (l.typeName != "int"){
+                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" +ANSI_RESET);
+            }
+            if (r.typeName != "int"){
+                System.err.println(ANSI_RED+"\u001B[33m Type Error: Right side of the operation is not of type int"+ANSI_RESET);
+            }
+            return n;
+        }
     }
 
     @Override
-    public String visit(Precedence_3 equal) {
+    public Result visit(Precedence_3 equal) {
         // les opérands doivent avoir le même type et le résultat doit être de type int
-
+        Result l = equal.left.accept(this);
+        Result r = equal.right.accept(this);
+        Result n = new Result();
+        n.typeName = l.typeName; 
+        if (l.typeName == r.typeName){
+            return n;
+        }else{
+            System.err.println(ANSI_RED+"Type Error: Not the same type for operands"+ANSI_RESET);
+            return n;
+        }
     }
 
     @Override
-    public String visit(Precedence_4 and) {
+    public Result visit(Precedence_4 and) {
         // les opérands et le résultat doivent être de type int
-
+        Result l = and.left.accept(this);
+        Result r = and.right.accept(this);
+        Result n = new Result();
+        n.typeName = "int"; 
+        if (l.typeName == "int" && r.typeName == "int"){
+            return n;
+        }else{
+            if (l.typeName != "int"){
+                System.err.println(ANSI_RED+"Type Error: Left side of the operation is not of type int"+ANSI_RESET);
+            }
+            if (r.typeName != "int"){
+                System.err.println(ANSI_RED+"Type Error: Right side of the operation is not of type int"+ANSI_RESET);
+            }
+            return n;
+        }
     }
 
     @Override
