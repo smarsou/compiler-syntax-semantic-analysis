@@ -232,18 +232,58 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public String visit(For f) {
+    public Result visit(For f) {
+        
+        //On créer une nouvelle TDS
+        createNewTds();
+        
+        //On créer l'entrée pour la variable d'increment
+        Var increment = new Var(f.idf.name, "int");
+        //On ajoute en entrée la variable d'incrment
+        Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
+        currentTds.addEntry(increment);
+
+        //TODO: COntroles sémantiques
         // The start and end index must be of type int. The variable is of type int and
         // must not be
         // assigned to in the body. The body must be of type
         // void. The result type is void.
+        
+        //On parcours la boucle for et on récupère les infos du resultat dans Result. (on peut ajouter des attributs à Result si necessaire)
+        Result r = f.expr3.accept(this);
+
+        //On remonte dans le bloc père
+        pileRO.pop();
+
+        Result nr = new Result();
+        nr.typeName = /*Type de retour d'une boucle for, voir règle sémantique */;
+        return nr;
 
     }
 
     @Override
-    public String visit(While d) {
-        // The condition type must be int, and the
-        // body type must be void. The result type is void.
+    public Result visit(While d) {
+
+        //On créer une nouvelle TDS
+        createNewTds();
+        
+        //TODO: COntrole sémantique 1
+        // The condition type must be int
+        
+        //On parcours la boucle while et on récupère le type de retour
+        Result r = d.expr2.accept(this);
+
+        //TODO: COntrole sémantqie 2
+        //The body type must be void. En gros c'est le Result r qui doit être de type void je crois
+
+
+        //On remonte dans le bloc père
+        pileRO.pop();
+
+        Result nr = new Result();
+        nr.typeName = "void";
+        return nr;
+
 
     }
 
@@ -291,10 +331,10 @@ public class tdsVisitor implements AstVisitor<Result> {
             return n;
         }else{
             if (l.typeName != "int"){
-                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET);
+                System.err.println(ANSI_RED + "Type Error: Left side of the multiplication is not of type int" + ANSI_RESET);
             }
             if (r.typeName != "int"){
-                System.err.println(ANSI_RED + "Type Error: Right side of the operation is not of type int" + ANSI_RESET);
+                System.err.println(ANSI_RED + "Type Error: Right side of the multiplication is not of type int" + ANSI_RESET);
             }
             return n;
         }
@@ -381,9 +421,23 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public String visit(Or or) {
+    public Result visit(Or or) {
         // les opérands et le résultat doivent être de type int
-
+        Result l = or.left.accept(this);
+        Result r = or.right.accept(this);
+        Result n = new Result();
+        n.typeName = "int"; 
+        if (l.typeName == "int" && r.typeName == "int"){
+            return n;
+        }else{
+            if (l.typeName != "int"){
+                System.err.println(ANSI_RED+"Type Error: Left side of the operation is not of type int"+ANSI_RESET);
+            }
+            if (r.typeName != "int"){
+                System.err.println(ANSI_RED+"Type Error: Right side of the operation is not of type int"+ANSI_RESET);
+            }
+            return n;
+        }
     }
 
     @Override
@@ -417,11 +471,20 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public String visit(Sup_inf sinf) {
+    public Result visit(Sup_inf sinf) {
         // les opérands doivent avoir le même type et doivent être de type int ou de
         // type string
         // le résultat doit être de type int
-
+        Result l = sinf.left.accept(this);
+        Result r = sinf.right.accept(this);
+        Result n = new Result();
+        n.typeName = l.typeName; 
+        if (l.typeName == r.typeName){
+            return n;
+        }else{
+            System.err.println(ANSI_RED+"Type Error: Not the same type for operands"+ANSI_RESET);
+            return n;
+        }
     }
 
     @Override
@@ -447,9 +510,23 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public String visit(Divide divide) {
+    public Result visit(Divide divide) {
         // les opérands et le résultat doivent être de type int
-
+        Result l = divide.left.accept(this);
+        Result r = divide.right.accept(this);
+        Result n = new Result();
+        n.typeName = "int"; 
+        if (l.typeName == "int" && r.typeName == "int"){
+            return n;
+        }else{
+            if (l.typeName != "int"){
+                System.err.println(ANSI_RED + "Type Error: Left side of the division is not of type int" + ANSI_RESET);
+            }
+            if (r.typeName != "int"){
+                System.err.println(ANSI_RED + "Type Error: Right side of the division is not of type int" + ANSI_RESET);
+            }
+            return n;
+        }
     }
 
     @Override
@@ -488,8 +565,23 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public String visit(Minus minus) {
+    public Result visit(Minus minus) {
         // les opérands et le résultat doivent être de type int
+        Result l = minus.left.accept(this);
+        Result r = minus.right.accept(this);
+        Result n = new Result();
+        n.typeName = "int"; 
+        if (l.typeName == "int" && r.typeName == "int"){
+            return n;
+        }else{
+            if (l.typeName != "int"){
+                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" +ANSI_RESET);
+            }
+            if (r.typeName != "int"){
+                System.err.println(ANSI_RED+"\u001B[33m Type Error: Right side of the operation is not of type int"+ANSI_RESET);
+            }
+            return n;
+        }
 
     }
 
