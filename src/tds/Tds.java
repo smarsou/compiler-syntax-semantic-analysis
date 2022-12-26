@@ -6,13 +6,16 @@ public class Tds{
     ArrayList<Entry> rows;
     int numRegion;
     int numImbrication;
-    public Tds(int numRegion, int numImbrication){
+    int pere;
+    public Tds(int numRegion, int numImbrication, int pere){
         this.numRegion = numRegion;
         this.numImbrication = numImbrication;
+        this.pere = pere;
     }
 
-    public void addEntry(Tds table, Entry e){
-        table.rows.add(e);
+    public void addEntry(Entry e){
+        this.rows.add(e);
     }
+
 
 }

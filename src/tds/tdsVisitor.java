@@ -3,6 +3,7 @@ package tds;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Stack;
 
 import javax.lang.model.type.ArrayType;
@@ -57,9 +58,17 @@ import ast.Divide;
 
 public class tdsVisitor implements AstVisitor<String> {
 
-    private ArrayList<Tds> tdsGlobal; // La liste de toutes les TDS
-    private Stack pileRO; // La pile des régions ouvertes
-    private TDS currentTDS;
+    private ArrayList<Tds> tdsGlobal = new ArrayList<>(); // La liste de toutes les TDS
+    private Stack<Integer> pileRO = new Stack<>(); // La pile des régions ouverte;
+
+    public void createNewTds(){
+        int currentRegion = pileRO.peek();
+        int newRegion = tdsGlobal.size();
+        int numImbrication = pileRO.size();
+        Tds tds = new Tds(newRegion, numImbrication, currentRegion);
+        pileRO.push(newRegion);
+        tdsGlobal.add(tds);
+    }
 
     @Override
     public String visit(RecField affect) {
@@ -70,32 +79,95 @@ public class tdsVisitor implements AstVisitor<String> {
 
     @Override
     public String visit(DecFunctWithReturnType dec) {
-        currentTDS.add(/* entry */)
-        TDS tds = new TDS(/*region*/, /*imbrication*/);
+        //On créer une nouvelle entrée et on l'ajoute à la TDS du bloc courant
+        Fonction func = new Fonction(dec.idf1.name, dec.type_id.name);
+        Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
+        currentTds.addEntry(func);
+        
+        //On créer une nouvelle tds pour la déclaration de la fonction
+        createNewTds();
+        
+        //On ajoute cette Tds à l'entrée
+        int numRegiontTds = tdsGlobal.get(tdsGlobal.size()-1).numRegion;
+        func.setTds(numRegiontTds);
+        
+        //On visit le bloc de la fonction
+        String retourDeExpr = dec.expr.accept(this);
+ 
+        //TODO Controle sémantique pour vérifier si l'exp correspond au type de retour
+
+        //On revient au père
+        pileRO.pop();
+        
+        return "NoReturn";
     }
 
     @Override
     public String visit(DecFunctVoid dec) {
-        currentTDS.add(/* entry */)
-        TDS tds = new TDS(/*region*/, /*imbrication*/);
+        //On créer une nouvelle entrée et on l'ajoute à la TDS du bloc courant
+        Fonction func = new Fonction(dec.idf.name, "void");
+        Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
+        currentTds.addEntry(func);
+        
+        //On créer une nouvelle tds pour la déclaration de la fonction
+        createNewTds();
+        
+        //On ajoute cette Tds à l'entrée
+        int numRegiontTds = tdsGlobal.get(tdsGlobal.size()-1).numRegion;
+        func.setTds(numRegiontTds);
+
+        //On visit le bloc de la fonction
+        dec.expr.accept(this);
+ 
+        //On revient au père
+        pileRO.pop();
+        
+        //La sémantique dit que la déclaration de la fonction ne renvoie rien
+        return "NoReturn";
     }
 
     @Override
     public String visit(LetInEnd dec) {
+        // On créer une nouvelle TDS pour le nouveau bloc d'environnement
+        createNewTds();
 
-        currentTDS.add(/* entry */)
-        TDS tds = new TDS(/*region*/, /*imbrication*/);
-        //change currentTDS
+        //On visit tout le LetInEnd
+        dec.declaration_list.accept(this);
+        String retourOfLastInstruction = dec.exprseq.accept(this);
+
+
+        //Quand on a terminé de visiter le LetInEnd, on revient chez le père
+        pileRO.pop();
+        return retourOfLastInstruction;
     }
 
     @Override
     public String visit(DecVarTypeSpec dec) {
-        currentTDS.add(/* entry */)
+        //TODO controle sémantique pour vérifier si l'exp correspond au type
+        String retourOfExpr = dec.expr.accept(this);
+
+        //On créer une nouvelle entrée
+        Var var = new Var(dec.idf1.name, dec.idf2.name, retourOfExpr);
+
+        //On ajoute l'entrée à la TDS courante
+        Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
+        currentTds.addEntry(var);
+
+        return "NoReturn";
     }
 
     @Override
     public String visit(DecVarTypeNotSpec dec) {
-        currentTDS.add(/* entry */)
+        String retourOfExpr = dec.expr.accept(this);
+
+        //On créer une nouvelle entrée
+        Var var = new Var(dec.idf.name, "NoType", retourOfExpr);
+
+        //On ajoute l'entrée à la TDS courante
+        Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
+        currentTds.addEntry(var);
+        
+        return "NoReturn";
     }
 
     @Override
@@ -106,6 +178,14 @@ public class tdsVisitor implements AstVisitor<String> {
     @Override
     public String visit(DecType dec) {
 
+        //On créer une nouvelle entrée
+        Type type = new Type(dec.idf.accept(this), dec.type.accept(this));
+
+        //On ajoute l'entrée à la TDS courante
+        Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
+        currentTds.addEntry(type);
+        
+        return "NoReturn";
     }
 
     @Override
@@ -181,7 +261,10 @@ public class tdsVisitor implements AstVisitor<String> {
 
     @Override
     public String visit(Program d) {
-        TDS tds = new TDS(/*region*/, /*imbrication*/);
+        Tds tds = new Tds(0,0,-1);
+        pileRO.push(0);
+        tdsGlobal.add(tds);
+        return "Program";
     }
 
     @Override

@@ -1,7 +1,7 @@
 1) precedenceOp/3.exp: ExprSeq in arithmétique expression (il faut ajouter un noeud qui différencie ExprSeq et une parenthèse dans les expressions arithmétique)
-2) arrays3.exp:    "var  table := rec_arr[2] of nil"  Il ya une erreur avec nil.
+arrays3.exp:    "var  table := rec_arr[2] of nil"  Il ya une erreur avec nil.
 3) boucle_recursivité.exp: code syntaxiquement faux
-4) functions.exp: AST ne se construit pas
+4) functions.exp: AST ne se construit pas; nouvelle erreur graphique, double lien affiché
 5) nil.exp: AST ne se contruit pas
 6) general/2.exp: AST ne se construit pas
 7) general/3.exp: erreur syntaxique

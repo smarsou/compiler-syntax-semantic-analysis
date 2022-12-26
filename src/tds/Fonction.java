@@ -6,16 +6,25 @@ public class Fonction implements Entry{
 
     private String nom;
     private String typeDeRetour;
-    private Tds infos;
+    private int tdsFils;
 
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }
 
-    public Fonction(String nom, String typeDeRetour, Tds infos){
+    public Fonction(String nom, String typeDeRetour, int tdsFils){
         this.nom = nom;
         this.typeDeRetour = typeDeRetour;
-        this.infos = infos;
+        this.tdsFils = tdsFils;
+    }
+
+    public Fonction(String nom, String typeDeRetour){
+        this.nom = nom;
+        this.typeDeRetour = typeDeRetour;
+    }
+
+    public void setTds(int tdsFils){
+        this.tdsFils = tdsFils;
     }
 
 

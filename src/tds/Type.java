@@ -18,4 +18,9 @@ public class Type implements Entry{
         this.Element = Element;
     }
 
+    public Type(String nom, String typeDeType){
+        this.nom = nom;
+        this.typeDeType = typeDeType;
+    }
+
 }
