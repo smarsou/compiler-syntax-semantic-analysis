@@ -116,17 +116,16 @@ public class GraphVizVisitor implements AstVisitor<String> {
     public String visit(DecFunctWithReturnType dec) {
 
         String nodeIdentifier = this.nextState();
-        this.addNode(nodeIdentifier, "DecFuncVoid");
+        this.addNode(nodeIdentifier, "DecFunctWithReturnType");
         String idf1 = dec.idf1.accept(this);
-        this.addTransition(nodeIdentifier, idf1);
-        String type_id = dec.type_id.accept(this);
-        String expr = dec.expr.accept(this);
         this.addTransition(nodeIdentifier, idf1);
         if (dec.type_field_list != null){
             String typefield = dec.type_field_list.accept(this);
             this.addTransition(nodeIdentifier, typefield);
         }
+        String type_id = dec.type_id.accept(this);
         this.addTransition(nodeIdentifier, type_id);
+        String expr = dec.expr.accept(this);
         this.addTransition(nodeIdentifier, expr);
         return nodeIdentifier;
     }

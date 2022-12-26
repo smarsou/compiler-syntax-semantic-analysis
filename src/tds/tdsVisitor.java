@@ -306,6 +306,7 @@ public class tdsVisitor implements AstVisitor<Result> {
         
         //On parcours la boucle for et on récupère les infos du resultat dans Result. (on peut ajouter des attributs à Result si necessaire)
         Result r = f.expr3.accept(this);
+        
 
         //On remonte dans le bloc père
         pileRO.pop();
@@ -546,25 +547,68 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public String visit(Negate_instruction Ni) {
+    public Result visit(Negate_instruction Ni) {
         // l'opérand et le résultat sont de type int
+        Result Ne= Ni.exp.accept(this);
+        Result n = new Result();
+        n.typeName = Ne.typeName; 
+        if (Ne.typeName == "int"){
+            return n;
+        }else{
+            System.err.println(ANSI_RED+"Type Error: The operand type is not int"+ANSI_RESET);
+            return n;
+        }
 
     }
 
     @Override
-    public String visit(IfThen ifThen) {
+    public Result visit(IfThen ifThen) {
         // The condition type must be int, and the
         // then-clause must be of type void. The result type
         // is also void
+        Result c = ifThen.condition.accept(this);
+        Result b = ifThen.thenBlock.accept(this);
+        Result n = new Result();
+        n.typeName = c.typeName;
+        if (c.typeName == "int"){
+            if (b.typeName == "void"){
+                return n;
+            }
+            else{
+                System.err.println(ANSI_RED+"Type Error: The then-clause must be of type void"+ANSI_RESET);
+                return n;
+            }
+        }
+        else{
+            System.err.println(ANSI_RED+"Type Error: The condition type must be int"+ANSI_RESET);
+            return n;
+        }
 
     }
 
     @Override
-    public String visit(IfThenElse ifThenElse) {
+    public Result visit(IfThenElse ifThenElse) {
         // The condition type must be int, and
         // the then-clause and else-clause must have the same
         // type, which becomes the result type
-
+        Result c = ifThenElse.condition.accept(this);
+        Result t = ifThenElse.thenBlock.accept(this);
+        Result e = ifThenElse.elseBlock.accept(this);
+        Result n = new Result();
+        n.typeName = c.typeName;
+        if (c.typeName == "int"){
+            if (t.typeName == e.typeName){
+                return n;
+            }
+            else{
+                System.err.println(ANSI_RED+"The then-clause and else-clause must have the same type"+ANSI_RESET);
+                return n;
+            }
+        }
+        else{
+            System.err.println(ANSI_RED+"Type Error: The condition type must be int"+ANSI_RESET);
+            return n;
+        }
     }
 
     @Override
