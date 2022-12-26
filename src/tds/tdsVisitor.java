@@ -7,7 +7,6 @@ import java.util.Deque;
 import java.util.Stack;
 
 import javax.lang.model.type.ArrayType;
-import javax.swing.text.TabExpander;
 
 import org.antlr.v4.parse.ANTLRParser.ruleEntry_return;
 
@@ -62,7 +61,6 @@ import tds.Result;
 
 import tds.Exceptions.*;
 
-
 public class tdsVisitor implements AstVisitor<Result> {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";
@@ -77,7 +75,7 @@ public class tdsVisitor implements AstVisitor<Result> {
     private ArrayList<Tds> tdsGlobal = new ArrayList<>(); // La liste de toutes les TDS
     private Stack<Integer> pileRO = new Stack<>(); // La pile des régions ouverte;
 
-    public void createNewTds(){
+    public void createNewTds() {
         int currentRegion = pileRO.peek();
         int newRegion = tdsGlobal.size();
         int numImbrication = pileRO.size();
@@ -95,50 +93,50 @@ public class tdsVisitor implements AstVisitor<Result> {
 
     @Override
     public Result visit(DecFunctWithReturnType dec) {
-        //On créer une nouvelle entrée et on l'ajoute à la TDS du bloc courant
+        // On créer une nouvelle entrée et on l'ajoute à la TDS du bloc courant
         Fonction func = new Fonction(dec.idf1.name, dec.type_id.name);
-        Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
+        Tds currentTds = tdsGlobal.get(tdsGlobal.size() - 1);
         currentTds.addEntry(func);
-        
-        //On créer une nouvelle tds pour la déclaration de la fonction
-        createNewTds();
-        
-        //On ajoute cette Tds à l'entrée
-        int numRegiontTds = tdsGlobal.get(tdsGlobal.size()-1).numRegion;
-        func.setTds(numRegiontTds);
-        
-        //On visit le bloc de la fonction
-        Result res= dec.expr.accept(this);
- 
-        //TODO Controle sémantique pour vérifier si l'exp correspond au type de retour
 
-        //On revient au père
+        // On créer une nouvelle tds pour la déclaration de la fonction
+        createNewTds();
+
+        // On ajoute cette Tds à l'entrée
+        int numRegiontTds = tdsGlobal.get(tdsGlobal.size() - 1).numRegion;
+        func.setTds(numRegiontTds);
+
+        // On visit le bloc de la fonction
+        Result res = dec.expr.accept(this);
+
+        // TODO Controle sémantique pour vérifier si l'exp correspond au type de retour
+
+        // On revient au père
         pileRO.pop();
-        
+
         return res;
     }
 
     @Override
     public Result visit(DecFunctVoid dec) {
-        //On créer une nouvelle entrée et on l'ajoute à la TDS du bloc courant
+        // On créer une nouvelle entrée et on l'ajoute à la TDS du bloc courant
         Fonction func = new Fonction(dec.idf.name, "void");
-        Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
+        Tds currentTds = tdsGlobal.get(tdsGlobal.size() - 1);
         currentTds.addEntry(func);
-        
-        //On créer une nouvelle tds pour la déclaration de la fonction
+
+        // On créer une nouvelle tds pour la déclaration de la fonction
         createNewTds();
-        
-        //On ajoute cette Tds à l'entrée
-        int numRegiontTds = tdsGlobal.get(tdsGlobal.size()-1).numRegion;
+
+        // On ajoute cette Tds à l'entrée
+        int numRegiontTds = tdsGlobal.get(tdsGlobal.size() - 1).numRegion;
         func.setTds(numRegiontTds);
 
-        //On visit le bloc de la fonction
+        // On visit le bloc de la fonction
         Result res = dec.expr.accept(this);
- 
-        //On revient au père
+
+        // On revient au père
         pileRO.pop();
-        
-        //La sémantique dit que la déclaration de la fonction ne renvoie rien
+
+        // La sémantique dit que la déclaration de la fonction ne renvoie rien
         return res;
     }
 
@@ -147,32 +145,25 @@ public class tdsVisitor implements AstVisitor<Result> {
         // On créer une nouvelle TDS pour le nouveau bloc d'environnement
         createNewTds();
 
-        //On visit tout le LetInEnd
+        // On visit tout le LetInEnd
         dec.declaration_list.accept(this);
         Result result = dec.exprseq.accept(this);
 
-        //Quand on a terminé de visiter le LetInEnd, on revient chez le père
+        // Quand on a terminé de visiter le LetInEnd, on revient chez le père
         pileRO.pop();
         return result;
     }
 
     @Override
     public Result visit(DecVarTypeSpec dec) {
-        //TODO controle sémantique pour vérifier si l'exp correspond au type, ie tester si result.typeName == dec.idf2.accept....
+        // TODO controle sémantique pour vérifier si l'exp correspond au type
         Result result = dec.expr.accept(this);
-        Var var = new Var();
 
-        //On créer une nouvelle entrée
-        if (result.typeName == "int"){
-            var = new Var(dec.idf1.name, dec.idf2.name, result.intValue);
-        }if (result.typeName == "array"){
-            var = new Var(dec.idf1.name, dec.idf2.name, result.ar);
-        }if (result.typeName == "rec"){
-            var = new Var(dec.idf1.name, dec.idf2.name, result.rc);
-        }
+        // On créer une nouvelle entrée
+        Var var = new Var(dec.idf1.name, dec.idf2.name);
 
-        //On ajoute l'entrée à la TDS courante
-        Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
+        // On ajoute l'entrée à la TDS courante
+        Tds currentTds = tdsGlobal.get(tdsGlobal.size() - 1);
         currentTds.addEntry(var);
 
         Result res = new Result();
@@ -182,16 +173,16 @@ public class tdsVisitor implements AstVisitor<Result> {
 
     @Override
     public Result visit(DecVarTypeNotSpec dec) {
-        //On récupère le resultat de l'expression
+        // On récupère le resultat de l'expression
         Result result = dec.expr.accept(this);
 
-        //On créer une nouvelle entrée
-        Var var = new Var(dec.idf.name, result.typeName, result);
+        // On créer une nouvelle entrée
+        Var var = new Var(dec.idf.name, result.typeName);
 
-        //On ajoute l'entrée à la TDS courante
-        Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
+        // On ajoute l'entrée à la TDS courante
+        Tds currentTds = tdsGlobal.get(tdsGlobal.size() - 1);
         currentTds.addEntry(var);
-        
+
         Result res = new Result();
         res.typeName = "void";
         return res;
@@ -205,13 +196,13 @@ public class tdsVisitor implements AstVisitor<Result> {
     @Override
     public String visit(DecType dec) {
 
-        //On créer une nouvelle entrée
+        // On créer une nouvelle entrée
         Type type = new Type(dec.idf.accept(this), dec.type.accept(this));
 
-        //On ajoute l'entrée à la TDS courante
-        Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
+        // On ajoute l'entrée à la TDS courante
+        Tds currentTds = tdsGlobal.get(tdsGlobal.size() - 1);
         currentTds.addEntry(type);
-        
+
         return "NoReturn";
     }
 
@@ -221,69 +212,28 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public Result visit(LvalueSub dec) {
+    public String visit(LvalueSub dec) {
         // l'index expr doit de type int
         // l'identifiant de la lvalue doit être de type array
         // le résultat doit avoit le même type que les éléments de la lvalue qui est de
         // type array
-        Result r = new Result();
-        r.strValue = dec.id;
-
-        ArrayList<Integer> a = new ArrayList<>();
-        for (Ast d : dec.successiveSub){
-            a.add(d.accept(this).intValue);
-        }
-        r.subscript = a;
-
-        return r;
 
     }
 
     @Override
-    public Result visit(ArrayCreate a) {
-
-        Result res = new Result();
-        res.typeName = "array";
-        Array tableau = new Array();
-        
-        Result second = a.expr2.accept(this);
-        if (second.typeName == "int"){
-            tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.intValue );
-        }
-        if (second.typeName == "array"){
-            tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.ar );
-            res.ar = tableau;
-        }
-        if (second.typeName == "rec"){
-            tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.rc);
-        }
-
-        res.ar = tableau;
-
-        return res;
-
+    public String visit(ArrayCreate a) {
         // The type of the Id must refer to an array type.
         // The expression in square brackets must be int, and
         // the expression after of must match the element
         // type of the array. The result type is the array type.
-
-        
     }
 
     @Override
-    public Result visit(RecCreate a) {
-        
-        Result res = new Result();
-        res.typeName = "array";
-    
-        Rec rc = new Rec();
-        rc.type_id = a.typeid.accept(this).name;
-        //TODO ajouter les élements, mais flemme...
-        res.rc = rc;
-        return res;
+    public String visit(RecCreate a) {
         // The tyId(type of the id) must refer to a record type,
         // and the order, names, and types of fields must
         // match. The result type is the record type.
+
     }
 
     @Override
@@ -320,26 +270,25 @@ public class tdsVisitor implements AstVisitor<Result> {
     @Override
     public Result visit(While d) {
 
-        //On créer une nouvelle TDS
+        // On créer une nouvelle TDS
         createNewTds();
-        
-        //TODO: COntrole sémantique 1
+
+        // TODO: COntrole sémantique 1
         // The condition type must be int
-        
-        //On parcours la boucle while et on récupère le type de retour
+
+        // On parcours la boucle while et on récupère le type de retour
         Result r = d.expr2.accept(this);
 
-        //TODO: COntrole sémantqie 2
-        //The body type must be void. En gros c'est le Result r qui doit être de type void je crois
+        // TODO: COntrole sémantqie 2
+        // The body type must be void. En gros c'est le Result r qui doit être de type
+        // void je crois
 
-
-        //On remonte dans le bloc père
+        // On remonte dans le bloc père
         pileRO.pop();
 
         Result nr = new Result();
         nr.typeName = "void";
         return nr;
-
 
     }
 
@@ -350,11 +299,8 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public Result visit(StrNode d) {
-        Result res = new Result();
-        res.strValue = d.name;
-        res.typeName = "String";
-        return res;
+    public String visit(StrNode d) {
+
     }
 
     @Override
@@ -373,54 +319,58 @@ public class tdsVisitor implements AstVisitor<Result> {
 
     @Override
     public Object visit(Program d) {
-        Tds tds = new Tds(0,0,-1);
+        Tds tds = new Tds(0, 0, -1);
         pileRO.push(0);
         tdsGlobal.add(tds);
         return "Program";
     }
 
     @Override
-    public Result visit(Precedence_1 mult){
+    public Result visit(Precedence_1 mult) {
         // les opérands et le résultat doivent être de type int
         Result l = mult.left.accept(this);
         Result r = mult.right.accept(this);
         Result n = new Result();
-        n.typeName = "int"; 
-        if (l.typeName == "int" && r.typeName == "int"){
+        n.typeName = "int";
+        if (l.typeName == "int" && r.typeName == "int") {
             return n;
-        }else{
-            if (l.typeName != "int"){
-                System.err.println(ANSI_RED + "Type Error: Left side of the multiplication is not of type int" + ANSI_RESET);
+        } else {
+            if (l.typeName != "int") {
+                System.err.println(
+                        ANSI_RED + "Type Error: Left side of the multiplication is not of type int" + ANSI_RESET);
             }
-            if (r.typeName != "int"){
-                System.err.println(ANSI_RED + "Type Error: Right side of the multiplication is not of type int" + ANSI_RESET);
+            if (r.typeName != "int") {
+                System.err.println(
+                        ANSI_RED + "Type Error: Right side of the multiplication is not of type int" + ANSI_RESET);
             }
             return n;
         }
         // Result l = mult.left.accept(this);
         // Result r = mult.right.accept(this);
         // if (l.typeName == "int" && r.typeName == "int"){
-        //     Result n = new Result();
-        //     n.intValue = l.intValue*r.intValue;
-        //     n.typeName = "int"; 
-        //     n.name = "Precedence_1";
-        //     return n;
+        // Result n = new Result();
+        // n.intValue = l.intValue*r.intValue;
+        // n.typeName = "int";
+        // n.name = "Precedence_1";
+        // return n;
         // }else{
-        //     Result n = new Result();
-        //     int leftSideOfOp=1;
-        //     int rightSideOfOp=1;
-        //     if (l.typeName != "int"){
-        //         System.err.println("Type Error: Left side of the operation is not of type int");
-        //     }else{
-        //         leftSideOfOp = l.intValue;
-        //     }
-        //     if (r.typeName != "int"){
-        //         System.err.println("Type Error: Right side of the operation is not of type int");
-        //     }else{
-        //         leftSideOfOp = r.intValue;
-        //     }
-        //     n.intValue = leftSideOfOp * rightSideOfOp;
-        //     return n;
+        // Result n = new Result();
+        // int leftSideOfOp=1;
+        // int rightSideOfOp=1;
+        // if (l.typeName != "int"){
+        // System.err.println("Type Error: Left side of the operation is not of type
+        // int");
+        // }else{
+        // leftSideOfOp = l.intValue;
+        // }
+        // if (r.typeName != "int"){
+        // System.err.println("Type Error: Right side of the operation is not of type
+        // int");
+        // }else{
+        // leftSideOfOp = r.intValue;
+        // }
+        // n.intValue = leftSideOfOp * rightSideOfOp;
+        // return n;
         // }
     }
 
@@ -430,15 +380,16 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result l = plus.left.accept(this);
         Result r = plus.right.accept(this);
         Result n = new Result();
-        n.typeName = "int"; 
-        if (l.typeName == "int" && r.typeName == "int"){
+        n.typeName = "int";
+        if (l.typeName == "int" && r.typeName == "int") {
             return n;
-        }else{
-            if (l.typeName != "int"){
-                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" +ANSI_RESET);
+        } else {
+            if (l.typeName != "int") {
+                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET);
             }
-            if (r.typeName != "int"){
-                System.err.println(ANSI_RED+" Type Error: Right side of the operation is not of type int"+ANSI_RESET);
+            if (r.typeName != "int") {
+                System.err.println(ANSI_RED + "\u001B[33m Type Error: Right side of the operation is not of type int"
+                        + ANSI_RESET);
             }
             return n;
         }
@@ -450,11 +401,11 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result l = equal.left.accept(this);
         Result r = equal.right.accept(this);
         Result n = new Result();
-        n.typeName = l.typeName; 
-        if (l.typeName == r.typeName){
+        n.typeName = l.typeName;
+        if (l.typeName == r.typeName) {
             return n;
-        }else{
-            System.err.println(ANSI_RED+"Type Error: Not the same type for operands"+ANSI_RESET);
+        } else {
+            System.err.println(ANSI_RED + "Type Error: Not the same type for operands" + ANSI_RESET);
             return n;
         }
     }
@@ -465,15 +416,16 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result l = and.left.accept(this);
         Result r = and.right.accept(this);
         Result n = new Result();
-        n.typeName = "int"; 
-        if (l.typeName == "int" && r.typeName == "int"){
+        n.typeName = "int";
+        if (l.typeName == "int" && r.typeName == "int") {
             return n;
-        }else{
-            if (l.typeName != "int"){
-                System.err.println(ANSI_RED+"Type Error: Left side of the operation is not of type int"+ANSI_RESET);
+        } else {
+            if (l.typeName != "int") {
+                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET);
             }
-            if (r.typeName != "int"){
-                System.err.println(ANSI_RED+"Type Error: Right side of the operation is not of type int"+ANSI_RESET);
+            if (r.typeName != "int") {
+                System.err
+                        .println(ANSI_RED + "Type Error: Right side of the operation is not of type int" + ANSI_RESET);
             }
             return n;
         }
@@ -485,47 +437,120 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result l = or.left.accept(this);
         Result r = or.right.accept(this);
         Result n = new Result();
-        n.typeName = "int"; 
-        if (l.typeName == "int" && r.typeName == "int"){
+        n.typeName = "int";
+        if (l.typeName == "int" && r.typeName == "int") {
             return n;
-        }else{
-            if (l.typeName != "int"){
-                System.err.println(ANSI_RED+"Type Error: Left side of the operation is not of type int"+ANSI_RESET);
+        } else {
+            if (l.typeName != "int") {
+                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET);
             }
-            if (r.typeName != "int"){
-                System.err.println(ANSI_RED+"Type Error: Right side of the operation is not of type int"+ANSI_RESET);
+            if (r.typeName != "int") {
+                System.err
+                        .println(ANSI_RED + "Type Error: Right side of the operation is not of type int" + ANSI_RESET);
             }
             return n;
         }
     }
 
     @Override
-    public String visit(Sup_equal supeq) {
+    public Result visit(Sup_equal supeq) {
         // les opérands doivent avoir le même type et le résultat doit être de type int
+        Result l = supeq.left.accept(this);
+        Result r = supeq.right.accept(this);
+        Result n = new Result();
+        n.typeName = "int";
+        if (l.typeName.equals(r.typeName)) {
+            return n;
+
+        } else {
+            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET);
+
+        }
+        return n;
 
     }
 
     @Override
-    public String visit(Inf_equal infeq) {
+    public Result visit(Inf_equal infeq) {
         // les opérands doivent avoir le même type et doivent être de type int ou de
         // type string
         // le résultat doit être de type int
+        Result l = infeq.left.accept(this);
+        Result r = infeq.right.accept(this);
+        Result n = new Result();
+        n.typeName = "int";
+        if (l.typeName.equals(r.typeName)) {
+            if (l.typeName.equals("int")) {
+                return n;
+            } else if (l.typeName.equals("string")) {
+                return n;
+
+            } else {
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET);
+                return n;
+            }
+
+        } else {
+            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET);
+            return n;
+
+        }
 
     }
 
     @Override
-    public String visit(Superior sup) {
+    public Result visit(Superior sup) {
         // les opérands doivent avoir le même type et doivent être de type int ou de
         // type string
         // le résultat doit être de type int
+        Result l = sup.left.accept(this);
+        Result r = sup.right.accept(this);
+        Result n = new Result();
+        n.typeName = "int";
+        if (l.typeName.equals(r.typeName)) {
+            if (l.typeName.equals("int")) {
+                return n;
+            } else if (l.typeName.equals("string")) {
+                return n;
+
+            } else {
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET);
+                return n;
+            }
+
+        } else {
+            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET);
+            return n;
+
+        }
 
     }
 
     @Override
-    public String visit(Inferior inf) {
+    public Result visit(Inferior inf) {
         // les opérands doivent avoir le même type et doivent être de type int ou de
         // type string
         // le résultat doit être de type int
+        Result l = inf.left.accept(this);
+        Result r = inf.right.accept(this);
+        Result n = new Result();
+        n.typeName = "int";
+        if (l.typeName.equals(r.typeName)) {
+            if (l.typeName.equals("int")) {
+                return n;
+            } else if (l.typeName.equals("string")) {
+                return n;
+
+            } else {
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET);
+                return n;
+            }
+
+        } else {
+            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET);
+            return n;
+
+        }
 
     }
 
@@ -537,12 +562,22 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result l = sinf.left.accept(this);
         Result r = sinf.right.accept(this);
         Result n = new Result();
-        n.typeName = l.typeName; 
-        if (l.typeName == r.typeName){
+        n.typeName = "int";
+        if (l.typeName.equals(r.typeName)) {
+            if (l.typeName.equals("int")) {
+                return n;
+            } else if (l.typeName.equals("string")) {
+                return n;
+
+            } else {
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET);
+                return n;
+            }
+
+        } else {
+            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET);
             return n;
-        }else{
-            System.err.println(ANSI_RED+"Type Error: Not the same type for operands"+ANSI_RESET);
-            return n;
+
         }
     }
 
@@ -617,14 +652,14 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result l = divide.left.accept(this);
         Result r = divide.right.accept(this);
         Result n = new Result();
-        n.typeName = "int"; 
-        if (l.typeName == "int" && r.typeName == "int"){
+        n.typeName = "int";
+        if (l.typeName == "int" && r.typeName == "int") {
             return n;
-        }else{
-            if (l.typeName != "int"){
+        } else {
+            if (l.typeName != "int") {
                 System.err.println(ANSI_RED + "Type Error: Left side of the division is not of type int" + ANSI_RESET);
             }
-            if (r.typeName != "int"){
+            if (r.typeName != "int") {
                 System.err.println(ANSI_RED + "Type Error: Right side of the division is not of type int" + ANSI_RESET);
             }
             return n;
@@ -656,67 +691,9 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public Result visit(LvalueInit lvalueInit) {
-
+    public String visit(LvalueInit lvalueInit) {
         // l'identifiant doit référencer une variable
-
-        // On parcours chaque composante de la lvalue
-
-        for (Ast a: lvalueInit.lvalue){
-            Result r = a.accept(this);
-            String idf = "";
-            ArrayList<Integer> sub;
-            if (r.typeName == "LvalueSub"){
-                idf = r.strValue;
-                sub = r.subscript;
-            }
-            if (r.typeName == "String"){
-                idf = r.strValue;
-            }
-            Entry e = findEntryByName(idf, pileRO.peek());
-            
-            
-        }
-    }
-
-    public Entry findEntryByName(String id, int tdsStartIndex){
-
-        int tdsIndex = tdsStartIndex;
-        Tds currentTds = tdsGlobal.get(tdsIndex);
-
-        while (tdsIndex != 0){
-
-            tdsIndex = currentTds.numRegion;
-            // Je cherche dans la TDS si le nom existe de la variable
-            Entry e = findEntryInTds(id, tdsIndex);      
-
-            if (e == null){
-                // Si ce n'est pas le cas je passe à la TDS père
-                currentTds = tdsGlobal.get(currentTds.pere);
-            }
-            else{
-                // Sinon je prends le premier venu
-                return e;
-            }
-        }
-        // Si je ne trouve rien, je préviens ! 
-        System.err.println(ANSI_RED + "Variable Not Found for "+ id +ANSI_RESET);
-        return null;
-
-    }   
-    
-    public Entry findEntryInTds(String id, int tdsIndex){
-        Tds currentTds = tdsGlobal.get(tdsIndex);
-        String idf;
-        Entry goodOne;
-        for (Entry e : currentTds.rows){
-            idf = e.getName();
-            if (idf == id){
-                goodOne = e;
-                return goodOne;
-            }
-        }
-        return null;
+        lvalueInit.
     }
 
     @Override
@@ -730,15 +707,16 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result l = minus.left.accept(this);
         Result r = minus.right.accept(this);
         Result n = new Result();
-        n.typeName = "int"; 
-        if (l.typeName == "int" && r.typeName == "int"){
+        n.typeName = "int";
+        if (l.typeName == "int" && r.typeName == "int") {
             return n;
-        }else{
-            if (l.typeName != "int"){
-                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" +ANSI_RESET);
+        } else {
+            if (l.typeName != "int") {
+                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET);
             }
-            if (r.typeName != "int"){
-                System.err.println(ANSI_RED+"\u001B[33m Type Error: Right side of the operation is not of type int"+ANSI_RESET);
+            if (r.typeName != "int") {
+                System.err.println(ANSI_RED + "\u001B[33m Type Error: Right side of the operation is not of type int"
+                        + ANSI_RESET);
             }
             return n;
         }
