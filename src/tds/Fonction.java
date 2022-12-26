@@ -7,7 +7,6 @@ public class Fonction implements Entry{
     private String nom;
     private String typeDeRetour;
     private int tdsFils;
-
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }
@@ -25,6 +24,10 @@ public class Fonction implements Entry{
 
     public void setTds(int tdsFils){
         this.tdsFils = tdsFils;
+    }
+
+    public String getName(){
+        return nom;
     }
 
 

@@ -22,5 +22,8 @@ public class Type implements Entry{
         this.nom = nom;
         this.typeDeType = typeDeType;
     }
+    public String getName(){
+        return nom;
+    }
 
 }

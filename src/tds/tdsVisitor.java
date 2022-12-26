@@ -613,10 +613,14 @@ public class tdsVisitor implements AstVisitor<Result> {
 
     @Override
     public Result visit(LvalueInit lvalueInit) {
+
         // l'identifiant doit référencer une variable
+
+        // On parcours chaque composante de la lvalue
+
         for (Ast a: lvalueInit.lvalue){
             Result r = a.accept(this);
-            String idf;
+            String idf = "";
             ArrayList<Integer> sub;
             if (r.typeName == "LvalueSub"){
                 idf = r.strValue;
@@ -625,8 +629,50 @@ public class tdsVisitor implements AstVisitor<Result> {
             if (r.typeName == "String"){
                 idf = r.strValue;
             }
+            Entry e = findEntryByName(idf, pileRO.peek());
+            
             
         }
+    }
+
+    public Entry findEntryByName(String id, int tdsStartIndex){
+
+        int tdsIndex = tdsStartIndex;
+        Tds currentTds = tdsGlobal.get(tdsIndex);
+
+        while (tdsIndex != 0){
+
+            tdsIndex = currentTds.numRegion;
+            // Je cherche dans la TDS si le nom existe de la variable
+            Entry e = findEntryInTds(id, tdsIndex);      
+
+            if (e == null){
+                // Si ce n'est pas le cas je passe à la TDS père
+                currentTds = tdsGlobal.get(currentTds.pere);
+            }
+            else{
+                // Sinon je prends le premier venu
+                return e;
+            }
+        }
+        // Si je ne trouve rien, je préviens ! 
+        System.err.println(ANSI_RED + "Variable Not Found for "+ id +ANSI_RESET);
+        return null;
+
+    }   
+    
+    public Entry findEntryInTds(String id, int tdsIndex){
+        Tds currentTds = tdsGlobal.get(tdsIndex);
+        String idf;
+        Entry goodOne;
+        for (Entry e : currentTds.rows){
+            idf = e.getName();
+            if (idf == id){
+                goodOne = e;
+                return goodOne;
+            }
+        }
+        return null;
     }
 
     @Override
