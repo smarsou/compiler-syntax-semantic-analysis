@@ -261,8 +261,23 @@ public class tdsVisitor implements AstVisitor<Result> {
         //On remonte dans le bloc père
         pileRO.pop();
 
+        Result c = f.expr1.accept(this);
+        Result l = f.expr2.accept(this);
+
+        if (c.typeName == "int" && l.typeName == "int") {
+        } 
+        else {
+            if (r.typeName != "void") {
+                System.err.println(
+                        ANSI_RED + "Type Error: The body must be of type void" + ANSI_RESET);
+            }
+        }
+
+        //On remonte dans le bloc père
+        pileRO.pop();
+
         Result nr = new Result();
-        nr.typeName = /*Type de retour d'une boucle for, voir règle sémantique */;
+        nr.typeName = "void"/*Type de retour d'une boucle for, voir règle sémantique */;
         return nr;
 
     }
@@ -275,6 +290,7 @@ public class tdsVisitor implements AstVisitor<Result> {
 
         // TODO: COntrole sémantique 1
         // The condition type must be int
+        Result c = d.expr1.accept(this);
 
         // On parcours la boucle while et on récupère le type de retour
         Result r = d.expr2.accept(this);
@@ -282,6 +298,23 @@ public class tdsVisitor implements AstVisitor<Result> {
         // TODO: COntrole sémantqie 2
         // The body type must be void. En gros c'est le Result r qui doit être de type
         // void je crois
+
+
+        if (c.typeName == "int"){
+            if (r.typeName == "void"){
+                
+            }
+
+            else{
+                System.err.println(
+                        ANSI_RED + "Type Error: The body type must be void" + ANSI_RESET);
+            }
+        }
+        
+        else{
+            System.err.println(
+                ANSI_RED + "Type Error: The condition type must be int" + ANSI_RESET);
+        }
 
         // On remonte dans le bloc père
         pileRO.pop();
@@ -604,9 +637,10 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result c = ifThen.condition.accept(this);
         Result b = ifThen.thenBlock.accept(this);
         Result n = new Result();
-        n.typeName = c.typeName;
-        if (c.typeName == "int"){
-            if (b.typeName == "void"){
+        n.conditionBlockReturn = c.conditionBlockReturn;
+        n.thenBlockReturn = b.thenBlockReturn;
+        if (c.conditionBlockReturn == "int"){
+            if (b.thenBlockReturn == "void"){
                 return n;
             }
             else{
@@ -630,7 +664,9 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result t = ifThenElse.thenBlock.accept(this);
         Result e = ifThenElse.elseBlock.accept(this);
         Result n = new Result();
-        n.typeName = c.typeName;
+        n.conditionBlockReturn = c.conditionBlockReturn;
+        n.thenBlockReturn = t.thenBlockReturn;
+        n.ElseBlockReturn = e.ElseBlockReturn;
         if (c.typeName == "int"){
             if (t.typeName == e.typeName){
                 return n;

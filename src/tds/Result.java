@@ -18,4 +18,8 @@ public class Result {
     Rec rc;
 
     ArrayList<Integer> subscript;
+
+    String conditionBlockReturn;
+    String thenBlockReturn;
+    String ElseBlockReturn;
 }

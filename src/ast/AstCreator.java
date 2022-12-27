@@ -72,7 +72,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
         if (ctx.getChildCount() == 3) {
             return ctx.getChild(1).accept(this);
         }
-        return ctx.accept(this);
+        return visitChildren(ctx);
     }
 
     @Override
