@@ -231,6 +231,9 @@ public class tdsVisitor implements AstVisitor<Result> {
         r.typeName = "LvalueSub";
         ArrayList<Result> a = new ArrayList<>();
         for (Ast d : dec.successiveSub){
+            if (d.accept(this).typeName != "int"){
+                System.err.println(ANSI_RED + "Subscript Error: Not an Integer"  + ANSI_RESET);
+            }
             a.add(d.accept(this));
         }
         r.subscript = a;
@@ -272,13 +275,15 @@ public class tdsVisitor implements AstVisitor<Result> {
 
     @Override
     public Result visit(RecCreate a) {
-        
+    
         Result res = new Result();
-        res.typeName = "array";
+        res.typeName = "rec";
     
         Rec rc = new Rec();
         rc.type_id = a.typeid.accept(this).name;
-        //TODO ajouter les élements, mais flemme...
+        for (Ast f : a.fieldList.accept(this).recFieldList){
+            //TODO...
+        }
         res.rc = rc;
         return res;
         // The tyId(type of the id) must refer to a record type,
@@ -343,9 +348,23 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public String visit(LvalueAffect d) {
+    public Result visit(LvalueAffect d) {
         // l'identifiant et l'expression doivent avoir le même type
-
+        Result res = new Result();
+        Result lv = d.lvalue.accept(this);
+        Result expr = d.lvalue_call_or_declare.accept(this);
+        if (!lv.lvalueCorrect){
+            System.err.println(ANSI_RED + "Affect Error: Can't find variable" + ANSI_RESET);
+            return res;
+        }
+        if (lv.lvalueType != expr.typeName){
+            System.err.println(ANSI_RED + "Affect Error: Type mismatch "+ lv.lvalueType + "/" + expr.typeName + ANSI_RESET);
+            return res;
+        }
+        Rec nR = new Rec();
+        nR.dict.put(lv.varIdf, lv.varObject);
+        checkLvalue(nR, lv.linkToLvalue, expr.objValue, false);
+        return res;
     }
 
     @Override
@@ -386,6 +405,7 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result n = new Result();
         n.typeName = "int"; 
         if (l.typeName == "int" && r.typeName == "int"){
+            n.intValue = l.intValue*r.intValue;
             return n;
         }else{
             if (l.typeName != "int"){
@@ -431,6 +451,7 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result n = new Result();
         n.typeName = "int"; 
         if (l.typeName == "int" && r.typeName == "int"){
+            n.intValue = l.intValue+r.intValue;
             return n;
         }else{
             if (l.typeName != "int"){
@@ -575,6 +596,11 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result n = new Result();
         n.typeName = "int"; 
         if (l.typeName == "int" && r.typeName == "int"){
+            if (r.intValue==0){
+                System.err.println(ANSI_RED + "Divide by zero error !" + ANSI_RESET);
+                return n;
+            }
+            n.intValue = l.intValue/r.intValue;
             return n;
         }else{
             if (l.typeName != "int"){
@@ -605,9 +631,10 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public String visit(RecFieldList recFieldList) {
-        // Field names, expression types, and the order thereof must exactly
-        // match those of the given record type.
+    public Result visit(RecFieldList recFieldList) {
+        Result res = new Result();
+        res.recFieldList = recFieldList.astList;
+        return res;
 
     }
 
@@ -615,47 +642,68 @@ public class tdsVisitor implements AstVisitor<Result> {
     public Result visit(LvalueInit lvalueInit) {
 
         //l'identifiant doit référencer une variable
-
             // On récupère l'identifiant de la lvalue
             Ast a = lvalueInit.lvalue.get(0);
             Result r = a.accept(this);
+            Result returnRes = new Result();
             String idf = r.strValue;
             // On cherche dans la tds cette variable
             Entry e = findEntryByName(idf, pileRO.peek());
             //Si on ne trouve pas cette idf
             if (e == null){
                 System.err.println(ANSI_RED + "Variable Not Found: "+ idf+" doesn't exist" +ANSI_RESET);
-                return r;
+                returnRes.lvalueCorrect = false;
+                return returnRes;
             }
             //Si ce n'est pas une variable
             if (e.getClass().getName() != "tds.Var"){
                 System.err.println(ANSI_RED + "Variable Not Found: "+ idf +" is not a variable " +ANSI_RESET);
-                return r;
+                returnRes.lvalueCorrect = false;
+                return returnRes;
             }
-            //Si on a trouvé cette lvalue
-            checkLvalue(((Var) e).valeur, lvalueInit.lvalue);
+            //Si on a trouvé cette lvalue, on la parcours en entier pour vérifier qu'elle existe
+            Rec nR = new Rec();
+            nR.dict.put(idf, ((Var) e).valeur);
+            Object res = checkLvalue(nR, lvalueInit.lvalue, null, true);
+            if (res == null){
+                returnRes.lvalueCorrect = false;
+                return returnRes;
+            }
+            returnRes.lvalueCorrect = true;
+            returnRes.lvalueObject = res;
+            returnRes.lvalueType = res.getClass().getName();
+            returnRes.linkToLvalue = lvalueInit.lvalue;
+            returnRes.varObject = ((Var) e).valeur;
+            returnRes.varIdf = idf;
+            return returnRes;
+
     }
 
-    public Boolean checkLvalue(Object obj, ArrayList<Ast> lvalue){
+    public Object checkLvalue(Object obj, ArrayList<Ast> lvalue, Object affect, Boolean print){
         if (lvalue.size()==0){
-            return true;
+            if (affect != null){
+                obj = affect;
+            }
+            return obj;
         }
         Result current = lvalue.get(0).accept(this);
         String id = current.strValue; // QUe ce soit une LvalueSub ou un StrNode, on récupère l'id
         // Si l'objet pdans lequel on cherche la suite de la lvalue n'est pas un Rec, cela veut dire que c'est forcément un entier, donc qu'il ne possède pas de sous idf
         if (obj.getClass().getName()!="tds.Rec"){
+            if (print){
             System.err.println(ANSI_RED + "Variable Not Found: "+ id +" can't be find because father doesn't have children" +ANSI_RESET);
-            return false;
+            }
+            return null;
         }
         // ON récupère l'obj correspondant à l'id
-        Object next = getSubObjInRec(id, (Rec) obj);
+        Object next = getSubObjInRec(id, (Rec) obj, print);
         if (next == null){
-            return false;
+            return null;
         }
         //Si c'est une StrNode, on cherche la suite de la lvalue dans l'obj trouvé
         if (current.typeName == "String"){
             lvalue.remove(0);
-            return checkLvalue(next, lvalue);
+            return checkLvalue(next, lvalue, affect, print);
         }
         // Si c'est une Lvalsub, on vérifie que tout est bien subscriptable
         if (current.typeName == "LvalueSub"){
@@ -663,39 +711,49 @@ public class tdsVisitor implements AstVisitor<Result> {
             ArrayList<Result> sub = current.subscript;
             for (Result s: sub){
                 if (next.getClass().getName() == "tds.Array"){
-                    next = getSubObjInArray(s.intValue, (Array) obj);
+                    next = getSubObjInArray(s.intValue, (Array) obj, print);
                     if (next == null){
-                        return false;
+                        return null;
                     }
                 }
                 else{
+                    if (print){
                     System.err.println(ANSI_RED + "Variable Subscript Error: "+ id +" not subscriptable." +ANSI_RESET);
-                    return false;
+                    }
+                    return null;
                 }
             }
              // puis on cherche la suite de la lvalue dans l'obj trouvé
             lvalue.remove(0);
-            return checkLvalue(next, lvalue);
+            return checkLvalue(next, lvalue, affect,print);
         }
+        if (print){
         System.err.println(ANSI_YELLOW + "Erreur bizarre dans Lvalue:current is not LvalueSub nor String " +ANSI_RESET);
+        }
         return false;
     }
 
-    public Object getSubObjInRec(String name, Rec rec){
+    public Object getSubObjInRec(String name, Rec rec, Boolean print){
         if (rec.dict.containsKey(name)){
             return rec.dict.get(name);
         }else{
+            if (print){
             System.err.println(ANSI_RED + "Variable Error: "+ name + " is not a child of the variable" +ANSI_RESET);
+            }
             return null;
         }
     }
-    public Object getSubObjInArray(Integer i, Array tab){
+    public Object getSubObjInArray(Integer i, Array tab, Boolean print){
         if (i == null){
+            if (print){
             System.err.println(ANSI_RED + "Variable Error: subscript value was not initialized" +ANSI_RESET);
+            }
             return null;
         }
         if (i>=tab.size){
+            if (print){
             System.err.println(ANSI_RED + "Index out of bounds" +ANSI_RESET);
+            }
             return null;
         }
         return tab.values[i];
@@ -755,6 +813,7 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result n = new Result();
         n.typeName = "int"; 
         if (l.typeName == "int" && r.typeName == "int"){
+            n.intValue = l.intValue-r.intValue;
             return n;
         }else{
             if (l.typeName != "int"){

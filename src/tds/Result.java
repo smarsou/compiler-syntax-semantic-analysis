@@ -2,6 +2,8 @@ package tds;
 
 import java.util.ArrayList;
 
+import ast.Ast;
+
 //Cette classe a pour but de manipuler les résultats lors de la visite des noeuds
 //Vous pouvez ajouter n'importe qu'elle attribut que vous souhaitez
 
@@ -13,9 +15,21 @@ public class Result {
     String name;
     String strValue;
     int intValue;
+    Object objValue;
 
     Array ar;
     Rec rc;
 
     ArrayList<Result> subscript;
+
+    Boolean lvalueCorrect;
+    Object lvalueObject;
+    String lvalueType;
+    ArrayList<Ast> linkToLvalue;
+    Object varObject;
+    String varIdf;
+
+    ArrayList<Ast> recFieldList;
+
+    
 }
