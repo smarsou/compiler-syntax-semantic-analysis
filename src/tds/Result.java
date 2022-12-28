@@ -20,6 +20,7 @@ public class Result {
     Array ar;
     Rec rc;
 
+<<<<<<< HEAD
     ArrayList<Result> subscript;
 
     Boolean lvalueCorrect;
@@ -32,4 +33,11 @@ public class Result {
     ArrayList<Ast> recFieldList;
 
     
+=======
+    ArrayList<Integer> subscript;
+
+    String conditionBlockReturn;
+    String thenBlockReturn;
+    String ElseBlockReturn;
+>>>>>>> c529a379165c6945d419ce6b4d7a9655f7123ce4
 }
