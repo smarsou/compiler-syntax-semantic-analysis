@@ -17,5 +17,5 @@ public class Result {
     Array ar;
     Rec rc;
 
-    ArrayList<Integer> subscript;
+    ArrayList<Result> subscript;
 }

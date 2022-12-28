@@ -4,9 +4,9 @@ import ast.AstVisitor;
 
 public class Var implements Entry{
 
-    private String nom;
-    private String type;
-    private Object valeur;
+    public String nom;
+    public String type;
+    public Object valeur;
     
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
@@ -16,11 +16,13 @@ public class Var implements Entry{
         this.nom = nom;
         this.type = type;
         this.valeur = valeur;
-        this.entryName = "Var"
     }
     public Var(String nom, String type){
         this.nom = nom;
         this.type = type;
+    }
+    public String getName(){
+        return nom;
     }
 
     public Var(){

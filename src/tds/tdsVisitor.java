@@ -212,7 +212,7 @@ public class tdsVisitor implements AstVisitor<Result> {
         Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
         currentTds.addEntry(type);
         
-        return "NoReturn";
+        return ;
     }
 
     @Override
@@ -228,10 +228,10 @@ public class tdsVisitor implements AstVisitor<Result> {
         // type array
         Result r = new Result();
         r.strValue = dec.id;
-
-        ArrayList<Integer> a = new ArrayList<>();
+        r.typeName = "LvalueSub";
+        ArrayList<Result> a = new ArrayList<>();
         for (Ast d : dec.successiveSub){
-            a.add(d.accept(this).intValue);
+            a.add(d.accept(this));
         }
         r.subscript = a;
 
@@ -614,25 +614,92 @@ public class tdsVisitor implements AstVisitor<Result> {
     @Override
     public Result visit(LvalueInit lvalueInit) {
 
-        // l'identifiant doit référencer une variable
+        //l'identifiant doit référencer une variable
 
-        // On parcours chaque composante de la lvalue
-
-        for (Ast a: lvalueInit.lvalue){
+            // On récupère l'identifiant de la lvalue
+            Ast a = lvalueInit.lvalue.get(0);
             Result r = a.accept(this);
-            String idf = "";
-            ArrayList<Integer> sub;
-            if (r.typeName == "LvalueSub"){
-                idf = r.strValue;
-                sub = r.subscript;
-            }
-            if (r.typeName == "String"){
-                idf = r.strValue;
-            }
+            String idf = r.strValue;
+            // On cherche dans la tds cette variable
             Entry e = findEntryByName(idf, pileRO.peek());
-            
-            
+            //Si on ne trouve pas cette idf
+            if (e == null){
+                System.err.println(ANSI_RED + "Variable Not Found: "+ idf+" doesn't exist" +ANSI_RESET);
+                return r;
+            }
+            //Si ce n'est pas une variable
+            if (e.getClass().getName() != "tds.Var"){
+                System.err.println(ANSI_RED + "Variable Not Found: "+ idf +" is not a variable " +ANSI_RESET);
+                return r;
+            }
+            //Si on a trouvé cette lvalue
+            checkLvalue(((Var) e).valeur, lvalueInit.lvalue);
+    }
+
+    public Boolean checkLvalue(Object obj, ArrayList<Ast> lvalue){
+        if (lvalue.size()==0){
+            return true;
         }
+        Result current = lvalue.get(0).accept(this);
+        String id = current.strValue; // QUe ce soit une LvalueSub ou un StrNode, on récupère l'id
+        // Si l'objet pdans lequel on cherche la suite de la lvalue n'est pas un Rec, cela veut dire que c'est forcément un entier, donc qu'il ne possède pas de sous idf
+        if (obj.getClass().getName()!="tds.Rec"){
+            System.err.println(ANSI_RED + "Variable Not Found: "+ id +" can't be find because father doesn't have children" +ANSI_RESET);
+            return false;
+        }
+        // ON récupère l'obj correspondant à l'id
+        Object next = getSubObjInRec(id, (Rec) obj);
+        if (next == null){
+            return false;
+        }
+        //Si c'est une StrNode, on cherche la suite de la lvalue dans l'obj trouvé
+        if (current.typeName == "String"){
+            lvalue.remove(0);
+            return checkLvalue(next, lvalue);
+        }
+        // Si c'est une Lvalsub, on vérifie que tout est bien subscriptable
+        if (current.typeName == "LvalueSub"){
+                // Une lvalueSub est forcément un array
+            ArrayList<Result> sub = current.subscript;
+            for (Result s: sub){
+                if (next.getClass().getName() == "tds.Array"){
+                    next = getSubObjInArray(s.intValue, (Array) obj);
+                    if (next == null){
+                        return false;
+                    }
+                }
+                else{
+                    System.err.println(ANSI_RED + "Variable Subscript Error: "+ id +" not subscriptable." +ANSI_RESET);
+                    return false;
+                }
+            }
+             // puis on cherche la suite de la lvalue dans l'obj trouvé
+            lvalue.remove(0);
+            return checkLvalue(next, lvalue);
+        }
+        System.err.println(ANSI_YELLOW + "Erreur bizarre dans Lvalue:current is not LvalueSub nor String " +ANSI_RESET);
+        return false;
+    }
+
+    public Object getSubObjInRec(String name, Rec rec){
+        if (rec.dict.containsKey(name)){
+            return rec.dict.get(name);
+        }else{
+            System.err.println(ANSI_RED + "Variable Error: "+ name + " is not a child of the variable" +ANSI_RESET);
+            return null;
+        }
+    }
+    public Object getSubObjInArray(Integer i, Array tab){
+        if (i == null){
+            System.err.println(ANSI_RED + "Variable Error: subscript value was not initialized" +ANSI_RESET);
+            return null;
+        }
+        if (i>=tab.size){
+            System.err.println(ANSI_RED + "Index out of bounds" +ANSI_RESET);
+            return null;
+        }
+        return tab.values[i];
+        
     }
 
     public Entry findEntryByName(String id, int tdsStartIndex){
@@ -655,11 +722,11 @@ public class tdsVisitor implements AstVisitor<Result> {
                 return e;
             }
         }
-        // Si je ne trouve rien, je préviens ! 
-        System.err.println(ANSI_RED + "Variable Not Found for "+ id +ANSI_RESET);
+        // Si je ne trouve rien, je renvoie null
         return null;
 
-    }   
+    }
+
     
     public Entry findEntryInTds(String id, int tdsIndex){
         Tds currentTds = tdsGlobal.get(tdsIndex);
