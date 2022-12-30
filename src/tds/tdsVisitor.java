@@ -81,12 +81,16 @@ public class tdsVisitor implements AstVisitor<Result> {
             System.out.println(ANSI_PURPLE + "------------------------------");
             System.out.println("|Région: " + tds.numRegion + " |Imbric: " + tds.numImbrication + "| Père: " +tds.pere);
             for (Entry e : tds.rows){
-                System.out.print(ANSI_CYAN+ e.getClass().getName()+" | "+e.getName()+" | ");
+               
                 if (e.getClass().getName() == "tds.Var"){
-                    System.out.println(((Var) e).valeur.toString());
+                    System.out.println(ANSI_CYAN+ "| Var  | "+e.getName()+" | " +((Var) e).valeur.toString());
+                }
+                if (e.getClass().getName() == "tds.Type"){
+                    System.out.println(ANSI_CYAN+ "| Type | "+e.getName()+" | "+((Type) e).typeDeType);
                 }
             }
             System.out.println(ANSI_PURPLE+"------------------------------" + ANSI_RESET);
+            System.out.println();
         }
     }
 
