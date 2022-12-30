@@ -3,7 +3,7 @@ package tds;
 import java.util.ArrayList;
 
 public class Tds{
-    ArrayList<Entry> rows;
+    ArrayList<Entry> rows = new ArrayList<>();
     int numRegion;
     int numImbrication;
     int pere;

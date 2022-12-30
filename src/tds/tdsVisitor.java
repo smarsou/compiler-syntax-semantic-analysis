@@ -59,7 +59,6 @@ import ast.Inferior;
 import ast.Divide;
 import tds.Result;
 
-import tds.Exceptions.*;
 
 public class tdsVisitor implements AstVisitor<Result> {
     public static final String ANSI_RESET = "\u001B[0m";
@@ -75,10 +74,26 @@ public class tdsVisitor implements AstVisitor<Result> {
     public ArrayList<Tds> tdsGlobal = new ArrayList<>(); // La liste de toutes les TDS
     public Stack<Integer> pileRO = new Stack<>(); // La pile des régions ouverte;
 
+    public void printTDS(){
+        tdsGlobal.remove(0);
+        System.out.println(ANSI_PURPLE + "TDS");
+        for (Tds tds : tdsGlobal){
+            System.out.println(ANSI_PURPLE + "------------------------------");
+            System.out.println("|Région: " + tds.numRegion + " |Imbric: " + tds.numImbrication + "| Père: " +tds.pere);
+            for (Entry e : tds.rows){
+                System.out.print(ANSI_CYAN+ e.getClass().getName()+" | "+e.getName()+" | ");
+                if (e.getClass().getName() == "tds.Var"){
+                    System.out.println(((Var) e).valeur.toString());
+                }
+            }
+            System.out.println(ANSI_PURPLE+"------------------------------" + ANSI_RESET);
+        }
+    }
+
     public void createNewTds() {
         int currentRegion = pileRO.peek();
         int newRegion = tdsGlobal.size();
-        int numImbrication = pileRO.size();
+        int numImbrication = pileRO.size()-1;
         Tds tds = new Tds(newRegion, numImbrication, currentRegion);
         pileRO.push(newRegion);
         tdsGlobal.add(tds);
@@ -163,11 +178,12 @@ public class tdsVisitor implements AstVisitor<Result> {
     public Result visit(LetInEnd dec) {
         // On créer une nouvelle TDS pour le nouveau bloc d'environnement
         createNewTds();
-
+        Result result = new Result();
         // On visit tout le LetInEnd
         dec.declaration_list.accept(this);
-        Result result = dec.exprseq.accept(this);
-
+        if (dec.exprseq != null){
+            result = dec.exprseq.accept(this);
+        }
         // Quand on a terminé de visiter le LetInEnd, on revient chez le père
         pileRO.pop();
         return result;
@@ -196,10 +212,11 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result result = dec.expr.accept(this);
 
         // On créer une nouvelle entrée
-        Var var = new Var(dec.idf.name, result.typeName);
+        Var var = new Var(dec.idf.name, result.typeName, result.objValue);
 
         // On ajoute l'entrée à la TDS courante
-        Tds currentTds = tdsGlobal.get(tdsGlobal.size() - 1);
+        System.out.println("Sommet de pile: "+pileRO.peek());
+        Tds currentTds = tdsGlobal.get(pileRO.peek());
         currentTds.addEntry(var);
 
         Result res = new Result();
@@ -208,30 +225,33 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public String visit(TypeField dec) {
-
+    public Result visit(TypeField dec) {
+        return new Result();
     }
 
     @Override
-    public String visit(DecType dec) {
+    public Result visit(DecType dec) {
 
         // On créer une nouvelle entrée
-        Type type = new Type(dec.idf.accept(this), dec.type.accept(this));
+        Type type = new Type(dec.idf.accept(this).strValue, dec.type.accept(this).strValue);
 
         // On ajoute l'entrée à la TDS courante
-        Tds currentTds = tdsGlobal.get(tdsGlobal.size() - 1);
+        Tds currentTds = tdsGlobal.get(pileRO.peek());
         currentTds.addEntry(type);
         
-        return ;
+        return new Result();
     }
 
     @Override
-    public String visit(Declaration_list dec) {
-
+    public Result visit(Declaration_list dec) {
+        for (Ast a : dec.declarationList) {
+            a.accept(this);
+        }
+        return new Result();
     }
 
     @Override
-    public String visit(LvalueSub dec) {
+    public Result visit(LvalueSub dec) {
         // l'index expr doit de type int
         // l'identifiant de la lvalue doit être de type array
         // le résultat doit avoit le même type que les éléments de la lvalue qui est de
@@ -253,11 +273,21 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public String visit(ArrayCreate a) {
+    public Result visit(ArrayCreate a) {
         // The type of the Id must refer to an array type.
         // The expression in square brackets must be int, and
         // the expression after of must match the element
         // type of the array. The result type is the array type.
+        Result r = new Result();
+
+        Result expr1 = a.expr1.accept(this);
+        Result expr2 = a.expr2.accept(this);
+        Result type = a.typeid.accept(this);
+        if (expr1.typeName != "int"){
+            System.err.println(ANSI_RED+"Can't create Array because it's not an integer in []" +ANSI_RESET);
+            return r;
+        }
+        return r;
     }
 
     @Override
@@ -389,30 +419,41 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public String visit(StrNode d) {
-
+    public Result visit(StrNode d) {
+        Result r = new Result();
+        r.typeName = "string";
+        r.strValue = d.name;
+        r.objValue = d.name;
+        return r;
     }
 
     @Override
-    public String visit(ArrayTypeNode n) {
-
+    public Result visit(ArrayTypeNode n) {
+        return null;
     }
 
     @Override
-    public String visit(CallExpr d) {
+    public Result visit(CallExpr d) {
         // The identifier must refer to a function.
         // The number and types of actual and formal parameters must be the same. The
         // type of the call is
         // the return type of the function
-
+        return null;
     }
 
     @Override
-    public Object visit(Program d) {
+    public Result visit(Program d) {
         Tds tds = new Tds(0, 0, -1);
         pileRO.push(0);
         tdsGlobal.add(tds);
-        return "Program";
+        for (Ast ast : d.exprList) {
+            if (ast != null) {
+                ast.accept(this);
+            } else {
+                System.out.println("EOF");
+            }
+        }
+        return new Result();
     }
 
     @Override
@@ -767,20 +808,28 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public String visit(ExprSeq exprseq) {
+    public Result visit(ExprSeq exprseq) {
         // If the sequence is empty, the type is void,
         // otherwise, the type is that of the last expression
-
+        Result r = new Result();
+        if (exprseq.astList.size()==0){
+            r.typeName ="void";
+            return r;
+        }
+        for (Ast a : exprseq.astList){
+            r = a.accept(this);
+        }
+        return r;
     }
 
     @Override
-    public String visit(ExprList exprlist) {
-
+    public Result visit(ExprList exprlist) {
+        return null;
     }
 
     @Override
-    public String visit(TypeFieldList typeFieldList) {
-
+    public Result visit(TypeFieldList typeFieldList) {
+        return null;
     }
 
     @Override
@@ -974,8 +1023,12 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public String visit(IntNode intNode) {
-
+    public Result visit(IntNode intNode) {
+        Result r = new Result();
+        r.typeName = "int";
+        r.intValue = intNode.value;
+        r.objValue = intNode.value;
+        return r;
     }
 
     @Override
@@ -1002,9 +1055,14 @@ public class tdsVisitor implements AstVisitor<Result> {
     }
 
     @Override
-    public String visit(Print print) {
+    public Result visit(Print print) {
         // l'argument doit être de type string
-
+        return null;
+    }
+    @Override
+    public Result visit(Entry e) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

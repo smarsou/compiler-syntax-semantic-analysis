@@ -42,13 +42,14 @@ public class MainTDS {
             Ast ast = program.accept(creator);
 
             // Visiteur de représentation graphique + appel
-            GraphVizVisitor graphViz = new GraphVizVisitor();
-            ast.accept(graphViz);
+            // GraphVizVisitor graphViz = new GraphVizVisitor();
+            // ast.accept(graphViz);
         
-            graphViz.dumpGraph("./out/tree.dot");
+            // graphViz.dumpGraph("./out/tree.dot");
 
             tdsVisitor tds = new tdsVisitor();
             ast.accept(tds);
+            tds.printTDS();
             
 
 

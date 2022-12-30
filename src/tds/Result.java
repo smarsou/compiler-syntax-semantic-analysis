@@ -31,7 +31,7 @@ public class Result {
     ArrayList<Result> recFieldList;
 
     
-    ArrayList<Integer> subscript;
+    ArrayList<Result> subscript;
     String conditionBlockReturn;
     String thenBlockReturn;
     String ElseBlockReturn;

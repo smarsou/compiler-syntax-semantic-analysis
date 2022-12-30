@@ -1,0 +1,13 @@
+let
+var a := 1
+in
+end
+
+let 
+var b := 2
+in
+    let 
+    var c := 3
+    in
+    end
+end

@@ -10,6 +10,9 @@ compile :
 astcompile :
 	javac -cp ./lib/antlr-4.9.2-complete.jar:./src ./src/MainAST.java -d ./bin
 
+tdscompile :
+	javac -cp ./lib/antlr-4.9.2-complete.jar:./src ./src/MainTDS.java -d ./bin
+
 run :
 	make parser
 	make compile
@@ -21,13 +24,12 @@ astrun :
 	java -cp ./lib/antlr-4.9.2-complete.jar:./bin MainAST $(target)
 	echo } >> out/tree.dot
 	dot -Tsvg ./out/tree.dot -o ./out/tree.svg
+	
 
 tdsrun:
 	make astparser
-	make astcompile
+	make tdscompile
 	java -cp ./lib/antlr-4.9.2-complete.jar:./bin MainTDS $(target)
-	echo } >> out/tree.dot
-	dot -Tsvg ./out/tree.dot -o ./out/tree.svg
 
 clean :
 	rm -rf src/parser/
