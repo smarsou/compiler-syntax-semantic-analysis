@@ -72,8 +72,8 @@ public class tdsVisitor implements AstVisitor<Result> {
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
 
-    private ArrayList<Tds> tdsGlobal = new ArrayList<>(); // La liste de toutes les TDS
-    private Stack<Integer> pileRO = new Stack<>(); // La pile des régions ouverte;
+    public ArrayList<Tds> tdsGlobal = new ArrayList<>(); // La liste de toutes les TDS
+    public Stack<Integer> pileRO = new Stack<>(); // La pile des régions ouverte;
 
     public void createNewTds() {
         int currentRegion = pileRO.peek();
@@ -88,7 +88,26 @@ public class tdsVisitor implements AstVisitor<Result> {
     public Result visit(RecField affect) {
         // Field names, expression types, and the order thereof must exactly
         // match those of the given record type.
+        String idf = affect.idf.accept(this).strValue;
+        Result expr = affect.expression.accept(this); 
+        String type = affect.lvTname.accept(this).strValue;
 
+        Result r = new Result();
+
+        //l'entrée existe car elle a été vérifié dans RecFieldList
+        Entry e = findEntryByName(type, pileRO.peek());
+        Type entry = (Type) e;
+        String typeDeExpr = expr.typeName;
+
+        String typeOfIdf = entry.typeFieldDict.get(idf);
+        if (typeOfIdf != typeDeExpr){
+            System.err.println(ANSI_RED + "Type Error: type mismatch " + typeOfIdf + "/" +typeDeExpr +ANSI_RESET);
+            return r;
+        }
+        r.typeName = typeOfIdf;
+        r.objValue = expr.objValue;
+        
+        return r;
     }
 
     @Override
@@ -249,8 +268,8 @@ public class tdsVisitor implements AstVisitor<Result> {
     
         Rec rc = new Rec();
         rc.type_id = a.typeid.accept(this).name;
-        for (Ast f : a.fieldList.accept(this).recFieldList){
-            //TODO...
+        for (Result r : a.fieldList.accept(this).recFieldList){
+            rc.dict.put(r.typeName, r.objValue);
         }
         res.rc = rc;
         return res;
@@ -767,7 +786,27 @@ public class tdsVisitor implements AstVisitor<Result> {
     @Override
     public Result visit(RecFieldList recFieldList) {
         Result res = new Result();
-        res.recFieldList = recFieldList.astList;
+        String type = recFieldList.type.accept(this).strValue;
+
+        Entry e = findEntryByName(type, pileRO.peek());
+        if (e==null){
+            System.err.println(ANSI_RED + "Type Not found Error: "+ type +" doesn't exist." +ANSI_RESET);
+            return res;
+        }
+        if (e.getClass().getName() != "tds.Type"){
+            System.err.println(ANSI_RED + "Type Not found Error: "+ type +" is the name of a variable or un function." +ANSI_RESET);
+            return res;
+        }
+        Type entry = (Type) e;
+        if (entry.typeDeType != "rectype"){
+            System.err.println(ANSI_RED + "Type Error: "+type + " is not a type with child types." +ANSI_RESET);
+            return res;
+        }
+        ArrayList<Result> recFLRes = new ArrayList<>();
+        for (Ast a : recFieldList.astList){
+            recFLRes.add(a.accept(this));
+        } 
+        res.recFieldList = recFLRes;
         return res;
 
     }

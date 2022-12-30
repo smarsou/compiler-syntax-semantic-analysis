@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import javax.lang.model.type.ArrayType;
 import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
 
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import parser.exprBaseVisitor;
 import parser.exprParser;
 
 public class AstCreator extends exprBaseVisitor<Ast> {
+    public static int counter;
+
     @Override
     public Ast visitProgram(exprParser.ProgramContext ctx) {
 
@@ -210,22 +213,31 @@ public class AstCreator extends exprBaseVisitor<Ast> {
     @Override
     public Ast visitRecField(exprParser.RecFieldContext ctx) {
         String idStr = ctx.getChild(0).toString();
+        ParserRuleContext ps = ctx.getParent().getParent();
+        for (int i =0; i<counter; i++){
+            ps = ps.getParent();
+        }
+        Ast lvalueTypeName = ps.getChild(0).accept(this);
         LvalueInit id = new LvalueInit(new StrNode(idStr));
         Ast exp = ctx.getChild(2).accept(this);
-        return new RecField(id, exp);
+        return new RecField(id, exp, lvalueTypeName);
     }
 
     @Override
     public Ast visitRecFieldListInit(exprParser.RecFieldListInitContext ctx) {
+        counter = 1;
         ArrayList<Ast> liste = new ArrayList<Ast>();
         liste.add(ctx.getChild(0).accept(this));
         ParseTree suivant = ctx.getChild(1);
         while (suivant.getChildCount() != 0) {
+            counter = counter +1;
             Ast a = suivant.getChild(1).accept(this);
             liste.add(a);
             suivant = suivant.getChild(2);
         }
-        return new RecFieldList(liste);
+        Ast type = ctx.getParent().getParent().accept(this);
+        counter = 0;
+        return new RecFieldList(liste, type);
     }
 
     @Override

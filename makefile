@@ -22,6 +22,13 @@ astrun :
 	echo } >> out/tree.dot
 	dot -Tsvg ./out/tree.dot -o ./out/tree.svg
 
+tdsrun:
+	make astparser
+	make astcompile
+	java -cp ./lib/antlr-4.9.2-complete.jar:./bin MainTDS $(target)
+	echo } >> out/tree.dot
+	dot -Tsvg ./out/tree.dot -o ./out/tree.svg
+
 clean :
 	rm -rf src/parser/
 	rm -rf bin/

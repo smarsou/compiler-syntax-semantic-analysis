@@ -1,7 +1,6 @@
 package ast;
 
 import tds.Entry;
-import tds.Exceptions.TypeErrorException;
 
 
 public interface AstVisitor<T> {

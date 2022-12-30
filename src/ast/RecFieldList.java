@@ -10,9 +10,11 @@ public class RecFieldList implements Ast {
     }
     
     public ArrayList<Ast>  astList;
+    public Ast type;
 
-    public RecFieldList(ArrayList<Ast> astList){
+    public RecFieldList(ArrayList<Ast> astList,Ast type){
         this.astList = astList;
+        this.type = type;
     }
 
 }

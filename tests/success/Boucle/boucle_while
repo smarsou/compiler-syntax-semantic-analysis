@@ -1,5 +1,5 @@
 let
     var i := 0
 in
-   while 10 > 5 do (i+1;())
+   while 10 > 5 do (i+1;1+2)
 end

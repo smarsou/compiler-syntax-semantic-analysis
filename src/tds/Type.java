@@ -1,17 +1,23 @@
 package tds;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import ast.AstVisitor;
 
 public class Type implements Entry{
 
-    private String nom;
-    private String typeDeType;
-    private Object Element;
+    public String nom;
+    public String typeDeType;
+    public Object Element;
+    public String typeid;
+    public String arrayOf;
+    public HashMap<String, String> typeFieldDict;
 
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
     }
-    
+
     public Type(String nom, String typeDeType, Object Element){
         this.nom = nom;
         this.typeDeType = typeDeType;
@@ -22,6 +28,7 @@ public class Type implements Entry{
         this.nom = nom;
         this.typeDeType = typeDeType;
     }
+
     public String getName(){
         return nom;
     }

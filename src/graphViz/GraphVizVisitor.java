@@ -104,6 +104,8 @@ public class GraphVizVisitor implements AstVisitor<String> {
         String idfState = affect.idf.accept(this);
         String expressionState = affect.expression.accept(this);
 
+        
+        
         this.addNode(nodeIdentifier, "AffectVarInType");
         this.addTransition(nodeIdentifier, idfState);
         this.addTransition(nodeIdentifier, expressionState);

@@ -1,9 +1,0 @@
-check Lvalue:
-
-Pour chaque composante de la Lvalue
-	On cherche l'id dans la Rec précédence et on recupere son objet(int,
-ou Array, ou Rec).
-
-	Une fois trouvé, et si c'est une LvalueSub, on boucle sur subscript.
-	Si c'est une StrNode, on relance checkLvalue(obj	
-

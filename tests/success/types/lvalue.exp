@@ -2,7 +2,7 @@ let
  type club = {nom: string, sports: sportlist}
  type meilleurJoueur = {nom:string}
  type sportlist = {nom_sport:string, other: othersportlist, nom : meilleurJoueur}
- var club := club { nom_sport = "salut", other = tkt}
+ var club := club { other = tkt, nom_sport = "salut"}
 in
 	club.sports[1].nom_sport := "football";
 	club.sports.nom := "Mady"
