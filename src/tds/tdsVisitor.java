@@ -282,16 +282,33 @@ public class tdsVisitor implements AstVisitor<Result> {
         // The expression in square brackets must be int, and
         // the expression after of must match the element
         // type of the array. The result type is the array type.
-        Result r = new Result();
+        Result res = new Result();
 
         Result expr1 = a.expr1.accept(this);
-        Result expr2 = a.expr2.accept(this);
-        Result type = a.typeid.accept(this);
         if (expr1.typeName != "int"){
             System.err.println(ANSI_RED+"Can't create Array because it's not an integer in []" +ANSI_RESET);
-            return r;
+            return res;
         }
-        return r;
+        res.typeName = "array";
+        Array tableau = new Array();
+        
+        Result second = a.expr2.accept(this);
+        if (second.typeName == "int"){
+            tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.intValue );
+        }
+        if (second.typeName == "array"){
+            tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.ar );
+            res.ar = tableau;
+        }
+        if (second.typeName == "rec"){
+            tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.rc);
+        }
+
+        res.ar = tableau;
+        res.objValue = tableau;
+
+        return res;
+
     }
 
     @Override
@@ -306,6 +323,7 @@ public class tdsVisitor implements AstVisitor<Result> {
             rc.dict.put(r.typeName, r.objValue);
         }
         res.rc = rc;
+        res.objValue = rc;
         return res;
         // The tyId(type of the id) must refer to a record type,
         // and the order, names, and types of fields must
