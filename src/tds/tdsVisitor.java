@@ -392,7 +392,6 @@ public class tdsVisitor implements AstVisitor<Result> {
         // The body type must be void. En gros c'est le Result r qui doit être de type
         // void je crois
 
-
         if (c.typeName == "int"){
             if (r.typeName != "void"){
                 System.err.println(ANSI_RED + "Type Error: The body type must be void" + ANSI_RESET);
@@ -1025,7 +1024,7 @@ public class tdsVisitor implements AstVisitor<Result> {
         Entry goodOne;
         for (Entry e : currentTds.rows){
             idf = e.getName();
-            if (idf == id){
+            if (idf.equals(id)){
                 goodOne = e;
                 return goodOne;
             }
