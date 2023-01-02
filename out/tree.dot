@@ -4,37 +4,19 @@ digraph "ast"{
 	ranksep=1;
 
 	N0 [label="Program", shape="box"];
-	N1 [label="LetInEnd", shape="box"];
-	N2 [label="DeclarationList", shape="box"];
-	N3 [label="Dec_Var", shape="box"];
-	N4 [label="a", shape="box"];
+	N2 [label="1", shape="box"];
+	N3 [label="1", shape="box"];
 	N5 [label="1", shape="box"];
-	N6 [label="LetInEnd", shape="box"];
-	N7 [label="DeclarationList", shape="box"];
-	N8 [label="Dec_Var", shape="box"];
-	N9 [label="b", shape="box"];
-	N10 [label="2", shape="box"];
-	N11 [label="ExprSeq", shape="box"];
-	N12 [label="LetInEnd", shape="box"];
-	N13 [label="DeclarationList", shape="box"];
-	N14 [label="Dec_Var", shape="box"];
-	N15 [label="c", shape="box"];
-	N16 [label="3", shape="box"];
+	N6 [label="1", shape="box"];
+	N7 [label="1", shape="box"];
+	N4 [label="IfThenElse", shape="box"];
+	N1 [label="IfThenElse", shape="box"];
 
-	N3 -> N4; 
-	N3 -> N5; 
-	N2 -> N3; 
+	N4 -> N5; 
+	N4 -> N6; 
+	N4 -> N7; 
 	N1 -> N2; 
+	N1 -> N3; 
+	N1 -> N4; 
 	N0 -> N1; 
-	N8 -> N9; 
-	N8 -> N10; 
-	N7 -> N8; 
-	N6 -> N7; 
-	N14 -> N15; 
-	N14 -> N16; 
-	N13 -> N14; 
-	N12 -> N13; 
-	N11 -> N12; 
-	N6 -> N11; 
-	N0 -> N6; 
 }

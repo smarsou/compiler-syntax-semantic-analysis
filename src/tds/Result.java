@@ -33,6 +33,6 @@ public class Result {
     
     ArrayList<Result> subscript;
     String conditionBlockReturn;
-    String thenBlockReturn;
-    String ElseBlockReturn;
+    Result thenBlock;
+    Result elseBlock;
 }
