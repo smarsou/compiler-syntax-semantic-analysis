@@ -4,9 +4,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 import javax.lang.model.type.ArrayType;
+import javax.swing.plaf.synth.SynthScrollBarUI;
 
 import org.antlr.v4.parse.ANTLRParser.ruleEntry_return;
 
@@ -70,28 +73,46 @@ public class tdsVisitor implements AstVisitor<Result> {
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
+    public static final String ANSI_TAB = "    ";
 
     public ArrayList<Tds> tdsGlobal = new ArrayList<>(); // La liste de toutes les TDS
     public Stack<Integer> pileRO = new Stack<>(); // La pile des régions ouverte;
 
+    public static void main(String[] args) {
+        
+    }
+
     public void printTDS(){
         tdsGlobal.remove(0);
-        System.out.println(ANSI_PURPLE + "TDS");
+        System.out.println();
+        System.out.println(ANSI_PURPLE + "°°° Affichage TDS");
         for (Tds tds : tdsGlobal){
-            System.out.println(ANSI_PURPLE + "------------------------------");
-            System.out.println("|Région: " + tds.numRegion + " |Imbric: " + tds.numImbrication + "| Père: " +tds.pere);
+            System.out.println(ANSI_TAB + ANSI_PURPLE + "------------------------------");
+            System.out.println(ANSI_TAB + "|Région: " + tds.numRegion + " |Imbric: " + tds.numImbrication + "| Père: " +tds.pere);
             for (Entry e : tds.rows){
                
                 if (e.getClass().getName() == "tds.Var"){
-                    System.out.println(ANSI_CYAN+ "| Var  | "+e.getName()+" | " +((Var) e).valeur.toString());
+                    System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | "+((Var) e).valeur.toString());
                 }
                 if (e.getClass().getName() == "tds.Type"){
-                    System.out.println(ANSI_CYAN+ "| Type | "+e.getName()+" | "+((Type) e).typeDeType);
+                    System.out.print(ANSI_TAB + ANSI_CYAN+ "| Type | "+e.getName()+" | "+ ((Type) e).typeDeType+ " | ");
+                    if (((Type) e).typeDeType.equals("rectype")){
+                        printHashMap(((Type) e).typeFieldDict);
+                    }else{
+                    System.out.println(ANSI_TAB + ANSI_CYAN+ "| Type | "+e.getName()+" | "+ ((Type) e).typeDeType+" | "+((Type) e).typeid );
+                    }
                 }
             }
-            System.out.println(ANSI_PURPLE+"------------------------------" + ANSI_RESET);
+            System.out.println(ANSI_TAB + ANSI_PURPLE+"------------------------------" + ANSI_RESET);
             System.out.println();
         }
+    }
+
+    public void printHashMap(HashMap<String,String> map){
+        for (Map.Entry<String,String> set : map.entrySet()){
+            System.out.print("{" +set.getKey() +":"+set.getValue()+"} ");      
+        }
+        System.out.println(ANSI_RESET);
     }
 
     public void createNewTds() {
@@ -195,19 +216,47 @@ public class tdsVisitor implements AstVisitor<Result> {
 
     @Override
     public Result visit(DecVarTypeSpec dec) {
-        // TODO controle sémantique pour vérifier si l'exp correspond au type
+        // On récupère le resultat de l'expression
         Result result = dec.expr.accept(this);
 
-        // On créer une nouvelle entrée
-        Var var = new Var(dec.idf1.name, dec.idf2.name);
+        Var var;
+        Tds currentTds = tdsGlobal.get(pileRO.peek());
+        //On vérifie qu'une variable de ce nom n'existe pas dans la tds courrante.
+        Entry e = findEntryInTds(dec.idf1.name, pileRO.peek());
+        if (e==null || e.getClass().getName() != "tds.Var"){
+            // dec.idf2.name.equals(result.typeName);
+            if (compareType(dec.idf2.name, result.typeName)){
+                var = new Var(dec.idf1.name, dec.idf2.name, result.objValue);
+                currentTds.addEntry(var);
+            }else{
+                System.err.println(ANSI_TAB + ANSI_RED + "Declaration Error: Type mismatch for \"" +dec.idf1.name+"\" (" +dec.idf2.name+ " / "+ result.typeName+" )." +ANSI_RESET);
+            }
+        }
+        else{
+            System.err.println(ANSI_TAB + ANSI_RED + "Declaration Error: Variable \"" +dec.idf1.name+"\" is already declared." +ANSI_RESET);
+        }
 
         // On ajoute l'entrée à la TDS courante
-        Tds currentTds = tdsGlobal.get(tdsGlobal.size() - 1);
-        currentTds.addEntry(var);
-
         Result res = new Result();
         res.typeName = "void";
         return res;
+    }
+
+    public Boolean compareType(String typeTDS, String typeResult){
+        
+        Entry e = findEntryByName(typeTDS, pileRO.peek());
+        if (e==null || e.getClass().getName() != "tds.Type"){
+            System.err.println(ANSI_TAB + ANSI_RED + "Type error: Type " + typeTDS + " is not found.");
+            return false;
+        }
+        Type t = (Type) e;
+        if (t.typeDeType.equals("typeid")){
+            return t.typeid.equals(typeResult);
+        }
+        if (t.typeDeType.equals("arrayof")){
+            return t.arrayOf.equals(typeResult);
+        }
+        return false;
     }
 
     @Override
@@ -215,14 +264,19 @@ public class tdsVisitor implements AstVisitor<Result> {
         // On récupère le resultat de l'expression
         Result result = dec.expr.accept(this);
 
-        // On créer une nouvelle entrée
-        Var var = new Var(dec.idf.name, result.typeName, result.objValue);
+        Var var;
+        Tds currentTds = tdsGlobal.get(pileRO.peek());
+        //On vérifie qu'une variable de ce nom n'existe pas dans la tds courrante.
+        Entry e = findEntryInTds(dec.idf.name, pileRO.peek());
+        if (e==null || e.getClass().getName() != "tds.Var"){
+            var = new Var(dec.idf.name, result.typeName, result.objValue);
+            currentTds.addEntry(var);
+        }
+        else{
+            System.err.println(ANSI_TAB + ANSI_RED + "Declaration Error: Variable \"" +dec.idf.name+"\" is already declared." +ANSI_RESET);
+        }
 
         // On ajoute l'entrée à la TDS courante
-        System.out.println("Sommet de pile: "+pileRO.peek());
-        Tds currentTds = tdsGlobal.get(pileRO.peek());
-        currentTds.addEntry(var);
-
         Result res = new Result();
         res.typeName = "void";
         return res;
@@ -230,15 +284,48 @@ public class tdsVisitor implements AstVisitor<Result> {
 
     @Override
     public Result visit(TypeField dec) {
-        return new Result();
+        Result r = new Result();
+        r.typeFieldidf = dec.idf1.accept(this).strValue;
+        r.typeFieldType = dec.idf2.accept(this).strValue;
+        return r;
     }
 
     @Override
     public Result visit(DecType dec) {
 
+        Entry e2 = findEntryInTds(dec.idf.accept(this).strValue, pileRO.peek());
+        if (e2!=null && e2.getClass().getName() == "tds.Type"){
+            System.err.println(ANSI_TAB + ANSI_RED + "Type Name Error: "+ dec.idf.accept(this).strValue+ " is already a type.");
+            return new Result();
+        }
         // On créer une nouvelle entrée
-        Type type = new Type(dec.idf.accept(this).strValue, dec.type.accept(this).strValue);
-
+        Type type = new Type(dec.idf.accept(this).strValue);
+        Result typeExpr = dec.type.accept(this);
+        if (typeExpr.typeDeType == "arrayof"){
+            type.typeDeType = typeExpr.typeDeType;
+            type.arrayOf = typeExpr.strValue;
+        }
+        if (typeExpr.typeDeType == "rectype"){
+            type.typeDeType = typeExpr.typeDeType;
+            type.typeFieldDict = typeExpr.typeFieldList;
+        }
+        if (typeExpr.typeDeType == null){
+            Entry e = findEntryByName(typeExpr.strValue, pileRO.peek());
+            if (e!=null && e.getClass().getName() == "tds.Type"){
+                type.typeDeType = "typeid";
+                type.typeid = typeExpr.strValue;
+            }else{
+                if (typeExpr.strValue.equals("string") || typeExpr.strValue.equals("int")) {
+                    type.typeDeType = "typeid";
+                    type.typeid = typeExpr.strValue;
+                }
+                else{
+                    type.typeDeType = "???";
+                    type.typeid = typeExpr.strValue;
+                    System.err.println(ANSI_TAB + ANSI_RED + "Type Not found: "+ typeExpr.strValue);
+                }
+            }
+        }
         // On ajoute l'entrée à la TDS courante
         Tds currentTds = tdsGlobal.get(pileRO.peek());
         currentTds.addEntry(type);
@@ -451,7 +538,10 @@ public class tdsVisitor implements AstVisitor<Result> {
 
     @Override
     public Result visit(ArrayTypeNode n) {
-        return null;
+        Result r = new Result();
+        r.typeDeType = "arrayof";
+        r.strValue = n.arrayType.accept(this).strValue;
+        return r;
     }
 
     @Override
@@ -468,11 +558,13 @@ public class tdsVisitor implements AstVisitor<Result> {
         Tds tds = new Tds(0, 0, -1);
         pileRO.push(0);
         tdsGlobal.add(tds);
+        System.out.println();
+        System.out.println(ANSI_BLUE + "°°° Construction TDS et contrôles sémantiques" + ANSI_RESET);;
         for (Ast ast : d.exprList) {
             if (ast != null) {
                 ast.accept(this);
             } else {
-                System.out.println("EOF");
+                System.out.println(ANSI_BLUE + "°°° EOF" + ANSI_RESET);
             }
         }
         return new Result();
@@ -851,7 +943,15 @@ public class tdsVisitor implements AstVisitor<Result> {
 
     @Override
     public Result visit(TypeFieldList typeFieldList) {
-        return null;
+        Result r= new Result();
+        r.typeDeType = "rectype";
+        r.typeFieldList = new HashMap<>();
+
+        for (Ast a: typeFieldList.astList){
+            Result typefield = a.accept(this);
+            r.typeFieldList.put(typefield.typeFieldidf,typefield.typeFieldType);
+        }
+        return r;
     }
 
     @Override
@@ -1015,7 +1115,7 @@ public class tdsVisitor implements AstVisitor<Result> {
             // Je cherche dans la TDS si le nom existe de la variable
             Entry e = findEntryInTds(id, tdsIndex);      
 
-            if (e == null){
+            if (e == null && currentTds.pere != -1){
                 // Si ce n'est pas le cas je passe à la TDS père
                 currentTds = tdsGlobal.get(currentTds.pere);
             }
@@ -1036,7 +1136,7 @@ public class tdsVisitor implements AstVisitor<Result> {
         Entry goodOne;
         for (Entry e : currentTds.rows){
             idf = e.getName();
-            if (idf == id){
+            if (idf.equals(id)){
                 goodOne = e;
                 return goodOne;
             }

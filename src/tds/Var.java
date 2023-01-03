@@ -16,6 +16,7 @@ public class Var implements Entry{
         this.nom = nom;
         this.type = type;
         this.valeur = valeur;
+        
     }
     public Var(String nom, String type){
         this.nom = nom;
