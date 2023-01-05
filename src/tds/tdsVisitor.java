@@ -587,33 +587,7 @@ public class tdsVisitor implements AstVisitor<Result> {
             }
             return n;
         }
-        // Result l = mult.left.accept(this);
-        // Result r = mult.right.accept(this);
-        // if (l.typeName == "int" && r.typeName == "int"){
-        // Result n = new Result();
-        // n.intValue = l.intValue*r.intValue;
-        // n.typeName = "int";
-        // n.name = "Precedence_1";
-        // return n;
-        // }else{
-        // Result n = new Result();
-        // int leftSideOfOp=1;
-        // int rightSideOfOp=1;
-        // if (l.typeName != "int"){
-        // System.err.println("Type Error: Left side of the operation is not of type
-        // int");
-        // }else{
-        // leftSideOfOp = l.intValue;
-        // }
-        // if (r.typeName != "int"){
-        // System.err.println("Type Error: Right side of the operation is not of type
-        // int");
-        // }else{
-        // leftSideOfOp = r.intValue;
-        // }
-        // n.intValue = leftSideOfOp * rightSideOfOp;
-        // return n;
-        // }
+
     }
 
     @Override
@@ -644,13 +618,31 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result l = equal.left.accept(this);
         Result r = equal.right.accept(this);
         Result n = new Result();
-        n.typeName = l.typeName;
-        if (l.typeName == r.typeName) {
-            return n;
+        n.typeName = "int";
+        if (l.typeName.equals(r.typeName)) {
+            if (l.typeName.equals("int")) {
+                if (l.intValue == r.intValue) {
+                    n.intValue = 1;
+                } else {
+                    n.intValue = 0;
+                }
+                return n;
+            } else if (l.typeName.equals("string")) {
+                if (l.strValue.compareTo(r.strValue) == 0) {
+                    n.intValue = 1;
+                } else {
+                    n.intValue = 0;
+                }
+                return n;
+            } else {
+                // Comparer les autres instances non nulles
+                return n;
+            }
         } else {
             System.err.println(ANSI_RED + "Type Error: Not the same type for operands" + ANSI_RESET);
             return n;
         }
+
     }
 
     @Override
@@ -660,13 +652,13 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result r = and.right.accept(this);
         Result n = new Result();
         n.typeName = "int";
-        if (l.typeName == "int" && r.typeName == "int") {
+        if (l.typeName.equals("int") && r.typeName.equals("int")) {
             return n;
         } else {
-            if (l.typeName != "int") {
+            if (!l.typeName.equals("int")) {
                 System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET);
             }
-            if (r.typeName != "int") {
+            if (!r.typeName.equals("int")) {
                 System.err
                         .println(ANSI_RED + "Type Error: Right side of the operation is not of type int" + ANSI_RESET);
             }
@@ -681,7 +673,7 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result r = or.right.accept(this);
         Result n = new Result();
         n.typeName = "int";
-        if (l.typeName == "int" && r.typeName == "int") {
+        if (l.typeName.equals("int") && r.typeName.equals("int")) {
             return n;
         } else {
             if (l.typeName != "int") {
@@ -697,19 +689,40 @@ public class tdsVisitor implements AstVisitor<Result> {
 
     @Override
     public Result visit(Sup_equal supeq) {
-        // les opérands doivent avoir le même type et le résultat doit être de type int
+        // les opérands doivent avoir le même type et doivent être de type int ou de
+        // type string
+        // le résultat doit être de type int
         Result l = supeq.left.accept(this);
         Result r = supeq.right.accept(this);
         Result n = new Result();
         n.typeName = "int";
         if (l.typeName.equals(r.typeName)) {
-            return n;
+            if (l.typeName.equals("int")) {
+                if (l.intValue >= r.intValue) {
+                    n.intValue = 1;
+                } else {
+                    n.intValue = 0;
+                }
+
+                return n;
+            } else if (l.typeName.equals("string")) {
+                if (l.strValue.compareTo(r.strValue) >= 0) {
+                    n.intValue = 1;
+                } else {
+                    n.intValue = 0;
+                }
+                return n;
+
+            } else {
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET);
+                return n;
+            }
 
         } else {
             System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET);
+            return n;
 
         }
-        return n;
 
     }
 
@@ -724,8 +737,19 @@ public class tdsVisitor implements AstVisitor<Result> {
         n.typeName = "int";
         if (l.typeName.equals(r.typeName)) {
             if (l.typeName.equals("int")) {
+                if (l.intValue <= r.intValue) {
+                    n.intValue = 1;
+                } else {
+                    n.intValue = 0;
+                }
+
                 return n;
             } else if (l.typeName.equals("string")) {
+                if (l.strValue.compareTo(r.strValue) <= 0) {
+                    n.intValue = 1;
+                } else {
+                    n.intValue = 0;
+                }
                 return n;
 
             } else {
@@ -752,8 +776,18 @@ public class tdsVisitor implements AstVisitor<Result> {
         n.typeName = "int";
         if (l.typeName.equals(r.typeName)) {
             if (l.typeName.equals("int")) {
+                if (l.intValue > r.intValue) {
+                    n.intValue = 1;
+                } else {
+                    n.intValue = 0;
+                }
                 return n;
             } else if (l.typeName.equals("string")) {
+                if (l.strValue.compareTo(r.strValue) > 0) {
+                    n.intValue = 1;
+                } else {
+                    n.intValue = 0;
+                }
                 return n;
 
             } else {
@@ -780,8 +814,18 @@ public class tdsVisitor implements AstVisitor<Result> {
         n.typeName = "int";
         if (l.typeName.equals(r.typeName)) {
             if (l.typeName.equals("int")) {
+                if (l.intValue < r.intValue) {
+                    n.intValue = 1;
+                } else {
+                    n.intValue = 0;
+                }
                 return n;
             } else if (l.typeName.equals("string")) {
+                if (l.strValue.compareTo(r.strValue) < 0) {
+                    n.intValue = 1;
+                } else {
+                    n.intValue = 0;
+                }
                 return n;
 
             } else {
@@ -829,8 +873,9 @@ public class tdsVisitor implements AstVisitor<Result> {
         // l'opérand et le résultat sont de type int
         Result Ne = Ni.exp.accept(this);
         Result n = new Result();
-        n.typeName = Ne.typeName;
-        if (Ne.typeName == "int") {
+        n.typeName = "int";
+        if (Ne.typeName.equals("int")) {
+            n.intValue = -Ne.intValue;
             return n;
         } else {
             System.err.println(ANSI_RED + "Type Error: The operand type is not int" + ANSI_RESET);
