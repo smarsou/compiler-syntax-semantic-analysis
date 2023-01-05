@@ -541,6 +541,7 @@ public class tdsVisitor implements AstVisitor<Result> {
 
     @Override
     public Result visit(CallExpr d) {
+        // Laisser pour Serge
         // The identifier must refer to a function.
         // The number and types of actual and formal parameters must be the same. The
         // type of the call is
@@ -653,6 +654,7 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result n = new Result();
         n.typeName = "int";
         if (l.typeName.equals("int") && r.typeName.equals("int")) {
+            n.intValue = l.intValue & r.intValue;
             return n;
         } else {
             if (!l.typeName.equals("int")) {
@@ -674,12 +676,14 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result n = new Result();
         n.typeName = "int";
         if (l.typeName.equals("int") && r.typeName.equals("int")) {
+            n.intValue = l.intValue | r.intValue;
+
             return n;
         } else {
-            if (l.typeName != "int") {
+            if (l.typeName.equals("int")) {
                 System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET);
             }
-            if (r.typeName != "int") {
+            if (r.typeName.equals("int")) {
                 System.err
                         .println(ANSI_RED + "Type Error: Right side of the operation is not of type int" + ANSI_RESET);
             }
