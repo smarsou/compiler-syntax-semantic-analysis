@@ -680,10 +680,10 @@ public class tdsVisitor implements AstVisitor<Result> {
 
             return n;
         } else {
-            if (l.typeName.equals("int")) {
+            if (!l.typeName.equals("int")) {
                 System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET);
             }
-            if (r.typeName.equals("int")) {
+            if (!r.typeName.equals("int")) {
                 System.err
                         .println(ANSI_RED + "Type Error: Right side of the operation is not of type int" + ANSI_RESET);
             }
