@@ -1,6 +1,7 @@
 package tds;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import ast.Ast;
 
@@ -20,6 +21,13 @@ public class Result {
     Array ar;
     Rec rc;
 
+    String typeDeType;
+
+    String typeFieldidf;
+    String typeFieldType;
+    ArrayList<String> typeFieldListidf;
+    ArrayList<String> typeFieldListType;
+    HashMap<String,String> typeFieldList;
 
     Boolean lvalueCorrect;
     Object lvalueObject;
