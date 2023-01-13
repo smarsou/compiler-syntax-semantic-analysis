@@ -83,7 +83,6 @@ public class tdsVisitor implements AstVisitor<Result> {
 
     public void printTDS() {
         tdsGlobal.remove(0);
-<<<<<<< HEAD
         System.out.println(ANSI_PURPLE + "TDS");
         for (Tds tds : tdsGlobal){
             System.out.println(ANSI_PURPLE + "------------------------------");
@@ -92,19 +91,6 @@ public class tdsVisitor implements AstVisitor<Result> {
                 System.out.println("entree est " + ((Var) e).type);
                 if (e.getClass().getName() == "tds.Var"){
                     System.out.println(ANSI_CYAN+ "| Var  | "+e.getName()+" | " +((Var) e).valeur.toString());
-=======
-        System.out.println();
-        System.out.println(ANSI_PURPLE + "°°° Affichage TDS");
-        for (Tds tds : tdsGlobal) {
-            System.out.println(ANSI_TAB + ANSI_PURPLE + "------------------------------");
-            System.out.println(
-                    ANSI_TAB + "|Région: " + tds.numRegion + " |Imbric: " + tds.numImbrication + "| Père: " + tds.pere);
-            for (Entry e : tds.rows) {
-
-                if (e.getClass().getName() == "tds.Var") {
-                    System.out.println(ANSI_TAB + ANSI_CYAN + "| Var  | " + e.getName() + " | " + ((Var) e).type + " | "
-                            + ((Var) e).valeur.toString());
->>>>>>> 6f4aa39f3d460eabda619ace33d1f848649935d0
                 }
                 if (e.getClass().getName() == "tds.Type") {
                     System.out.print(
@@ -440,47 +426,31 @@ public class tdsVisitor implements AstVisitor<Result> {
 
         // On créer une nouvelle TDS
         createNewTds();
-<<<<<<< HEAD
         //On parcours la boucle for et on récupère les infos du resultat dans Result. (on peut ajouter des attributs à Result si necessaire)
-        
-=======
 
-        // On créer l'entrée pour la variable d'increment
-        Var increment = new Var(f.idf.name, "int");
-        // On ajoute en entrée la variable d'incrment
-        Tds currentTds = tdsGlobal.get(tdsGlobal.size() - 1);
-        currentTds.addEntry(increment);
-
-        // TODO: COntroles sémantiques
-        // The start and end index must be of type int. The variable is of type int and
-        // must not be
-        // assigned to in the body. The body must be of type
-        // void. The result type is void.
-
-        // On parcours la boucle for et on récupère les infos du resultat dans Result.
-        // (on peut ajouter des attributs à Result si necessaire)
-        Result r = f.expr3.accept(this);
-
->>>>>>> 6f4aa39f3d460eabda619ace33d1f848649935d0
         Result c = f.expr1.accept(this);
         Result l = f.expr2.accept(this);
+
+
+        //On créer l'entrée pour la variable d'increment
+        Var increment = new Var(f.idf.name, "int", c.intValue);
+        //On ajoute en entrée la variable d'increment
+        Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
+        currentTds.addEntry(increment);
+        
         Result r = f.expr3.accept(this);
         if (c.typeName == "int" && l.typeName == "int") {
-            //On créer l'entrée pour la variable d'increment
-            Var increment = new Var(f.idf.name, "int", c.intValue);
-            //On ajoute en entrée la variable d'increment
-            Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
-            currentTds.addEntry(increment);
+
             if (r.typeName != "void") {
                 System.err.println(
                         ANSI_RED + "Type Error: The body must be of type void" + ANSI_RESET);
+                pileRO.pop();
                 return r;
             }
-<<<<<<< HEAD
             else{
                 createNewTds();
                 Tds currentTds1 = tdsGlobal.get(tdsGlobal.size()-1);
-                int v = findEntryInTds1(f.idf.name, pileRO.peek());
+                int v = findIndexInTds(f.idf.name, pileRO.peek());
                 Var v1 = (Var) currentTds.rows.get(v);
                 Result a = new Result();
                 for (int x=c.intValue; x<l.intValue;x++) {
@@ -498,12 +468,8 @@ public class tdsVisitor implements AstVisitor<Result> {
         else {
             System.err.println(
                     ANSI_RED + "Type Error: The start and end index of boucle for must be of type int" + ANSI_RESET);
+            pileRO.pop();
             return r;
-=======
-        } else {
-            System.err.println(
-                    ANSI_RED + "Type Error: The start and end index of boucle for must be of type int" + ANSI_RESET);
->>>>>>> 6f4aa39f3d460eabda619ace33d1f848649935d0
         }
         
 
@@ -514,11 +480,7 @@ public class tdsVisitor implements AstVisitor<Result> {
         // void. The result type is void.
         
 
-<<<<<<< HEAD
-=======
         // On remonte dans le bloc père
-        pileRO.pop();
->>>>>>> 6f4aa39f3d460eabda619ace33d1f848649935d0
 
 
     }
@@ -544,6 +506,7 @@ public class tdsVisitor implements AstVisitor<Result> {
             if (r.typeName != "void") {
                 System.err.println(ANSI_RED + "Type Error: The body type must be void" + ANSI_RESET);
             }
+
         }
 
         else {
@@ -932,24 +895,12 @@ public class tdsVisitor implements AstVisitor<Result> {
     @Override
     public Result visit(Negate_instruction Ni) {
         // l'opérand et le résultat sont de type int
-<<<<<<< HEAD
         Result Ne= Ni.exp.accept(this);
         if (Ne.typeName == "int"){
             return Ne;
         }else{
             System.err.println(ANSI_RED+"Type Error: The operand type is not int"+ANSI_RESET);
             return Ne;
-=======
-        Result Ne = Ni.exp.accept(this);
-        Result n = new Result();
-        n.typeName = "int";
-        if (Ne.typeName.equals("int")) {
-            n.intValue = -Ne.intValue;
-            return n;
-        } else {
-            System.err.println(ANSI_RED + "Type Error: The operand type is not int" + ANSI_RESET);
-            return n;
->>>>>>> 6f4aa39f3d460eabda619ace33d1f848649935d0
         }
 
     }
@@ -1227,22 +1178,13 @@ public class tdsVisitor implements AstVisitor<Result> {
 
             tdsIndex = currentTds.numRegion;
             // Je cherche dans la TDS si le nom existe de la variable
-<<<<<<< HEAD
             Entry e = findEntryInTds(id, tdsIndex);  
-=======
-            Entry e = findEntryInTds(id, tdsIndex);
->>>>>>> 6f4aa39f3d460eabda619ace33d1f848649935d0
 
             if (e == null && currentTds.pere != -1) {
                 // Si ce n'est pas le cas je passe à la TDS père
-<<<<<<< HEAD
                 if (tdsIndex != 0) {currentTds = tdsGlobal.get(currentTds.pere);}
             }
             else{
-=======
-                currentTds = tdsGlobal.get(currentTds.pere);
-            } else {
->>>>>>> 6f4aa39f3d460eabda619ace33d1f848649935d0
                 // Sinon je prends le premier venu
                 return e;
             }
@@ -1266,7 +1208,7 @@ public class tdsVisitor implements AstVisitor<Result> {
         return null;
     }
 
-    public int findEntryInTds1(String id, int tdsIndex){
+    public int findIndexInTds(String id, int tdsIndex){
         Tds currentTds = tdsGlobal.get(tdsIndex);
         String idf;
         int index = 0;
