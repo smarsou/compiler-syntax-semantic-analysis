@@ -73,9 +73,14 @@ public class tdsVisitor implements AstVisitor<Result> {
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
     public static final String ANSI_TAB = "    ";
+    private String file;
 
     public ArrayList<Tds> tdsGlobal = new ArrayList<>(); // La liste de toutes les TDS
     public Stack<Integer> pileRO = new Stack<>(); // La pile des régions ouverte;
+
+    public tdsVisitor(String testFile) {
+        this.file = testFile;
+    }
 
     public static void main(String[] args) {
 

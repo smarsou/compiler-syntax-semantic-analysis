@@ -46,8 +46,10 @@ public class MainTDS {
             // ast.accept(graphViz);
         
             // graphViz.dumpGraph("./out/tree.dot");
+            
 
-            tdsVisitor tds = new tdsVisitor();
+            tdsVisitor tds = new tdsVisitor(testFile);
+            //System.out.println(lexer.getLine());
             ast.accept(tds);
             tds.printTDS();
             
