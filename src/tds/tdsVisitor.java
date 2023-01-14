@@ -961,15 +961,17 @@ public class tdsVisitor implements AstVisitor<Result>{
         // is also void
         Result c = ifThen.condition.accept(this);
         Result b = ifThen.thenBlock.accept(this);
-        if (c.typeName == "int") {
-            if (b.typeName == "void") {
+        if (c.typeName.equals("int")) {
+            if (b.typeName.equals("void")) {
                 return b;
             } else {
-                System.err.println(ANSI_RED + "Type Error: The then-clause must be of type void" + ANSI_RESET);
+                int lig = this.numberLine("then"+this.getAttr(b));
+                System.err.println(ANSI_RED + "Type Error: The then-clause must be of type void" + ANSI_RESET+" "+"ligne"+" "+lig);
                 return b;
             }
         } else {
-            System.err.println(ANSI_RED + "Type Error: The condition type must be int" + ANSI_RESET);
+            int lig = this.numberLine("if" +this.getAttr(c));
+            System.err.println(ANSI_RED + "Type Error: The condition type must be int" + ANSI_RESET+" "+"ligne"+" "+lig);
             return b;
         }
 
@@ -986,18 +988,24 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result n = new Result();
         n.thenBlock = t;
         n.elseBlock = e;
-        if (c.typeName == "int") {
-            if (t.typeName == e.typeName) {
+
+        
+        if (c.typeName.equals("int")) {
+            if (t.typeName.equals(e.typeName)) {
                 n.typeName = t.typeName;
                 return n;
             } else {
-                System.err.println(ANSI_RED + "The then-clause and else-clause must have the same type" + ANSI_RESET);
+                int lig1 = this.numberLine("then"+this.getAttr(t));
+                int lig2 = this.numberLine("else"+this.getAttr(e));
+
+                System.err.println(ANSI_RED + "The then-clause and else-clause must have the same type" + ANSI_RESET+" "+"ligne"+" "+lig1 + " "+"et ligne"+" "+lig2);
                 return n;
             }
         }
 
         else {
-            System.err.println(ANSI_RED + "Type Error: The condition type must be int" + ANSI_RESET);
+            int lig = this.numberLine("if"+this.getAttr(c));
+            System.err.println(ANSI_RED + "Type Error: The condition type must be int" + ANSI_RESET+" "+"ligne"+" "+lig);
             return n;
         }
     }
@@ -1361,6 +1369,11 @@ public class tdsVisitor implements AstVisitor<Result>{
         if (r.objValue != null) {
             res += r.objValue;
             return res;
+        }
+        if (r.elseBlock != null) {
+            res += this.getAttr(r.elseBlock);
+            return res;
+
         }
         return res;
 
