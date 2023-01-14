@@ -620,11 +620,11 @@ public class tdsVisitor implements AstVisitor<Result>{
         String vl = this.getAttr(l);
         String vr = this.getAttr(r);
         int lig = this.numberLine(vl+"*"+vr);
-        if (l.typeName == "int" && r.typeName == "int") {
+        if (l.typeName.equals("int") && r.typeName.equals("int")) {
             n.intValue = l.intValue * r.intValue;
             return n;
         } else {
-            if (l.typeName != "int") {
+            if (l.typeName.equals("int")) {
                 System.err.println(
                         ANSI_RED + "Type Error: Left side of the multiplication is not of type int" + ANSI_RESET+" "+"ligne"+" "+lig);
             }
