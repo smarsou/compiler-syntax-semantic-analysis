@@ -499,6 +499,7 @@ public class GraphVizVisitor implements AstVisitor<String> {
 
         String leftState = sup.left.accept(this);
         String rightState = sup.right.accept(this);
+        //System.out.println(leftState + " " + rightState);
 
         this.addNode(nodeIdentifier, ">");
 

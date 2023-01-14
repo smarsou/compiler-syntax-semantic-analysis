@@ -1,11 +1,14 @@
 package tds;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Stack;
 
 import javax.lang.model.type.ArrayType;
@@ -62,7 +65,7 @@ import ast.Inferior;
 import ast.Divide;
 import tds.Result;
 
-public class tdsVisitor implements AstVisitor<Result> {
+public class tdsVisitor implements AstVisitor<Result>{
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";
     public static final String ANSI_RED = "\u001B[31m";
@@ -74,17 +77,18 @@ public class tdsVisitor implements AstVisitor<Result> {
     public static final String ANSI_WHITE = "\u001B[37m";
     public static final String ANSI_TAB = "    ";
     private String file;
+    private ArrayList<String> lignes;
 
     public ArrayList<Tds> tdsGlobal = new ArrayList<>(); // La liste de toutes les TDS
     public Stack<Integer> pileRO = new Stack<>(); // La pile des régions ouverte;
 
     public tdsVisitor(String testFile) {
         this.file = testFile;
+        this.lignes = new ArrayList<String>();
+        this.setLines();
     }
 
-    public static void main(String[] args) {
-
-    }
+   
 
     public void printTDS() {
         tdsGlobal.remove(0);
@@ -802,6 +806,7 @@ public class tdsVisitor implements AstVisitor<Result> {
         Result l = sup.left.accept(this);
         Result r = sup.right.accept(this);
         Result n = new Result();
+        
         n.typeName = "int";
         if (l.typeName.equals(r.typeName)) {
             if (l.typeName.equals("int")) {
@@ -820,12 +825,12 @@ public class tdsVisitor implements AstVisitor<Result> {
                 return n;
 
             } else {
-                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET);
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET + " " + "ligne" + " " + this.numberLine(">"));
                 return n;
             }
 
         } else {
-            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET);
+            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET+ " " + "ligne" + " " + this.numberLine(">"));
             return n;
 
         }
@@ -1256,6 +1261,35 @@ public class tdsVisitor implements AstVisitor<Result> {
             }
             return n;
         }
+
+    }
+
+    public void setLines() {
+        try {
+            ArrayList<String> ligs = new ArrayList<String>();
+            FileInputStream file = new FileInputStream(this.file);
+            Scanner sc = new Scanner(file);
+            while (sc.hasNextLine()) {
+                ligs.add(sc.nextLine());
+
+            }
+            sc.close();
+            this.lignes.addAll(ligs);
+            
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+           
+    }
+
+    public int numberLine(String val) {
+        for (int i = 0;i<this.lignes.size();i++) {
+            if (this.lignes.get(i).contains(val)) {
+                return i+1;
+            }
+        }
+        return 0;
 
     }
 

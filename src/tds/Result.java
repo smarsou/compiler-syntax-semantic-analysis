@@ -8,7 +8,7 @@ import ast.Ast;
 //Cette classe a pour but de manipuler les résultats lors de la visite des noeuds
 //Vous pouvez ajouter n'importe qu'elle attribut que vous souhaitez
 
-public class Result {
+public class Result  {
    
     //typeName = 'int', 'array' pour les tableau de même type, 'rec' pour les tableaux avec différents types
     String typeName;
@@ -35,10 +35,7 @@ public class Result {
     ArrayList<Ast> linkToLvalue;
     Object varObject;
     String varIdf;
-
     ArrayList<Result> recFieldList;
-
-    
     ArrayList<Result> subscript;
     String conditionBlockReturn;
     Result thenBlock;
