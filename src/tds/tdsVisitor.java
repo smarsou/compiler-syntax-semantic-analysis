@@ -240,12 +240,14 @@ public class tdsVisitor implements AstVisitor<Result>{
                 var = new Var(dec.idf1.name, dec.idf2.name, result.objValue);
                 currentTds.addEntry(var);
             } else {
+                int lig = this.numberLine("var"+dec.idf1.name+":"+dec.idf2.name);
                 System.err.println(ANSI_TAB + ANSI_RED + "Declaration Error: Type mismatch for \"" + dec.idf1.name
-                        + "\" (" + dec.idf2.name + " / " + result.typeName + " )." + ANSI_RESET);
+                        + "\" (" + dec.idf2.name + " / " + result.typeName + " )." + ANSI_RESET+" "+"ligne"+" "+lig);
             }
         } else {
+            int lig = this.numberLine("var"+dec.idf1.name+":"+dec.idf2.name);
             System.err.println(ANSI_TAB + ANSI_RED + "Declaration Error: Variable \"" + dec.idf1.name
-                    + "\" is already declared." + ANSI_RESET);
+                    + "\" is already declared." + ANSI_RESET+" "+"ligne"+" "+lig);
         }
 
         // On ajoute l'entrée à la TDS courante
@@ -284,8 +286,9 @@ public class tdsVisitor implements AstVisitor<Result>{
             var = new Var(dec.idf.name, result.typeName, result.objValue);
             currentTds.addEntry(var);
         } else {
+            int lig = this.numberLine("var"+dec.idf.name+":="+this.getAttr(result));
             System.err.println(ANSI_TAB + ANSI_RED + "Declaration Error: Variable \"" + dec.idf.name
-                    + "\" is already declared." + ANSI_RESET);
+                    + "\" is already declared." + ANSI_RESET+" "+"ligne"+" "+lig);
         }
 
         // On ajoute l'entrée à la TDS courante
@@ -537,12 +540,14 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result lv = d.lvalue.accept(this);
         Result expr = d.lvalue_call_or_declare.accept(this);
         if (!lv.lvalueCorrect) {
-            System.err.println(ANSI_RED + "Affect Error: Can't find variable" + ANSI_RESET);
+            int lig = this.numberLine(this.getAttr(lv));
+            System.err.println(ANSI_RED + "Affect Error: Can't find variable" + ANSI_RESET+" "+"ligne"+" "+lig);
             return res;
         }
         if (lv.lvalueType != expr.typeName) {
+            int lig1 = this.numberLine(this.getAttr(expr));
             System.err.println(
-                    ANSI_RED + "Affect Error: Type mismatch " + lv.lvalueType + "/" + expr.typeName + ANSI_RESET);
+                    ANSI_RED + "Affect Error: Type mismatch " + lv.lvalueType + "/" + expr.typeName + ANSI_RESET+" "+"ligne"+" "+lig1);
             return res;
         }
         Rec nR = new Rec();
@@ -1112,15 +1117,17 @@ public class tdsVisitor implements AstVisitor<Result>{
         String idf = r.strValue;
         // On cherche dans la tds cette variable
         Entry e = findEntryByName(idf, pileRO.peek());
+        int lig = this.numberLine(idf);
         // Si on ne trouve pas cette idf
         if (e == null) {
-            System.err.println(ANSI_RED + "Variable Not Found: " + idf + " doesn't exist" + ANSI_RESET);
+            
+            System.err.println(ANSI_RED + "Variable Not Found: " + idf + " doesn't exist" + ANSI_RESET+" "+"ligne"+" "+lig);
             returnRes.lvalueCorrect = false;
             return returnRes;
         }
         // Si ce n'est pas une variable
         if (e.getClass().getName() != "tds.Var") {
-            System.err.println(ANSI_RED + "Variable Not Found: " + idf + " is not a variable " + ANSI_RESET);
+            System.err.println(ANSI_RED + "Variable Not Found: " + idf + " is not a variable " + ANSI_RESET+" "+"ligne"+" "+lig);
             returnRes.lvalueCorrect = false;
             return returnRes;
         }
