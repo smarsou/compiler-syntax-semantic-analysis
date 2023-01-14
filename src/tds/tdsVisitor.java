@@ -603,17 +603,20 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result r = mult.right.accept(this);
         Result n = new Result();
         n.typeName = "int";
+        String vl = this.getAttr(l);
+        String vr = this.getAttr(r);
+        int lig = this.numberLine(vl+"*"+vr);
         if (l.typeName == "int" && r.typeName == "int") {
             n.intValue = l.intValue * r.intValue;
             return n;
         } else {
             if (l.typeName != "int") {
                 System.err.println(
-                        ANSI_RED + "Type Error: Left side of the multiplication is not of type int" + ANSI_RESET);
+                        ANSI_RED + "Type Error: Left side of the multiplication is not of type int" + ANSI_RESET+" "+"ligne"+" "+lig);
             }
             if (r.typeName != "int") {
                 System.err.println(
-                        ANSI_RED + "Type Error: Right side of the multiplication is not of type int" + ANSI_RESET);
+                        ANSI_RED + "Type Error: Right side of the multiplication is not of type int" + ANSI_RESET+" "+"ligne"+" "+lig);
             }
             return n;
         }
@@ -627,16 +630,19 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result r = plus.right.accept(this);
         Result n = new Result();
         n.typeName = "int";
+        String vl = this.getAttr(l);
+        String vr = this.getAttr(r);
+        int lig = this.numberLine(vl+"+"+vr);
         if (l.typeName == "int" && r.typeName == "int") {
             n.intValue = l.intValue + r.intValue;
             return n;
         } else {
             if (l.typeName != "int") {
-                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET);
+                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET+" "+"ligne"+lig);
             }
             if (r.typeName != "int") {
                 System.err.println(ANSI_RED + "\u001B[33m Type Error: Right side of the operation is not of type int"
-                        + ANSI_RESET);
+                        + ANSI_RESET+" "+"ligne"+lig);
             }
             return n;
         }
@@ -649,6 +655,9 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result r = equal.right.accept(this);
         Result n = new Result();
         n.typeName = "int";
+        String vl = this.getAttr(l);
+        String vr = this.getAttr(r);
+        int lig = this.numberLine(vl+"="+vr);
         if (l.typeName.equals(r.typeName)) {
             if (l.typeName.equals("int")) {
                 if (l.intValue == r.intValue) {
@@ -669,7 +678,7 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return n;
             }
         } else {
-            System.err.println(ANSI_RED + "Type Error: Not the same type for operands" + ANSI_RESET);
+            System.err.println(ANSI_RED + "Type Error: Not the same type for operands" + ANSI_RESET+" "+"ligne"+lig);
             return n;
         }
 
@@ -682,16 +691,19 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result r = and.right.accept(this);
         Result n = new Result();
         n.typeName = "int";
+        String vl = this.getAttr(l);
+        String vr = this.getAttr(r);
+        int lig = this.numberLine(vl+"&"+vr);
         if (l.typeName.equals("int") && r.typeName.equals("int")) {
             n.intValue = l.intValue & r.intValue;
             return n;
         } else {
             if (!l.typeName.equals("int")) {
-                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET);
+                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET+" "+"ligne"+" "+ lig);
             }
             if (!r.typeName.equals("int")) {
                 System.err
-                        .println(ANSI_RED + "Type Error: Right side of the operation is not of type int" + ANSI_RESET);
+                        .println(ANSI_RED + "Type Error: Right side of the operation is not of type int" + ANSI_RESET+" "+"ligne"+lig);
             }
             return n;
         }
@@ -704,17 +716,21 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result r = or.right.accept(this);
         Result n = new Result();
         n.typeName = "int";
+        String vl = this.getAttr(l);
+        String vr = this.getAttr(r);
+        int lig = this.numberLine(vl+"|"+vr);
+        
         if (l.typeName.equals("int") && r.typeName.equals("int")) {
             n.intValue = l.intValue | r.intValue;
 
             return n;
         } else {
             if (!l.typeName.equals("int")) {
-                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET);
+                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET+" "+"ligne"+lig);
             }
             if (!r.typeName.equals("int")) {
                 System.err
-                        .println(ANSI_RED + "Type Error: Right side of the operation is not of type int" + ANSI_RESET);
+                        .println(ANSI_RED + "Type Error: Right side of the operation is not of type int" + ANSI_RESET+" "+"ligne"+lig);
             }
             return n;
         }
@@ -729,6 +745,9 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result r = supeq.right.accept(this);
         Result n = new Result();
         n.typeName = "int";
+        String vl = this.getAttr(l);
+        String vr = this.getAttr(r);
+        int lig = this.numberLine(vl+">="+vr);
         if (l.typeName.equals(r.typeName)) {
             if (l.typeName.equals("int")) {
                 if (l.intValue >= r.intValue) {
@@ -747,12 +766,12 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return n;
 
             } else {
-                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET);
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET + " "+ "ligne" +lig);
                 return n;
             }
 
         } else {
-            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET);
+            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET + " "+ "ligne" +lig);
             return n;
 
         }
@@ -767,6 +786,10 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result l = infeq.left.accept(this);
         Result r = infeq.right.accept(this);
         Result n = new Result();
+        String vl = this.getAttr(l);
+        String vr = this.getAttr(r);
+        int lig = this.numberLine(vl+"<="+vr);
+        
         n.typeName = "int";
         if (l.typeName.equals(r.typeName)) {
             if (l.typeName.equals("int")) {
@@ -786,12 +809,12 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return n;
 
             } else {
-                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET);
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET+ " " + "ligne" + " " + lig);
                 return n;
             }
 
         } else {
-            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET);
+            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET+" " + "ligne" + " " + lig);
             return n;
 
         }
@@ -806,6 +829,10 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result l = sup.left.accept(this);
         Result r = sup.right.accept(this);
         Result n = new Result();
+        String vl = this.getAttr(l);
+        String vr = this.getAttr(r);
+        int lig = this.numberLine(vl+">"+vr);
+        
         
         n.typeName = "int";
         if (l.typeName.equals(r.typeName)) {
@@ -825,12 +852,12 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return n;
 
             } else {
-                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET + " " + "ligne" + " " + this.numberLine(">"));
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET + " " + "ligne" + " " + lig);
                 return n;
             }
 
         } else {
-            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET+ " " + "ligne" + " " + this.numberLine(">"));
+            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET+ " " + "ligne" + " " + lig);
             return n;
 
         }
@@ -846,6 +873,10 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result r = inf.right.accept(this);
         Result n = new Result();
         n.typeName = "int";
+        String vl = this.getAttr(l);
+        String vr = this.getAttr(r);
+        int lig = this.numberLine(vl+"<"+vr);
+       
         if (l.typeName.equals(r.typeName)) {
             if (l.typeName.equals("int")) {
                 if (l.intValue < r.intValue) {
@@ -863,12 +894,12 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return n;
 
             } else {
-                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET);
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET+" "+"ligne"+lig);
                 return n;
             }
 
         } else {
-            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET);
+            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET+" "+"ligne"+" "+lig);
             return n;
 
         }
@@ -884,6 +915,10 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result r = sinf.right.accept(this);
         Result n = new Result();
         n.typeName = "int";
+        String vl = this.getAttr(l);
+        String vr = this.getAttr(r);
+        int lig = this.numberLine(vl+"<>"+vr);
+        
         if (l.typeName.equals(r.typeName)) {
             if (l.typeName.equals("int")) {
                 return n;
@@ -891,12 +926,12 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return n;
 
             } else {
-                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET);
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET+" "+"ligne"+" "+lig);
                 return n;
             }
 
         } else {
-            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET);
+            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET+" "+"ligne"+" "+lig);
             return n;
 
         }
@@ -906,10 +941,14 @@ public class tdsVisitor implements AstVisitor<Result>{
     public Result visit(Negate_instruction Ni) {
         // l'opérand et le résultat sont de type int
         Result Ne= Ni.exp.accept(this);
+        String vl = this.getAttr(Ne);
+        
+        int lig = this.numberLine("-"+vl);
+        
         if (Ne.typeName == "int"){
             return Ne;
         }else{
-            System.err.println(ANSI_RED+"Type Error: The operand type is not int"+ANSI_RESET);
+            System.err.println(ANSI_RED+"Type Error: The operand type is not int"+ANSI_RESET+" "+"ligne"+" "+lig);
             return Ne;
         }
 
@@ -969,20 +1008,24 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result l = divide.left.accept(this);
         Result r = divide.right.accept(this);
         Result n = new Result();
+        String vl = this.getAttr(l);
+        String vr = this.getAttr(r);
+        int lig = this.numberLine(vl+"/"+vr);
+        
         n.typeName = "int";
         if (l.typeName == "int" && r.typeName == "int") {
             if (r.intValue == 0) {
-                System.err.println(ANSI_RED + "Divide by zero error !" + ANSI_RESET);
+                System.err.println(ANSI_RED + "Divide by zero error !" + ANSI_RESET+" "+"ligne"+" "+lig);
                 return n;
             }
             n.intValue = l.intValue / r.intValue;
             return n;
         } else {
             if (l.typeName != "int") {
-                System.err.println(ANSI_RED + "Type Error: Left side of the division is not of type int" + ANSI_RESET);
+                System.err.println(ANSI_RED + "Type Error: Left side of the division is not of type int" + ANSI_RESET+" "+"ligne"+" "+lig);
             }
             if (r.typeName != "int") {
-                System.err.println(ANSI_RED + "Type Error: Right side of the division is not of type int" + ANSI_RESET);
+                System.err.println(ANSI_RED + "Type Error: Right side of the division is not of type int" + ANSI_RESET+" "+"ligne"+" "+lig);
             }
             return n;
         }
@@ -1248,16 +1291,21 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result r = minus.right.accept(this);
         Result n = new Result();
         n.typeName = "int";
+        String vl = this.getAttr(l);
+        String vr = this.getAttr(r);
+        String res = vl+"-"+vr;
+        int lig = this.numberLine(res);
+        
         if (l.typeName == "int" && r.typeName == "int") {
             n.intValue = l.intValue - r.intValue;
             return n;
         } else {
             if (l.typeName != "int") {
-                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET);
+                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET+" "+"ligne"+" "+lig);
             }
             if (r.typeName != "int") {
                 System.err.println(ANSI_RED + "\u001B[33m Type Error: Right side of the operation is not of type int"
-                        + ANSI_RESET);
+                        + ANSI_RESET+" "+"ligne"+" "+lig);
             }
             return n;
         }
@@ -1270,7 +1318,8 @@ public class tdsVisitor implements AstVisitor<Result>{
             FileInputStream file = new FileInputStream(this.file);
             Scanner sc = new Scanner(file);
             while (sc.hasNextLine()) {
-                ligs.add(sc.nextLine());
+                String str = sc.nextLine().replaceAll("\\s", "");
+                ligs.add(str);
 
             }
             sc.close();
@@ -1290,6 +1339,30 @@ public class tdsVisitor implements AstVisitor<Result>{
             }
         }
         return 0;
+
+    }
+
+    public String getAttr(Result r) {
+        String res = "";
+        if (r.strValue != null) {
+            res += r.strValue;
+            return res;
+
+        }
+
+        if (r.intValue != 0) {
+            res += r.intValue;
+            return res;
+        }
+        if (r.lvalueObject != null) {
+            res += r.lvalueObject;
+            return res;
+        }
+        if (r.objValue != null) {
+            res += r.objValue;
+            return res;
+        }
+        return res;
 
     }
 
