@@ -99,7 +99,22 @@ public class tdsVisitor implements AstVisitor<Result>{
             for (Entry e : tds.rows){
                 // System.out.println("entree est " + ((Var) e).type);
                 if (e.getClass().getName() == "tds.Var"){
-                    System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | "+((Var) e).valeur.toString());
+                    Var k = (Var) e;
+                    if (k.valeur != null) {
+                        System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | "+((Var) e).valeur.toString());
+
+                    }
+                    else {
+                        if (k.isParm) {
+                            System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" "+ "|" + " "+"paramètre");
+
+                        }
+                        else {
+                            System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type + "|"+" "+"variable");
+
+                        }
+                    }
+                    
                 }
                 if (e.getClass().getName() == "tds.Type") {
                     if (((Type) e).typeDeType.equals("rectype")) {
@@ -178,17 +193,16 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result res = dec.expr.accept(this);
         HashMap<String,String> parms = dec.type_field_list.accept(this).typeFieldList;
         for (Map.Entry m : parms.entrySet()) {
+            
             Var e = new Var(m.getKey().toString(),m.getValue().toString(),true);
             tdsGlobal.get(tdsGlobal.size() - 1).addEntry(e);
 
         }
+        //System.out.println(dec.type_id.name);
         
-
         // TODO Controle sémantique pour vérifier si l'exp correspond au type de retour
-        if (!res.typeName.equals(dec.type_id.accept(this).typeName)) {
+        if (!res.typeName.equals(dec.type_id.name)) {
             System.out.println(ANSI_TAB + ANSI_RED + "Type of expression does not match the type of function");
-
-
         }
         
             
@@ -644,6 +658,7 @@ public class tdsVisitor implements AstVisitor<Result>{
                 }
 
             }
+            
             if (count == lis.exprList.size()) {
                 for (int i = 0;i<count;i++) {
                     Var vr = (Var) tds.rows.get(i);
@@ -657,6 +672,8 @@ public class tdsVisitor implements AstVisitor<Result>{
                 }
 
             }
+            
+
 
             if (count != lis.exprList.size()) {
                 System.out.println(ANSI_RED + "The number of actual and formal parameters must be the same" +  ANSI_RESET);
@@ -1148,6 +1165,7 @@ public class tdsVisitor implements AstVisitor<Result>{
     @Override
     public Result visit(ExprList exprlist) {
         Result res = new Result();
+        res.exprList = new ArrayList<>();
         res.exprList.addAll(exprlist.astList);
         return res;
     }
