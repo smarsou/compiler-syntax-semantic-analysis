@@ -119,12 +119,38 @@ public class tdsVisitor implements AstVisitor<Result>{
                     else {
                         if (k.isParm) {
                             
-                            System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" "+ "|" + " "+"paramètre");
+                            System.out.println(ANSI_TAB + ANSI_CYAN+ "| paramètre  | "+e.getName()+" | "+((Var) e).type );
                             
 
                         }
                     }
                     
+                }
+
+                if (e.getClass().getName().equals("tds.Fonction")) {
+                    Fonction f = (Fonction) e;
+                    
+                    Tds t = tdsGlobal.get(f.gettdsFils()-1);
+                    
+            
+                    int count = 0;
+            
+                    for (Entry m : t.rows) {
+                
+                        if (m instanceof Var) {
+                    
+                            Var v = (Var) m;
+                    
+                            if (v.isParm) {
+                        
+                                count++;
+                    
+                            }
+                
+                        }
+                    }
+                    System.out.println(ANSI_TAB + ANSI_CYAN+  "| Function | "+ e.getName()+ " | "+ ((Fonction) e).getType()+ " | "+ count+" paramètres");
+
                 }
                 if (e.getClass().getName() == "tds.Type") {
                     if (((Type) e).typeDeType.equals("rectype")) {
@@ -688,7 +714,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         else {
             Result lis =  d.exprList.accept(this);
             Fonction f = (Fonction) e;
-            Tds tds = tdsGlobal.get(f.gettdsFils());
+            Tds tds = tdsGlobal.get(f.gettdsFils()-1-1);
             int count = 0;
             for (Entry m : tds.rows) {
                 if (m instanceof Var) {
