@@ -104,7 +104,7 @@ public class tdsVisitor implements AstVisitor<Result>{
                     Var k = ((Var) e);
                     if (k.valeur != null) {
                         if (((Var) e).type == "array"){
-                            System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" of " + ((Var) e).array.type);
+                            System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" de type " + ((Var) e).array.type);
                             printArray(((Var) e).array);
                         }else if (((Var) e).type == "rec") {
                             System.out.print(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | ");
@@ -505,7 +505,7 @@ public class tdsVisitor implements AstVisitor<Result>{
             return res;
         }
 
-        Array tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.objValue);
+        Array tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).strValue, second.objValue);
         // if (second.typeName == "array") {
         //     tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.ar);
         // }else if (second.typeName == "rec") {
@@ -513,7 +513,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         // } else {
         //     tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.objValue);
         // }
-
+        
         res.ar = tableau;
         res.objValue = tableau;
 
@@ -1295,7 +1295,6 @@ public class tdsVisitor implements AstVisitor<Result>{
         int lig = this.numberLine(idf);
         // Si on ne trouve pas cette idf
         if (e == null) {
-            
             System.err.println(ANSI_RED + "Variable Not Found: " + idf + " doesn't exist" + ANSI_RESET+" "+"ligne"+" "+lig);
             returnRes.lvalueCorrect = false;
             return returnRes;
