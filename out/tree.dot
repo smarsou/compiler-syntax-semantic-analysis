@@ -8,6 +8,16 @@ digraph "ast"{
 	N2 [label="DeclarationList", shape="box"];
 	N3 [label="Dec_Var", shape="box"];
 	N4 [label="a", shape="box"];
+<<<<<<< HEAD
+	N5 [label="0", shape="box"];
+	N6 [label="ExprSeq", shape="box"];
+	N7 [label="For", shape="box"];
+	N8 [label="i", shape="box"];
+	N9 [label="0", shape="box"];
+	N10 [label="100", shape="box"];
+	N12 [label="\"aaaa\"", shape="box"];
+	N11 [label="Print", shape="box"];
+=======
 	N5 [label="\"un\"", shape="box"];
 	N6 [label="Dec_Var", shape="box"];
 	N7 [label="b", shape="box"];
@@ -63,10 +73,20 @@ digraph "ast"{
 	N57 [label="Dec_Var", shape="box"];
 	N58 [label="e", shape="box"];
 	N59 [label="5", shape="box"];
+>>>>>>> d9c45be30e5ed3b4bcc228e809eacc2591d5e444
 
 	N3 -> N4; 
 	N3 -> N5; 
 	N2 -> N3; 
+<<<<<<< HEAD
+	N1 -> N2; 
+	N7 -> N8; 
+	N7 -> N9; 
+	N7 -> N10; 
+	N11 -> N12; 
+	N7 -> N11; 
+=======
+>>>>>>> d9c45be30e5ed3b4bcc228e809eacc2591d5e444
 	N6 -> N7; 
 	N6 -> N8; 
 	N2 -> N6; 

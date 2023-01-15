@@ -494,12 +494,13 @@ public class tdsVisitor implements AstVisitor<Result>{
         currentTds.addEntry(increment);
         
         Result r = f.expr3.accept(this);
+        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaa : " + r);
         if (c.typeName == "int" && l.typeName == "int") {
 
             if (r.typeName != "void") {
                 int lig = this.numberLine("for"+f.idf.name+":="+this.getAttr(c)+"to"+this.getAttr(l));
                 System.err.println(
-                        ANSI_RED + "Type Error: The body must be of type void" + ANSI_RESET+" "+"ligne"+" "+lig);
+                        ANSI_RED + "For Error: The body must be of type void" + ANSI_RESET+" "+"ligne"+" "+lig);
                 pileRO.pop();
                 return r;
             }
@@ -524,7 +525,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         else {
             int lig = this.numberLine("for"+f.idf.name+":="+this.getAttr(c)+"to"+this.getAttr(l));
             System.err.println(
-                    ANSI_RED + "Type Error: The start and end index of boucle for must be of type int" + ANSI_RESET+" "+"ligne"+" "+lig);
+                    ANSI_RED + "For Error: The start and end index of boucle for must be of type int" + ANSI_RESET+" "+"ligne"+" "+lig);
             pileRO.pop();
             return r;
         }
@@ -561,7 +562,7 @@ public class tdsVisitor implements AstVisitor<Result>{
 
         if (c.typeName.equals("int")) {
             if (r.typeName != "void") {
-                System.err.println(ANSI_RED + "Type Error: The body type must be void" + ANSI_RESET);
+                System.err.println(ANSI_RED + "While Error: The body type must be void" + ANSI_RESET);
             }
 
         }
@@ -569,7 +570,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         else {
             int lig = this.numberLine("while"+this.getAttr(c)+"do");
             System.err.println(
-                    ANSI_RED + "Type Error: The condition type must be int" + ANSI_RESET+ " "+ "ligne"+" "+lig);
+                    ANSI_RED + "While Error: The condition type must be int" + ANSI_RESET+ " "+ "ligne"+" "+lig);
         }
 
         // On remonte dans le bloc père
@@ -755,6 +756,8 @@ public class tdsVisitor implements AstVisitor<Result>{
             return n;
         }
     }
+
+
 
     @Override
     public Result visit(Precedence_3 equal) {
@@ -1074,12 +1077,12 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return b;
             } else {
                 int lig = this.numberLine("then"+this.getAttr(b));
-                System.err.println(ANSI_RED + "Type Error: The then-clause must be of type void" + ANSI_RESET+" "+"ligne"+" "+lig);
+                System.err.println(ANSI_RED + "Ifthen Error: The then-clause must be of type void" + ANSI_RESET+" "+"ligne"+" "+lig);
                 return b;
             }
         } else {
             int lig = this.numberLine("if" +this.getAttr(c));
-            System.err.println(ANSI_RED + "Type Error: The condition type must be int" + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED + "Ifthen Error: The condition type must be int" + ANSI_RESET+" "+"ligne"+" "+lig);
             return b;
         }
 
@@ -1106,14 +1109,14 @@ public class tdsVisitor implements AstVisitor<Result>{
                 int lig1 = this.numberLine("then"+this.getAttr(t));
                 int lig2 = this.numberLine("else"+this.getAttr(e));
 
-                System.err.println(ANSI_RED + "The then-clause and else-clause must have the same type" + ANSI_RESET+" "+"ligne"+" "+lig1 + " "+"et ligne"+" "+lig2);
+                System.err.println(ANSI_RED + "IfthenElse error : The then-clause and else-clause must have the same type" + ANSI_RESET+" "+"ligne"+" "+lig1 + " "+"et ligne"+" "+lig2);
                 return n;
             }
         }
 
         else {
             int lig = this.numberLine("if"+this.getAttr(c));
-            System.err.println(ANSI_RED + "Type Error: The condition type must be int" + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED + "IfthenElse Error: The condition type must be int" + ANSI_RESET+" "+"ligne"+" "+lig);
             return n;
         }
     }
@@ -1499,7 +1502,19 @@ public class tdsVisitor implements AstVisitor<Result>{
     @Override
     public Result visit(Print print) {
         // l'argument doit être de type string
-        return null;
+        Result r = new Result();
+        Result pr = print.str.accept(this);
+        if (pr.typeName == "string"){
+            r.typeName = "void";
+            r.strValue = pr.name;
+            r.objValue = pr.name;
+
+            return r;
+        }
+        else {
+            System.err.println(ANSI_RED + "Print Error: Argument must be type of string");
+            return pr;
+        }
     }
 
     @Override
