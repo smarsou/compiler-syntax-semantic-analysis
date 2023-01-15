@@ -1,5 +1,7 @@
 package tds;
 
+import java.util.HashMap;
+
 import ast.AstVisitor;
 
 public class Var implements Entry{
@@ -7,6 +9,8 @@ public class Var implements Entry{
     public String nom;
     public String type;
     public Object valeur;
+    public Rec rec;
+    public Array array;
     
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
