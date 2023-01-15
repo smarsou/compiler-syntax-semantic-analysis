@@ -19,7 +19,8 @@ in
     var d := 4
     var e := 5
     var f := tableau ["salut"] of 0
-    var f := tableau [12] of "salut"
+    var f := tableau [12] of 0
+    var g := club {a = 10, b ="salut" , c = 3}
     in
     end
 end

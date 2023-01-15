@@ -225,6 +225,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitRecFieldListInit(exprParser.RecFieldListInitContext ctx) {
+
         counter = 1;
         ArrayList<Ast> liste = new ArrayList<Ast>();
         liste.add(ctx.getChild(0).accept(this));
@@ -235,14 +236,13 @@ public class AstCreator extends exprBaseVisitor<Ast> {
             liste.add(a);
             suivant = suivant.getChild(2);
         }
-        Ast type = ctx.getParent().getParent().accept(this);
+        Ast type = ctx.getParent().getParent().getChild(0).accept(this);
         counter = 0;
         return new RecFieldList(liste, type);
     }
 
     @Override
     public Ast visitRecFieldListAdd(exprParser.RecFieldListAddContext ctx) {
-        
         return visitChildren(ctx);
     }
 

@@ -13,6 +13,7 @@ import java.util.Stack;
 
 import javax.lang.model.type.ArrayType;
 import javax.swing.plaf.synth.SynthScrollBarUI;
+import javax.swing.plaf.synth.SynthSpinnerUI;
 
 import org.antlr.v4.parse.ANTLRParser.ruleEntry_return;
 
@@ -100,23 +101,25 @@ public class tdsVisitor implements AstVisitor<Result>{
             for (Entry e : tds.rows){
                 // System.out.println("entree est " + ((Var) e).type);
                 if (e.getClass().getName() == "tds.Var"){
-                    Var k = (Var) e;
+                    Var k = ((Var) e);
                     if (k.valeur != null) {
-                        
+                        if (((Var) e).type == "array"){
+                            System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" of " + ((Var) e).array.type);
+                            printArray(((Var) e).array);
+                        }else if (((Var) e).type == "rec") {
+                            System.out.print(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | ");
+                            printRec(((Var) e).rec);
+                        }
+                        else {
+                            
                         System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | "+((Var) e).valeur.toString());
-                        
+                        }                        
 
                     }
                     else {
                         if (k.isParm) {
                             
                             System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" "+ "|" + " "+"paramètre");
-                            
-
-                        }
-                        else {
-                            
-                            System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type + "|"+" "+"variable");
                             
 
                         }
@@ -129,9 +132,7 @@ public class tdsVisitor implements AstVisitor<Result>{
                         System.out.print(ANSI_TAB + ANSI_CYAN + "| Type | " + e.getName() + " | " + ((Type) e).typeDeType + " | ");
                         
                         printHashMap(((Type) e).typeFieldDict);
-                        
-                    }if (((Type) e).typeDeType.equals("arrayof")) {
-                        
+                    }else if (((Type) e).typeDeType.equals("arrayof")) {
                         System.out.println(ANSI_TAB + ANSI_CYAN + "| Type | " + e.getName() + " | " + ((Type) e).typeDeType + " | " + ((Type) e).arrayOf);
                         
                     } else {
@@ -149,6 +150,20 @@ public class tdsVisitor implements AstVisitor<Result>{
     public void printHashMap(HashMap<String, String> map) {
         for (Map.Entry<String, String> set : map.entrySet()) {
             System.out.print("{" + set.getKey() + ":" + set.getValue() + "} ");
+        }
+        System.out.println(ANSI_RESET);
+    }
+    public void printRec(Rec rec) {
+
+        for (Map.Entry<String, Object> set : rec.dict.entrySet()) {
+            System.out.print("{" + set.getKey() + "=" + set.getValue() + "} ");
+        }
+        System.out.println(ANSI_RESET);
+    }
+
+    public void printArray(Array a){
+        for (int i =0; i< a.size; i++){
+            System.out.println("                         "+"["+i+"] --> " + a.values[i]);
         }
         System.out.println(ANSI_RESET);
     }
@@ -335,6 +350,11 @@ public class tdsVisitor implements AstVisitor<Result>{
         if (e == null || e.getClass().getName() != "tds.Var") {
             if (result.objValue != null){
                 var = new Var(dec.idf.name, result.typeName, result.objValue);
+                if (result.typeName == "array"){
+                    var.array = result.ar;
+                }if (result.typeName == "rec"){
+                    var.rec = result.rc;
+                }
                 currentTds.addEntry(var);
             }
         } else {
@@ -441,27 +461,32 @@ public class tdsVisitor implements AstVisitor<Result>{
         // the expression after of must match the element
         // type of the array. The result type is the array type.
         Result res = new Result();
+        
 
         Result expr1 = a.expr1.accept(this);
         if (expr1.typeName != "int") {
             int lig = this.numberLine("[" +this.getAttr(expr1)+"]"+"of");
-            System.err.println(ANSI_RED + "Can't create Array because it's not an integer in []" + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_TAB+ANSI_RED + "Can't create Array because it's not an integer in []" + ANSI_RESET+" "+"ligne"+" "+lig);
             return res;
         }
+        
         res.typeName = "array";
-        Array tableau = new Array();
-
         Result second = a.expr2.accept(this);
-        if (second.typeName == "int") {
-            tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.intValue);
+
+        if (!compareType(a.typeid.accept(this).strValue,second.typeName)){
+            int lig = this.numberLine("[" +this.getAttr(expr1)+"]"+"of");
+            System.err.println(ANSI_TAB+ANSI_RED + "Can't create Array because type mismatch" + ANSI_RESET+" "+"ligne"+" "+lig);
+            return res;
         }
-        if (second.typeName == "array") {
-            tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.ar);
-            res.ar = tableau;
-        }
-        if (second.typeName == "rec") {
-            tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.rc);
-        }
+
+        Array tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.objValue);
+        // if (second.typeName == "array") {
+        //     tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.ar);
+        // }else if (second.typeName == "rec") {
+        //     tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.rc);
+        // } else {
+        //     tableau = new Array(a.expr1.accept(this).intValue, a.typeid.accept(this).name, second.objValue);
+        // }
 
         res.ar = tableau;
         res.objValue = tableau;
