@@ -676,7 +676,6 @@ public class tdsVisitor implements AstVisitor<Result>{
         tdsGlobal.add(tds);
         System.out.println();
         System.out.println(ANSI_BLUE + "°°° Construction TDS et contrôles sémantiques" + ANSI_RESET);
-        ;
         for (Ast ast : d.exprList) {
             if (ast != null) {
                 ast.accept(this);
