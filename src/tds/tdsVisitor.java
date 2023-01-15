@@ -94,21 +94,19 @@ public class tdsVisitor implements AstVisitor<Result>{
         tdsGlobal.remove(0);
         System.out.println(ANSI_PURPLE + "TDS");
         for (Tds tds : tdsGlobal){
-            System.out.println(ANSI_PURPLE + "------------------------------");
-            System.out.println("|Région: " + tds.numRegion + " |Imbric: " + tds.numImbrication + "| Père: " +tds.pere);
+            System.out.println(ANSI_TAB+ ANSI_PURPLE + "------------------------------");
+            System.out.println(ANSI_TAB+"|Région: " + tds.numRegion + " |Imbric: " + tds.numImbrication + "| Père: " +tds.pere);
             for (Entry e : tds.rows){
-                System.out.println("entree est " + ((Var) e).type);
+                // System.out.println("entree est " + ((Var) e).type);
                 if (e.getClass().getName() == "tds.Var"){
-                    System.out.println(ANSI_CYAN+ "| Var  | "+e.getName()+" | " +((Var) e).valeur.toString());
+                    System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | "+((Var) e).valeur.toString());
                 }
                 if (e.getClass().getName() == "tds.Type") {
-                    System.out.print(
-                            ANSI_TAB + ANSI_CYAN + "| Type | " + e.getName() + " | " + ((Type) e).typeDeType + " | ");
                     if (((Type) e).typeDeType.equals("rectype")) {
+                        System.out.print(ANSI_TAB + ANSI_CYAN + "| Type | " + e.getName() + " | " + ((Type) e).typeDeType + " | ");
                         printHashMap(((Type) e).typeFieldDict);
                     } else {
-                        System.out.println(ANSI_TAB + ANSI_CYAN + "| Type | " + e.getName() + " | "
-                                + ((Type) e).typeDeType + " | " + ((Type) e).typeid);
+                        System.out.println(ANSI_TAB + ANSI_CYAN + "| Type | " + e.getName() + " | "+ ((Type) e).typeDeType + " | " + ((Type) e).typeid);
                     }
                 }
             }
