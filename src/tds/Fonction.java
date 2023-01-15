@@ -29,6 +29,12 @@ public class Fonction implements Entry{
     public String getName(){
         return nom;
     }
+    public int gettdsFils() {
+        return this.tdsFils;
+    }
 
+    public String getType() {
+        return this.typeDeRetour;
+    }
 
 }

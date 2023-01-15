@@ -28,6 +28,7 @@ public class Result  {
     ArrayList<String> typeFieldListidf;
     ArrayList<String> typeFieldListType;
     HashMap<String,String> typeFieldList;
+    ArrayList<Ast> exprList;
 
     Boolean lvalueCorrect;
     Object lvalueObject;

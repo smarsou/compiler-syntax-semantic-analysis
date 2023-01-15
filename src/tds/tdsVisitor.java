@@ -176,6 +176,13 @@ public class tdsVisitor implements AstVisitor<Result>{
 
         // On visit le bloc de la fonction
         Result res = dec.expr.accept(this);
+        HashMap<String,String> parms = dec.type_field_list.accept(this).typeFieldList;
+        for (Map.Entry m : parms.entrySet()) {
+            Var e = new Var(m.getKey().toString(),m.getValue().toString(),true);
+            tdsGlobal.get(tdsGlobal.size() - 1).addEntry(e);
+
+        }
+        
 
         // TODO Controle sémantique pour vérifier si l'exp correspond au type de retour
         if (!res.typeName.equals(dec.type_id.accept(this).typeName)) {
@@ -210,6 +217,13 @@ public class tdsVisitor implements AstVisitor<Result>{
 
         // On visit le bloc de la fonction
         Result res = dec.expr.accept(this);
+        HashMap<String,String> parms = dec.type_field_list.accept(this).typeFieldList;
+        for (Map.Entry m : parms.entrySet()) {
+            Var e = new Var(m.getKey().toString(),m.getValue().toString());
+            tdsGlobal.get(tdsGlobal.size() - 1).addEntry(e);
+
+        }
+        
 
         // On revient au père
         pileRO.pop();
@@ -599,7 +613,60 @@ public class tdsVisitor implements AstVisitor<Result>{
         // The number and types of actual and formal parameters must be the same. The
         // type of the call is
         // the return type of the function
-        return null;
+        Entry e = findEntryByName(d.idf.name, pileRO.peek());
+        Result result = new Result();
+        if (e instanceof Fonction) {
+            Fonction p = (Fonction) e;
+            result.typeName = p.getType();
+        }
+        if (e == null) {
+            if (e instanceof Fonction) {
+                System.out.println(ANSI_RED + "name of function undefined"+ANSI_RESET);
+
+            }
+            else {
+                System.out.println(ANSI_RED + "name of function undefined"+ANSI_RESET);
+                System.out.println(ANSI_RED + "The identifier must refer to a function"+ANSI_RESET);
+
+            }  
+        }
+        else {
+            Result lis =  d.exprList.accept(this);
+            Fonction f = (Fonction) e;
+            Tds tds = tdsGlobal.get(f.gettdsFils());
+            int count = 0;
+            for (Entry m : tds.rows) {
+                if (m instanceof Var) {
+                    Var v = (Var) m;
+                    if (v.isParm) {
+                        count++;
+                    }
+                }
+
+            }
+            if (count == lis.exprList.size()) {
+                for (int i = 0;i<count;i++) {
+                    Var vr = (Var) tds.rows.get(i);
+                    if (vr.isParm && vr.type.equals(lis.exprList.get(i).accept(this).typeName)) {
+
+                    }
+                    else {
+                        System.out.println(ANSI_RED + "The types of actual and formal parameters must be the same" +  ANSI_RESET);
+
+                    }
+                }
+
+            }
+
+            if (count != lis.exprList.size()) {
+                System.out.println(ANSI_RED + "The number of actual and formal parameters must be the same" +  ANSI_RESET);
+
+            }
+
+            
+        }
+
+        return result;
     }
 
     @Override
@@ -1081,7 +1148,9 @@ public class tdsVisitor implements AstVisitor<Result>{
 
     @Override
     public Result visit(ExprList exprlist) {
-        return null;
+        Result res = new Result();
+        res.exprList.addAll(exprlist.astList);
+        return res;
     }
 
     @Override
