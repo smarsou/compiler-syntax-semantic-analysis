@@ -218,7 +218,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
             ps = ps.getParent();
         }
         Ast lvalueTypeName = ps.getChild(0).accept(this);
-        LvalueInit id = new LvalueInit(new StrNode(idStr));
+        StrNode id = new StrNode(idStr);
         Ast exp = ctx.getChild(2).accept(this);
         return new RecField(id, exp, lvalueTypeName);
     }
