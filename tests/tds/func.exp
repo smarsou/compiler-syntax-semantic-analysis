@@ -1,6 +1,6 @@
 let
   
-  function add(a : int) : int = 1
+  function add(a : int,p:string,b:int) : int = 1
   
 in
 add("MAIN",2)
