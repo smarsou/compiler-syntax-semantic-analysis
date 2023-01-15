@@ -11,10 +11,15 @@ var b := 6
 in
     let 
     type club = {a : int}
-    type club2 = {a : int}
+    type club2 = {a : int, b : string, c : int}
+    type club3= club2
+    type club4= clubInconnu
+    type tableau = array of int
     var d := 3
     var d := 4
     var e := 5
+    var f := tableau ["salut"] of 0
+    var f := tableau [12] of "salut"
     in
     end
 end

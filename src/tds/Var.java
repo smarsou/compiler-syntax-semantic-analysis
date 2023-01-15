@@ -7,6 +7,7 @@ public class Var implements Entry{
     public String nom;
     public String type;
     public Object valeur;
+    public boolean isParm;
     
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
@@ -21,6 +22,13 @@ public class Var implements Entry{
     public Var(String nom, String type){
         this.nom = nom;
         this.type = type;
+    }
+
+    public Var(String nom,String type,boolean isParm) {
+        this.nom = nom;
+        this.type = type;
+        this.isParm = true;
+
     }
     public String getName(){
         return nom;

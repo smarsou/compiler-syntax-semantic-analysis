@@ -105,6 +105,8 @@ public class tdsVisitor implements AstVisitor<Result>{
                     if (((Type) e).typeDeType.equals("rectype")) {
                         System.out.print(ANSI_TAB + ANSI_CYAN + "| Type | " + e.getName() + " | " + ((Type) e).typeDeType + " | ");
                         printHashMap(((Type) e).typeFieldDict);
+                    }if (((Type) e).typeDeType.equals("arrayof")) {
+                        System.out.println(ANSI_TAB + ANSI_CYAN + "| Type | " + e.getName() + " | " + ((Type) e).typeDeType + " | " + ((Type) e).arrayOf);
                     } else {
                         System.out.println(ANSI_TAB + ANSI_CYAN + "| Type | " + e.getName() + " | "+ ((Type) e).typeDeType + " | " + ((Type) e).typeid);
                     }
@@ -174,8 +176,23 @@ public class tdsVisitor implements AstVisitor<Result>{
 
         // On visit le bloc de la fonction
         Result res = dec.expr.accept(this);
+        HashMap<String,String> parms = dec.type_field_list.accept(this).typeFieldList;
+        for (Map.Entry m : parms.entrySet()) {
+            Var e = new Var(m.getKey().toString(),m.getValue().toString(),true);
+            tdsGlobal.get(tdsGlobal.size() - 1).addEntry(e);
+
+        }
+        
 
         // TODO Controle sémantique pour vérifier si l'exp correspond au type de retour
+        if (!res.typeName.equals(dec.type_id.accept(this).typeName)) {
+            System.out.println(ANSI_TAB + ANSI_RED + "Type of expression does not match the type of function");
+
+
+        }
+        
+            
+        
 
         // On revient au père
         pileRO.pop();
@@ -200,6 +217,13 @@ public class tdsVisitor implements AstVisitor<Result>{
 
         // On visit le bloc de la fonction
         Result res = dec.expr.accept(this);
+        HashMap<String,String> parms = dec.type_field_list.accept(this).typeFieldList;
+        for (Map.Entry m : parms.entrySet()) {
+            Var e = new Var(m.getKey().toString(),m.getValue().toString());
+            tdsGlobal.get(tdsGlobal.size() - 1).addEntry(e);
+
+        }
+        
 
         // On revient au père
         pileRO.pop();
@@ -281,8 +305,10 @@ public class tdsVisitor implements AstVisitor<Result>{
         // On vérifie qu'une variable de ce nom n'existe pas dans la tds courrante.
         Entry e = findEntryInTds(dec.idf.name, pileRO.peek());
         if (e == null || e.getClass().getName() != "tds.Var") {
-            var = new Var(dec.idf.name, result.typeName, result.objValue);
-            currentTds.addEntry(var);
+            if (result.objValue != null){
+                var = new Var(dec.idf.name, result.typeName, result.objValue);
+                currentTds.addEntry(var);
+            }
         } else {
             int lig = this.numberLine("var"+dec.idf.name+":="+this.getAttr(result));
             System.err.println(ANSI_TAB + ANSI_RED + "Declaration Error: Variable \"" + dec.idf.name
@@ -337,8 +363,8 @@ public class tdsVisitor implements AstVisitor<Result>{
                     type.typeDeType = "???";
                     type.typeid = typeExpr.strValue;
                     int lig = this.numberLine("type"+type.typeid+"=");
-
                     System.err.println(ANSI_TAB + ANSI_RED + "Type Not found: " + typeExpr.strValue+" "+"ligne"+" "+lig);
+                    return new Result();
                 }
             }
         }
@@ -520,7 +546,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         // The body type must be void. En gros c'est le Result r qui doit être de type
         // void je crois
 
-        if (c.typeName == "int") {
+        if (c.typeName.equals("int")) {
             if (r.typeName != "void") {
                 System.err.println(ANSI_RED + "While Error: The body type must be void" + ANSI_RESET);
             }
@@ -588,7 +614,60 @@ public class tdsVisitor implements AstVisitor<Result>{
         // The number and types of actual and formal parameters must be the same. The
         // type of the call is
         // the return type of the function
-        return null;
+        Entry e = findEntryByName(d.idf.name, pileRO.peek());
+        Result result = new Result();
+        if (e instanceof Fonction) {
+            Fonction p = (Fonction) e;
+            result.typeName = p.getType();
+        }
+        if (e == null) {
+            if (e instanceof Fonction) {
+                System.out.println(ANSI_RED + "name of function undefined"+ANSI_RESET);
+
+            }
+            else {
+                System.out.println(ANSI_RED + "name of function undefined"+ANSI_RESET);
+                System.out.println(ANSI_RED + "The identifier must refer to a function"+ANSI_RESET);
+
+            }  
+        }
+        else {
+            Result lis =  d.exprList.accept(this);
+            Fonction f = (Fonction) e;
+            Tds tds = tdsGlobal.get(f.gettdsFils());
+            int count = 0;
+            for (Entry m : tds.rows) {
+                if (m instanceof Var) {
+                    Var v = (Var) m;
+                    if (v.isParm) {
+                        count++;
+                    }
+                }
+
+            }
+            if (count == lis.exprList.size()) {
+                for (int i = 0;i<count;i++) {
+                    Var vr = (Var) tds.rows.get(i);
+                    if (vr.isParm && vr.type.equals(lis.exprList.get(i).accept(this).typeName)) {
+
+                    }
+                    else {
+                        System.out.println(ANSI_RED + "The types of actual and formal parameters must be the same" +  ANSI_RESET);
+
+                    }
+                }
+
+            }
+
+            if (count != lis.exprList.size()) {
+                System.out.println(ANSI_RED + "The number of actual and formal parameters must be the same" +  ANSI_RESET);
+
+            }
+
+            
+        }
+
+        return result;
     }
 
     @Override
@@ -598,7 +677,6 @@ public class tdsVisitor implements AstVisitor<Result>{
         tdsGlobal.add(tds);
         System.out.println();
         System.out.println(ANSI_BLUE + "°°° Construction TDS et contrôles sémantiques" + ANSI_RESET);
-        ;
         for (Ast ast : d.exprList) {
             if (ast != null) {
                 ast.accept(this);
@@ -1072,7 +1150,9 @@ public class tdsVisitor implements AstVisitor<Result>{
 
     @Override
     public Result visit(ExprList exprlist) {
-        return null;
+        Result res = new Result();
+        res.exprList.addAll(exprlist.astList);
+        return res;
     }
 
     @Override
