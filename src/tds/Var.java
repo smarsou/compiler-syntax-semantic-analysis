@@ -9,12 +9,9 @@ public class Var implements Entry{
     public String nom;
     public String type;
     public Object valeur;
-<<<<<<< HEAD
     public Rec rec;
     public Array array;
-=======
     public boolean isParm;
->>>>>>> 4ce117729ebee5fdde1ac6bb211c85d6fa73b07e
     
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);

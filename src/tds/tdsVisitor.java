@@ -100,35 +100,26 @@ public class tdsVisitor implements AstVisitor<Result>{
             for (Entry e : tds.rows){
                 // System.out.println("entree est " + ((Var) e).type);
                 if (e.getClass().getName() == "tds.Var"){
-<<<<<<< HEAD
-                    if (((Var) e).type == "array"){
-                        System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" of " + ((Var) e).array.type);
-                        printArray(((Var) e).array);
-                    }else if (((Var) e).type == "rec") {
-                        System.out.print(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | ");
-                        printRec(((Var) e).rec);
-                    }
-                    else {
-                        System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | "+((Var) e).valeur.toString());
-                    }
-=======
-                    Var k = (Var) e;
+                    Var k = ((Var) e);
                     if (k.valeur != null) {
-                        System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | "+((Var) e).valeur.toString());
-
+                        if (((Var) e).type == "array"){
+                            System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" of " + ((Var) e).array.type);
+                            printArray(((Var) e).array);
+                        }else if (((Var) e).type == "rec") {
+                            System.out.print(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | ");
+                            printRec(((Var) e).rec);
+                        }
+                        else {
+                            System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | "+((Var) e).valeur.toString());
+                        }
                     }
                     else {
                         if (k.isParm) {
                             System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" "+ "|" + " "+"paramètre");
 
                         }
-                        else {
-                            System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type + "|"+" "+"variable");
-
-                        }
                     }
                     
->>>>>>> 4ce117729ebee5fdde1ac6bb211c85d6fa73b07e
                 }
                 if (e.getClass().getName() == "tds.Type") {
                     if (((Type) e).typeDeType.equals("rectype")) {
