@@ -176,6 +176,14 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result res = dec.expr.accept(this);
 
         // TODO Controle sémantique pour vérifier si l'exp correspond au type de retour
+        if (!res.typeName.equals(dec.type_id.accept(this).typeName)) {
+            System.out.println(ANSI_TAB + ANSI_RED + "Type of expression does not match the type of function");
+
+
+        }
+        
+            
+        
 
         // On revient au père
         pileRO.pop();
@@ -519,7 +527,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         // The body type must be void. En gros c'est le Result r qui doit être de type
         // void je crois
 
-        if (c.typeName == "int") {
+        if (c.typeName.equals("int")) {
             if (r.typeName != "void") {
                 System.err.println(ANSI_RED + "Type Error: The body type must be void" + ANSI_RESET);
             }
