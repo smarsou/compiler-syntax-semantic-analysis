@@ -105,6 +105,8 @@ public class tdsVisitor implements AstVisitor<Result>{
                     if (((Type) e).typeDeType.equals("rectype")) {
                         System.out.print(ANSI_TAB + ANSI_CYAN + "| Type | " + e.getName() + " | " + ((Type) e).typeDeType + " | ");
                         printHashMap(((Type) e).typeFieldDict);
+                    }if (((Type) e).typeDeType.equals("arrayof")) {
+                        System.out.println(ANSI_TAB + ANSI_CYAN + "| Type | " + e.getName() + " | " + ((Type) e).typeDeType + " | " + ((Type) e).arrayOf);
                     } else {
                         System.out.println(ANSI_TAB + ANSI_CYAN + "| Type | " + e.getName() + " | "+ ((Type) e).typeDeType + " | " + ((Type) e).typeid);
                     }
@@ -289,8 +291,10 @@ public class tdsVisitor implements AstVisitor<Result>{
         // On vérifie qu'une variable de ce nom n'existe pas dans la tds courrante.
         Entry e = findEntryInTds(dec.idf.name, pileRO.peek());
         if (e == null || e.getClass().getName() != "tds.Var") {
-            var = new Var(dec.idf.name, result.typeName, result.objValue);
-            currentTds.addEntry(var);
+            if (result.objValue != null){
+                var = new Var(dec.idf.name, result.typeName, result.objValue);
+                currentTds.addEntry(var);
+            }
         } else {
             int lig = this.numberLine("var"+dec.idf.name+":="+this.getAttr(result));
             System.err.println(ANSI_TAB + ANSI_RED + "Declaration Error: Variable \"" + dec.idf.name
@@ -345,8 +349,8 @@ public class tdsVisitor implements AstVisitor<Result>{
                     type.typeDeType = "???";
                     type.typeid = typeExpr.strValue;
                     int lig = this.numberLine("type"+type.typeid+"=");
-
                     System.err.println(ANSI_TAB + ANSI_RED + "Type Not found: " + typeExpr.strValue+" "+"ligne"+" "+lig);
+                    return new Result();
                 }
             }
         }
