@@ -346,7 +346,9 @@ public class tdsVisitor implements AstVisitor<Result>{
 
         // On ajoute l'entrée à la TDS courante
         Result res = new Result();
-        res.typeName = "void";
+        res.typeName = dec.idf2.name;
+        res.name = dec.idf1.name;
+        res.objValue = result.objValue;
         return res;
     }
 
@@ -395,6 +397,9 @@ public class tdsVisitor implements AstVisitor<Result>{
         // On ajoute l'entrée à la TDS courante
         Result res = new Result();
         res.typeName = result.typeName;
+        res.name = dec.idf.name;
+        res.objValue = result.objValue;
+        
         return res;
     }
 
@@ -471,7 +476,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         r.typeName = "LvalueSub";
         ArrayList<Result> a = new ArrayList<>();
         for (Ast d : dec.successiveSub) {
-            if (d.accept(this).typeName != "int") {
+            if (!d.accept(this).typeName.equals("int")) {
                 int lig = this.numberLine(r.strValue);
                 System.err.println(ANSI_RED + "Subscript Error: Not an Integer" + ANSI_RESET+" "+"ligne"+" "+lig);
             }
@@ -658,6 +663,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result lv = d.lvalue.accept(this);
         Result expr = d.lvalue_call_or_declare.accept(this);
         res.typeName = expr.typeName;
+       
         if (!lv.lvalueCorrect) {
             int lig = this.numberLine(this.getAttr(lv)+":=");
             System.err.println(ANSI_RED + "Affect Error: Can't find variable" + ANSI_RESET+" "+"ligne"+" "+lig);
@@ -808,12 +814,13 @@ public class tdsVisitor implements AstVisitor<Result>{
         // les opérands et le résultat doivent être de type int
         Result l = plus.left.accept(this);
         Result r = plus.right.accept(this);
-        System.out.println();
+        
         Result n = new Result();
         n.typeName = "int";
         String vl = this.getAttr(l);
         String vr = this.getAttr(r);
         int lig = this.numberLine(vl+"+"+vr);
+        
         if (l.typeName.equals("int") && r.typeName.equals("int")) {
             n.intValue = l.intValue + r.intValue;
             return n;
@@ -1338,6 +1345,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         returnRes.linkToLvalue = lvalueInit.lvalue;
         returnRes.varObject = ((Var) e).valeur;
         returnRes.varIdf = idf;
+        returnRes.typeName = ((Var) e).type;
         return returnRes;
 
     }
@@ -1503,7 +1511,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         String res = vl+"-"+vr;
         int lig = this.numberLine(res);
         
-        if (l.typeName == "int" && r.typeName == "int") {
+        if (l.typeName.equals("int") && r.typeName.equals("int")) {
             n.intValue = l.intValue - r.intValue;
             return n;
         } else {
@@ -1603,6 +1611,7 @@ public class tdsVisitor implements AstVisitor<Result>{
     public Result visit(Entry e) {
         // TODO Auto-generated method stub
         return null;
+        
     }
 
 }
