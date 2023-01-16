@@ -98,6 +98,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         for (Tds tds : tdsGlobal){
             System.out.println(ANSI_TAB+ ANSI_PURPLE + "------------------------------");
             System.out.println(ANSI_TAB+"|Région: " + tds.numRegion + " |Imbric: " + tds.numImbrication + "| Père: " +tds.pere);
+            System.out.println();
             for (Entry e : tds.rows){
                 // System.out.println("entree est " + ((Var) e).type);
                 if (e.getClass().getName() == "tds.Var"){
@@ -111,25 +112,60 @@ public class tdsVisitor implements AstVisitor<Result>{
                             printRec(((Var) e).rec);
                         }
                         else {
-                            System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | "+((Var) e).valeur.toString());
-                        }
+                            
+                        System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | "+((Var) e).valeur.toString());
+                        }                        
+
                     }
                     else {
                         if (k.isParm) {
-                            System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" "+ "|" + " "+"paramètre");
+                            
+                            System.out.println(ANSI_TAB + ANSI_CYAN+ "| paramètre  | "+e.getName()+" | "+((Var) e).type );
+                            
 
                         }
                     }
                     
                 }
+
+                if (e.getClass().getName().equals("tds.Fonction")) {
+                    Fonction f = (Fonction) e;
+                    
+                    Tds t = tdsGlobal.get(f.gettdsFils()-1);
+                    
+            
+                    int count = 0;
+            
+                    for (Entry m : t.rows) {
+                
+                        if (m instanceof Var) {
+                    
+                            Var v = (Var) m;
+                    
+                            if (v.isParm) {
+                        
+                                count++;
+                    
+                            }
+                
+                        }
+                    }
+                    System.out.println(ANSI_TAB + ANSI_CYAN+  "| Function | "+ e.getName()+ " | "+ ((Fonction) e).getType()+ " | "+ count+" paramètres");
+
+                }
                 if (e.getClass().getName() == "tds.Type") {
                     if (((Type) e).typeDeType.equals("rectype")) {
+                        
                         System.out.print(ANSI_TAB + ANSI_CYAN + "| Type | " + e.getName() + " | " + ((Type) e).typeDeType + " | ");
+                        
                         printHashMap(((Type) e).typeFieldDict);
                     }else if (((Type) e).typeDeType.equals("arrayof")) {
                         System.out.println(ANSI_TAB + ANSI_CYAN + "| Type | " + e.getName() + " | " + ((Type) e).typeDeType + " | " + ((Type) e).arrayOf);
+                        
                     } else {
+                        
                         System.out.println(ANSI_TAB + ANSI_CYAN + "| Type | " + e.getName() + " | "+ ((Type) e).typeDeType + " | " + ((Type) e).typeid);
+                        
                     }
                 }
             }
@@ -665,6 +701,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         // the return type of the function
         Entry e = findEntryByName(d.idf.name, pileRO.peek());
         Result result = new Result();
+        
         if (e instanceof Fonction) {
             Fonction p = (Fonction) e;
             result.typeName = p.getType();
@@ -683,7 +720,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         else {
             Result lis =  d.exprList.accept(this);
             Fonction f = (Fonction) e;
-            Tds tds = tdsGlobal.get(f.gettdsFils());
+            Tds tds = tdsGlobal.get(f.gettdsFils()-1-1);
             int count = 0;
             for (Entry m : tds.rows) {
                 if (m instanceof Var) {
