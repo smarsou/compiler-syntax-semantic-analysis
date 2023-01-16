@@ -12,6 +12,7 @@ import java.util.Scanner;
 import java.util.Stack;
 
 import javax.lang.model.type.ArrayType;
+import javax.sound.midi.SysexMessage;
 import javax.swing.plaf.synth.SynthScrollBarUI;
 import javax.swing.plaf.synth.SynthSpinnerUI;
 
@@ -106,7 +107,7 @@ public class tdsVisitor implements AstVisitor<Result>{
                             System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" de type " + ((Var) e).array.type);
                             printArray(((Var) e).array);
                         }else if (((Var) e).type == "rec") {
-                            System.out.print(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | ");
+                            System.out.print(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" de type " + ((Var) e).rec.type_id+ " | ");
                             printRec(((Var) e).rec);
                         }
                         else {
@@ -183,10 +184,12 @@ public class tdsVisitor implements AstVisitor<Result>{
         String typeDeExpr = expr.typeName;
 
         String typeOfIdf = entry.typeFieldDict.get(idf);
-        if (typeOfIdf != typeDeExpr) {
-            System.err.println(ANSI_RED + "Type Error: type mismatch " + typeOfIdf + "/" + typeDeExpr + ANSI_RESET);
+
+        if (!typeDeExpr.equals(typeOfIdf)) {
+            System.err.println(ANSI_TAB+ANSI_RED + "Type Error: type mismatch " + typeOfIdf + "/" + typeDeExpr + ANSI_RESET);
             return r;
         }
+        r.strValue = idf;
         r.typeName = typeOfIdf;
         r.objValue = expr.objValue;
 
@@ -492,9 +495,13 @@ public class tdsVisitor implements AstVisitor<Result>{
         res.typeName = "rec";
 
         Rec rc = new Rec();
-        rc.type_id = a.typeid.accept(this).name;
+        rc.type_id = a.typeid.accept(this).strValue;
+        if (a.fieldList.accept(this).recFieldList==null){
+            System.err.println(ANSI_TAB+ANSI_RED+"Can't create Record." + ANSI_RESET);
+            return res;
+        }
         for (Result r : a.fieldList.accept(this).recFieldList) {
-            rc.dict.put(r.typeName, r.objValue);
+            rc.dict.put(r.strValue, r.objValue);
         }
         res.rc = rc;
         res.objValue = rc;
@@ -525,7 +532,6 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result r = f.expr3.accept(this);
         System.out.println("aaaaaaaaaaaaaaaaaaaaaaaa : " + r);
         if (c.typeName == "int" && l.typeName == "int") {
-
             if (r.typeName != "void") {
                 int lig = this.numberLine("for"+f.idf.name+":="+this.getAttr(c)+"to"+this.getAttr(l));
                 System.err.println(
@@ -1226,18 +1232,30 @@ public class tdsVisitor implements AstVisitor<Result>{
             return res;
         }
         if (e.getClass().getName() != "tds.Type") {
-            System.err.println(ANSI_RED + "Type Not found Error: " + type + " is the name of a variable or un function."
+            System.err.println(ANSI_RED + "Type Not found Error: " + type + " is the name of a variable or a function."
                     + ANSI_RESET);
             return res;
         }
         Type entry = (Type) e;
         if (entry.typeDeType != "rectype") {
-            System.err.println(ANSI_RED + "Type Error: " + type + " is not a type with child types." + ANSI_RESET);
+            System.err.println(ANSI_RED + "Type Error: " + type + " is not a record type." + ANSI_RESET);
             return res;
         }
+
+        if (recFieldList.astList.size() != entry.typeFieldDict.size()){
+            System.err.println(ANSI_TAB+ ANSI_RED + "The type of the record need more Record Field." + ANSI_RESET);
+            return res;
+        }
+
         ArrayList<Result> recFLRes = new ArrayList<>();
-        for (Ast a : recFieldList.astList) {
-            recFLRes.add(a.accept(this));
+        for (int i = 0 ; i < recFieldList.astList.size(); i++) {
+            Ast a = recFieldList.astList.get(i);
+            Result r = a.accept(this);
+            if (r.strValue == null){
+                return res;
+            }
+            recFLRes.add(r);
+
         }
         res.recFieldList = recFLRes;
         return res;
@@ -1536,7 +1554,6 @@ public class tdsVisitor implements AstVisitor<Result>{
             r.typeName = "void";
             r.strValue = pr.name;
             r.objValue = pr.name;
-
             return r;
         }
         else {

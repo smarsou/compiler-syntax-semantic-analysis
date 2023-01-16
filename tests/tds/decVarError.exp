@@ -20,7 +20,7 @@ in
     var e := 5
     var f := tableau ["salut"] of 0
     var f := tableau [3] of 0
-    var g := club {a = 10, b ="salut" , c = 3}
+    var g := club2 {a = 10, b ="salut" , c = 3}
     in
     end
 end
