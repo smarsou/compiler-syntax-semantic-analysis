@@ -1,0 +1,9 @@
+let
+type first = array of int
+type second = {a:int, b:string}
+var a := 1
+var b : string := "salut"
+var c := first [3] of 5
+var d := second {a = 2, b = "salut"}
+in
+end

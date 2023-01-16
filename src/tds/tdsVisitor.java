@@ -330,7 +330,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         Entry e = findEntryInTds(dec.idf1.name, pileRO.peek());
         if (e == null || e.getClass().getName() != "tds.Var") {
             // dec.idf2.name.equals(result.typeName);
-            if (compareType(dec.idf2.name, result.typeName)) {
+            if (compareType(dec.idf2.name, result.typeName) || dec.idf2.name.equals(result.typeName)) {
                 var = new Var(dec.idf1.name, dec.idf2.name, result.objValue);
                 currentTds.addEntry(var);
             } else {
