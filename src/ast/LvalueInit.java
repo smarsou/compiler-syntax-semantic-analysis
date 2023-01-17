@@ -10,18 +10,27 @@ public class LvalueInit implements Ast{
     }
 
     public ArrayList<Ast> lvalue;
+    public ArrayList<Ast> lvalue2;
 
     public LvalueInit(ArrayList<Ast> lvalue){
         this.lvalue = lvalue;
     }
 
+    public LvalueInit(ArrayList<Ast> lvalue, ArrayList<Ast> lvalue2){
+        this.lvalue = lvalue;
+        this.lvalue2 = (ArrayList<Ast>) lvalue2.clone();
+    }
+
     public LvalueInit(Ast ast){
         lvalue = new ArrayList<>();
         lvalue.add(ast);
+        lvalue2 = new ArrayList<>();
+        lvalue2.add(ast);
     }
 
     public LvalueInit(LvalueInit ast){
         this.lvalue = ast.lvalue;
+        this.lvalue2 = ast.lvalue;
     }
 
 }

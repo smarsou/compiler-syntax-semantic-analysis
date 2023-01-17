@@ -483,7 +483,6 @@ public class tdsVisitor implements AstVisitor<Result>{
             a.add(d.accept(this));
         }
         r.subscript = a;
-
         return r;
 
     }
@@ -662,22 +661,28 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result res = new Result();
         Result lv = d.lvalue.accept(this);
         Result expr = d.lvalue_call_or_declare.accept(this);
-        res.typeName = expr.typeName;
+        res.typeName = expr.typeName;   
        
         if (!lv.lvalueCorrect) {
             int lig = this.numberLine(this.getAttr(lv)+":=");
             System.err.println(ANSI_RED + "Affect Error: Can't find variable" + ANSI_RESET+" "+"ligne"+" "+lig);
             return res;
         }
+        if (lv.lvalueType == "java.lang.Integer" && expr.typeName == "int"){
+
+        }else
         if (!lv.lvalueType.equals(expr.typeName)) {
             int lig1 = this.numberLine(":="+this.getAttr(expr));
             System.err.println(
-                    ANSI_RED + "Affect Error: Type mismatch " + lv.lvalueType + "/" + expr.typeName + ANSI_RESET+" "+"ligne"+" "+lig1);
+                    ANSI_RED + "Affect Error: Type mismatch for the variable" +lv.lvalueType + "/" + expr.typeName + ANSI_RESET+" "+"ligne"+" "+lig1);
             return res;
         }
-        Rec nR = new Rec();
-        nR.dict.put(lv.varIdf, lv.varObject);
-        checkLvalue(nR, lv.linkToLvalue, expr.objValue, false);
+        
+        Entry e = findEntryByName(lv.varIdf, pileRO.peek());
+        // System.out.println("obj to affect : " +expr.objValue);
+        AffectLvalue(lv.varIdf, e, expr.objValue ,lv.linkToLvalue, false);
+        // System.out.println(ob);
+        // printRec((Rec) ob);
         return res;
     }
 
@@ -1136,6 +1141,8 @@ public class tdsVisitor implements AstVisitor<Result>{
         int lig = this.numberLine("-"+vl);
         
         if (Ne.typeName == "int"){
+            Ne.intValue = -Ne.intValue;
+            Ne.objValue = - (Integer) Ne.objValue;
             return Ne;
         }else{
             System.err.println(ANSI_RED+"Type Error: The operand type is not int"+ANSI_RESET+" "+"ligne"+" "+lig);
@@ -1306,12 +1313,27 @@ public class tdsVisitor implements AstVisitor<Result>{
 
     }
 
+    public void printLv(ArrayList<Ast> lvalue){
+        for (Ast a: lvalue){
+            System.out.println(a.accept(this).strValue);
+        }
+    }
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
     @Override
     public Result visit(LvalueInit lvalueInit) {
 
         // l'identifiant doit référencer une variable
         // On récupère l'identifiant de la lvalue
         Ast a = lvalueInit.lvalue.get(0);
+
+        // System.out.println("1:"+lvalueInit.lvalue.size());
+        // for (Ast b  : lvalueInit.lvalue){
+        //     System.out.println(b.accept(this).strValue);
+        // }
         Result r = a.accept(this);
         Result returnRes = new Result();
         String idf = r.strValue;
@@ -1335,14 +1357,16 @@ public class tdsVisitor implements AstVisitor<Result>{
         Rec nR = new Rec();
         nR.dict.put(idf, ((Var) e).valeur);
         Object res = checkLvalue(nR, lvalueInit.lvalue, null, true);
-        if (res == null) {
+        // System.out.println(res);
+        if (res == null){
             returnRes.lvalueCorrect = false;
             return returnRes;
         }
         returnRes.lvalueCorrect = true;
         returnRes.lvalueObject = res;
         returnRes.lvalueType = res.getClass().getName();
-        returnRes.linkToLvalue = lvalueInit.lvalue;
+        // System.out.println("2:"+lvalueInit.lvalue2.size());
+        returnRes.linkToLvalue = lvalueInit.lvalue2;
         returnRes.varObject = ((Var) e).valeur;
         returnRes.varIdf = idf;
         returnRes.typeName = ((Var) e).type;
@@ -1350,13 +1374,112 @@ public class tdsVisitor implements AstVisitor<Result>{
 
     }
 
+    public void AffectLvalue(String idf,Entry e, Object value, ArrayList<Ast> lvalue, Boolean print){
+        Object toAffect;
+        Object last;
+        Object next;
+        Boolean first = true;
+        Rec nR = new Rec();
+        nR.dict.put(idf, ((Var) e).valeur);
+        // System.out.println("1:"+e);
+        // System.out.println("2:"+ ((Var) e).valeur);
+        toAffect = nR;
+        next = nR;
+        last = e;
+        String lastType = "Entry";
+        String lastId = "";
+
+        // System.out.println("3:"+nR.dict.get(idf));
+
+        int i = 0;
+        
+        for (Ast a  : lvalue){
+            // System.out.println(a.accept(this).strValue);
+        }
+
+        while (lvalue.size()!=0){
+                // for (Ast a : lvalue){
+            //     System.out.println(a.accept(this).typeName);
+            // }
+
+            Result current = lvalue.get(0).accept(this);
+            String id = current.strValue; // QUe ce soit une LvalueSub ou un StrNode, on récupère l'id
+            // Si l'objet pdans lequel on cherche la suite de la lvalue n'est pas un Rec,
+            // cela veut dire que c'est forcément un entier, donc qu'il ne possède pas de
+            // sous idf
+            // if (toAffect.getClass().getName() != "tds.Rec") {
+            //     if (print) {
+            //         System.err.println(ANSI_RED + "Variable Not Found: " + id
+            //                 + " Bruuuuuuh" + ANSI_RESET);
+            //     }
+            // }
+            // System.out.println(toAffect.getClass().getName());
+            // printRec((Rec) obj);
+            // ON récupère l'obj correspondant à l'id
+            next = ((Rec) toAffect).dict.get(id);
+            // System.out.println(next);
+            // System.out.println(current.typeName);
+            // Si c'est une StrNode, on cherche la suite de la lvalue dans l'obj trouvé
+
+            if (current.typeName == "string") {
+                // System.out.println("Bruuuuuuh");
+                lvalue.remove(0);
+                if (first){
+                    first = false;
+                }else{
+                    last = toAffect;
+                    lastType = "string";
+                    lastId = id;
+                }
+                continue;
+            }
+            // Si c'est une Lvalsub, on vérifie que tout est bien subscriptable
+            if (current.typeName == "LvalueSub") {
+                // Une lvalueSub est forcément un array
+                ArrayList<Result> sub = current.subscript;
+                for (Result s : sub) {
+                    if (next.getClass().getName() == "tds.Array") {
+                        last = next;
+                        lastType = "Array";
+                        i = s.intValue;
+                        next = ((Array) next).values[s.intValue];
+                    }
+                }
+                // puis on cherche la suite de la lvalue dans l'obj trouvé
+                lvalue.remove(0);
+                // System.out.println("Wot next=" + next.getClass().getName()+ next+lvalue.size());
+                toAffect = next;
+            }
+        }
+
+        if (lastType == "Array"){
+            ((Array) last).values[i] = value;
+        }else if(lastType == "string"){
+            ((Rec) last).dict.put(lastId, value);
+            // printRec((Rec) last);
+        }else if(lastType == "Entry"){
+            ((Var) last).valeur = value;
+        }
+        // System.out.println(lastId + " " + value  );
+        // System.out.println(toAffect);
+        // System.out.println(next);
+        // System.out.println(last);
+    }
+
+
     public Object checkLvalue(Object obj, ArrayList<Ast> lvalue, Object affect, Boolean print) {
+        // for (Ast a : lvalue){
+        //     System.out.println(a.accept(this).typeName);
+        // }
+
         if (lvalue.size() == 0) {
             if (affect != null) {
                 obj = affect;
             }
+            
             return obj;
         }
+
         Result current = lvalue.get(0).accept(this);
         String id = current.strValue; // QUe ce soit une LvalueSub ou un StrNode, on récupère l'id
         // Si l'objet pdans lequel on cherche la suite de la lvalue n'est pas un Rec,
@@ -1369,13 +1492,17 @@ public class tdsVisitor implements AstVisitor<Result>{
             }
             return null;
         }
+        // System.out.println(obj.getClass().getName());
+        // printRec((Rec) obj);
         // ON récupère l'obj correspondant à l'id
         Object next = getSubObjInRec(id, (Rec) obj, print);
+        // System.out.println(next);
+        // System.out.println(current.typeName);
         if (next == null) {
             return null;
         }
         // Si c'est une StrNode, on cherche la suite de la lvalue dans l'obj trouvé
-        if (current.typeName == "String") {
+        if (current.typeName == "string") {
             lvalue.remove(0);
             return checkLvalue(next, lvalue, affect, print);
         }
@@ -1385,7 +1512,7 @@ public class tdsVisitor implements AstVisitor<Result>{
             ArrayList<Result> sub = current.subscript;
             for (Result s : sub) {
                 if (next.getClass().getName() == "tds.Array") {
-                    next = getSubObjInArray(s.intValue, (Array) obj, print);
+                    next = getSubObjInArray(s.intValue, (Array) next, print);
                     if (next == null) {
                         return null;
                     }
@@ -1399,6 +1526,7 @@ public class tdsVisitor implements AstVisitor<Result>{
             }
             // puis on cherche la suite de la lvalue dans l'obj trouvé
             lvalue.remove(0);
+            // System.out.println("Wot next=" + next.getClass().getName()+ next+lvalue.size());
             return checkLvalue(next, lvalue, affect, print);
         }
         if (print) {
