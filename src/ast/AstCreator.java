@@ -262,7 +262,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
         ParseTree premier = ctx.getChild(0);
         ParseTree suivant = ctx.getChild(1);
-
+        String last = "";
         if (suivant.getChildCount() == 0) {
             return new LvalueInit(new StrNode(premier.toString()));
         }
@@ -272,6 +272,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
         while (suivant.getChildCount() != 0) {
             switch (suivant.getChild(0).toString()) {
                 case ".":
+                    last =".";
                     if (!printed) {
                         list.add(new StrNode(premier.toString()));
                     }
@@ -280,6 +281,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
                     suivant = suivant.getChild(2);
                     break;
                 case "[":
+                    last="[";
                     Ast subscript = suivant.getChild(1).accept(this);
                     String typeOfLast;
                     if (list.size() > 0) {
@@ -287,7 +289,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
                     } else {
                         typeOfLast = "None";
                     }
-                    if (typeOfLast.equals("ast.LvalueSub")) {
+                    if (typeOfLast.equals("ast.LvalueSub") && printed) {
                         LvalueSub lastSubList = (LvalueSub) list.get(list.size() - 1);
                         lastSubList.successiveSub.add(subscript);
                     } else {
@@ -303,8 +305,14 @@ public class AstCreator extends exprBaseVisitor<Ast> {
                     break;
             }
         }
-        list.add(new StrNode(premier.toString()));
-        return new LvalueInit(list);
+        // System.out.println(last);
+        if (last!="["){
+            list.add(new StrNode(premier.toString()));
+        }
+        // for (Ast a : list){
+        //     // System.out.println(a);
+        // }
+        return new LvalueInit(list, list);
     }
 
     // @Override

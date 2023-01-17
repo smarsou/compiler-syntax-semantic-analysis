@@ -1,0 +1,23 @@
+let 
+    type club = {a : int}
+    type club2 = {a : int, b : string, c : int}
+    type cool = {a : club2, b : int}
+    type club3= club2
+    type club4= clubInconnu
+    type tableau = array of int
+    var d := 3
+    var d := 4
+    var e := 5
+    var f := tableau ["salut"] of 0
+    var f := tableau [3] of 0
+    var g := club2 {a = 10, b ="salut" , c = 3}
+in
+
+    f[0] := 28;
+    f[1] := 29;
+    f[2] := 30;
+    f[3] := 28;
+    e := 0;
+    e := -1
+
+end
