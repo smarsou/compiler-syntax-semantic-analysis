@@ -5,13 +5,9 @@ let
   function set(a:int) = "papa"
   
 in
-<<<<<<< HEAD
-  add("MAIN",2)
-=======
 
 add("MAIN",2);set(1)
 
 
->>>>>>> fd121f58535d9582d50a38a55c42e93bfd351131
 
 end
