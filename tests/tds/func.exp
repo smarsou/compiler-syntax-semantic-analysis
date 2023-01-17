@@ -1,8 +1,13 @@
 let
-  
+  var add := 1
   function add(a : int,p:string,b:int) : int = 1
+  function pop() : int = 4
+  function set(a:int) = "papa"
   
 in
-add("MAIN",2)
+
+add("MAIN",2);set("ok")
+
+
 
 end
