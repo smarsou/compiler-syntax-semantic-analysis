@@ -803,7 +803,6 @@ public class tdsVisitor implements AstVisitor<Result>{
             System.out.println(ANSI_RED + "The identifier must refer to a function"+ANSI_RESET+" ligne "+lig);
         }
         else {
-            
             Fonction f = (Fonction) e;
             result.typeName = f.getType();
             Tds tds = tdsGlobal.get(f.gettdsFils()-1);
