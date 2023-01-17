@@ -132,7 +132,7 @@ public class AstCreator extends exprBaseVisitor<Ast> {
 
     @Override
     public Ast visitBreak(exprParser.BreakContext ctx) {
-        return ctx.accept(this);
+        return new StrNode("break");
     }
 
     @Override

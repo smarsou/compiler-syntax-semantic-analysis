@@ -132,7 +132,6 @@ public class tdsVisitor implements AstVisitor<Result>{
                     Fonction f = (Fonction) e;
                     
                     Tds t = tdsGlobal.get(f.gettdsFils()-1);
-                    
             
                     int count = 0;
             
@@ -150,6 +149,7 @@ public class tdsVisitor implements AstVisitor<Result>{
                 
                         }
                     }
+                    
                     System.out.println(ANSI_TAB + ANSI_CYAN+  "| Function | "+ e.getName()+ " | "+ ((Fonction) e).getType()+ " | "+ count+" paramètres");
 
                 }
@@ -234,14 +234,18 @@ public class tdsVisitor implements AstVisitor<Result>{
 
     @Override
     public Result visit(DecFunctWithReturnType dec) {
-        // Laisser à Serge
+        
         // On créer une nouvelle entrée et on l'ajoute à la TDS du bloc courant
         Fonction func = new Fonction(dec.idf1.name, dec.type_id.name);
-        Tds currentTds = tdsGlobal.get(tdsGlobal.size() - 1);
-        currentTds.addEntry(func);
-
+        
         // On créer une nouvelle tds pour la déclaration de la fonction
         createNewTds();
+        int imb = tdsGlobal.get(tdsGlobal.size()-1).numImbrication;
+        //System.out.println(imb);
+        
+        Tds currentTds = tdsGlobal.get(imb);
+        
+
 
         // On ajoute cette Tds à l'entrée
         int numRegiontTds = tdsGlobal.get(tdsGlobal.size() - 1).numRegion;
@@ -249,23 +253,46 @@ public class tdsVisitor implements AstVisitor<Result>{
 
         // On visit le bloc de la fonction
         Result res = dec.expr.accept(this);
-        HashMap<String,String> parms = dec.type_field_list.accept(this).typeFieldList;
+        HashMap<String,String> parms = new HashMap<>();
+
+        if (dec.type_field_list.accept(this).typeFieldList != null) {
+            parms = dec.type_field_list.accept(this).typeFieldList;
+        }
+        String pm = "";
         for (Map.Entry m : parms.entrySet()) {
             
             Var e = new Var(m.getKey().toString(),m.getValue().toString(),true);
             tdsGlobal.get(tdsGlobal.size() - 1).addEntry(e);
+            pm += m.getKey().toString() + ":"+m.getValue().toString()+",";
 
         }
-        //System.out.println(dec.type_id.name);
+        if (!pm.equals("")) {
+            pm = pm.substring(0, pm.length()-1);
+
+        }
         
+        
+        int lig = this.numberLine("function"+dec.idf1.name+"("+pm+")");
+        System.out.println(lig);
         // TODO Controle sémantique pour vérifier si l'exp correspond au type de retour
+       
         if (!res.typeName.equals(dec.type_id.name)) {
-            System.out.println(ANSI_TAB + ANSI_RED + "Type of expression does not match the type of function");
+            System.out.println(ANSI_TAB + ANSI_RED + "Type of expression does not match the type of function"+ANSI_RESET+" ligne "+lig);
+        }
+        Entry e = findEntryByName(dec.idf1.name, pileRO.peek());
+        if (e != null) {
+            if (!e.getClass().getName().equals("tds.Fonction")) {
+                
+                System.out.println(ANSI_TAB + ANSI_RED+"The id "+dec.idf1.name+" already exists "+ANSI_RESET+"ligne "+lig);
+
+            }
+            
+
+        }
+        else {
+            currentTds.addEntry(func);
         }
         
-            
-        
-
         // On revient au père
         pileRO.pop();
 
@@ -274,26 +301,58 @@ public class tdsVisitor implements AstVisitor<Result>{
 
     @Override
     public Result visit(DecFunctVoid dec) {
-        // Laisser à Serge
+        
         // On créer une nouvelle entrée et on l'ajoute à la TDS du bloc courant
         Fonction func = new Fonction(dec.idf.name, "void");
-        Tds currentTds = tdsGlobal.get(tdsGlobal.size() - 1);
-        currentTds.addEntry(func);
+        
 
         // On créer une nouvelle tds pour la déclaration de la fonction
         createNewTds();
+        int imb = tdsGlobal.get(tdsGlobal.size()-1).numImbrication;
+        
+        
+        Tds currentTds = tdsGlobal.get(imb);
+        
+
 
         // On ajoute cette Tds à l'entrée
         int numRegiontTds = tdsGlobal.get(tdsGlobal.size() - 1).numRegion;
         func.setTds(numRegiontTds);
 
         // On visit le bloc de la fonction
-        Result res = dec.expr.accept(this);
-        HashMap<String,String> parms = dec.type_field_list.accept(this).typeFieldList;
-        for (Map.Entry m : parms.entrySet()) {
-            Var e = new Var(m.getKey().toString(),m.getValue().toString());
-            tdsGlobal.get(tdsGlobal.size() - 1).addEntry(e);
+        Result res = func.accept(this);
+        HashMap<String,String> parms = new HashMap<>();
 
+        if (dec.type_field_list.accept(this).typeFieldList != null) {
+            parms = dec.type_field_list.accept(this).typeFieldList;
+        }
+        String pm = "";
+        for (Map.Entry m : parms.entrySet()) {
+            Var e = new Var(m.getKey().toString(),m.getValue().toString(),true);
+            tdsGlobal.get(tdsGlobal.size() - 1).addEntry(e);
+            pm += m.getKey().toString() + ":"+m.getValue().toString()+",";
+            
+
+        }
+        if (!pm.equals("")) {
+            pm = pm.substring(0, pm.length()-1);
+
+        }
+
+        int lig = this.numberLine("function"+dec.idf.name+"("+pm+")");
+        
+        Entry e = findEntryByName(dec.idf.name, pileRO.peek());
+        if (e != null) {
+            if (!e.getClass().getName().equals("tds.Fonction")) {
+                System.out.println(ANSI_TAB + ANSI_RED+"The id "+dec.idf.name+" already exists "+"ligne "+lig);
+
+            }
+            
+            
+            
+        }
+        else {
+            currentTds.addEntry(func);
         }
         
 
@@ -309,6 +368,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         // On créer une nouvelle TDS pour le nouveau bloc d'environnement
         createNewTds();
         Result result = new Result();
+        
         // On visit tout le LetInEnd
         dec.declaration_list.accept(this);
         if (dec.exprseq != null) {
@@ -692,6 +752,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         r.typeName = "string";
         r.strValue = d.name;
         r.objValue = d.name;
+        r.name = d.name;
         return r;
     }
 
@@ -713,25 +774,44 @@ public class tdsVisitor implements AstVisitor<Result>{
         Entry e = findEntryByName(d.idf.name, pileRO.peek());
         Result result = new Result();
         
-        if (e instanceof Fonction) {
-            Fonction p = (Fonction) e;
-            result.typeName = p.getType();
-        }
+        Result lis =  d.exprList.accept(this);
         if (e == null) {
-            if (e instanceof Fonction) {
-                System.out.println(ANSI_RED + "name of function undefined"+ANSI_RESET);
+            String resf = "";
+                        
+            for (int p = 0;p<lis.exprList.size();p++) {
+                            
+                resf += lis.exprList.get(p).accept(this).name+",";
 
-            }
-            else {
-                System.out.println(ANSI_RED + "name of function undefined"+ANSI_RESET);
-                System.out.println(ANSI_RED + "The identifier must refer to a function"+ANSI_RESET);
+                        
+            }          
+            resf = resf.substring(0,resf.length()-1);
+                        
+            int lig = this.numberLine(d.idf.name+"("+resf+")");
+            
+            System.out.println(ANSI_RED + "name of function undefined"+ANSI_RESET+" ligne "+lig);
 
-            }  
+             
+        }
+        else if (!e.getClass().getName().equals("tds.Fonction")) {
+            String resf = "";
+            for (int p = 0;p<lis.exprList.size();p++) {
+                            
+                resf += lis.exprList.get(p).accept(this).name+",";
+
+                        
+            }          
+            resf = resf.substring(0,resf.length()-1);
+                        
+            int lig = this.numberLine(d.idf.name+"("+resf+")");
+            
+            System.out.println(ANSI_RED + "name of function undefined"+ANSI_RESET+" ligne "+lig);
+            System.out.println(ANSI_RED + "The identifier must refer to a function"+ANSI_RESET+" ligne "+lig);
         }
         else {
-            Result lis =  d.exprList.accept(this);
+            
             Fonction f = (Fonction) e;
-            Tds tds = tdsGlobal.get(f.gettdsFils()-1-1);
+            result.typeName = f.getType();
+            Tds tds = tdsGlobal.get(f.gettdsFils()-1);
             int count = 0;
             for (Entry m : tds.rows) {
                 if (m instanceof Var) {
@@ -750,7 +830,14 @@ public class tdsVisitor implements AstVisitor<Result>{
 
                     }
                     else {
-                        System.out.println(ANSI_RED + "The types of actual and formal parameters must be the same" +  ANSI_RESET);
+                        String resf = "";
+                        for (int p = 0;p<lis.exprList.size();p++) {
+                            resf += lis.exprList.get(i).accept(this).name+",";
+
+                        }
+                        resf = resf.substring(0,resf.length()-1);
+                        int lig = this.numberLine(d.idf.name+"("+resf+")");
+                        System.out.println(ANSI_RED + "The types of actual and formal parameters must be the same" +  ANSI_RESET+" ligne "+lig);
 
                     }
                 }
@@ -760,7 +847,16 @@ public class tdsVisitor implements AstVisitor<Result>{
 
 
             if (count != lis.exprList.size()) {
-                System.out.println(ANSI_RED + "The number of actual and formal parameters must be the same" +  ANSI_RESET);
+                String resf = "";
+                        
+                for (int p = 0;p<lis.exprList.size();p++) {
+                    resf += lis.exprList.get(p).accept(this).name+",";
+
+                }
+                resf = resf.substring(0,resf.length()-1);
+                
+                int lig = this.numberLine(d.idf.name+"("+resf+")");
+                System.out.println(ANSI_RED + "The number of actual and formal parameters must be the same" +  ANSI_RESET+" ligne "+lig);
 
             }
 
@@ -772,7 +868,7 @@ public class tdsVisitor implements AstVisitor<Result>{
 
     @Override
     public Result visit(Program d) {
-        Tds tds = new Tds(0, 0, -1);
+        Tds tds = new Tds(0, -1, -1);
         pileRO.push(0);
         tdsGlobal.add(tds);
         System.out.println();
@@ -824,6 +920,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         n.typeName = "int";
         String vl = this.getAttr(l);
         String vr = this.getAttr(r);
+        
         int lig = this.numberLine(vl+"+"+vr);
         
         if (l.typeName.equals("int") && r.typeName.equals("int")) {
@@ -1624,6 +1721,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         r.typeName = "int";
         r.intValue = intNode.value;
         r.objValue = intNode.value;
+        r.name = intNode.value+"";
         return r;
     }
 
@@ -1697,23 +1795,20 @@ public class tdsVisitor implements AstVisitor<Result>{
             res += r.intValue;
             return res;
         }
-        if (r.lvalueObject != null) {
-            res += r.lvalueObject;
-            return res;
-        }
         if (r.varIdf != null) {
             res += r.varIdf;
             return res;
         }
+        if (r.lvalueObject != null) {
+            res += r.lvalueObject;
+            return res;
+        }
+        
         if (r.objValue != null) {
             res += r.objValue;
             return res;
         }
-        if (r.elseBlock != null) {
-            res += this.getAttr(r.elseBlock);
-            return res;
-
-        }
+        
         return res;
 
     }
