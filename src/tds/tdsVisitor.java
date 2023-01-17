@@ -273,7 +273,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         
         
         int lig = this.numberLine("function"+dec.idf1.name+"("+pm+")");
-        
+        System.out.println(lig);
         // TODO Controle sémantique pour vérifier si l'exp correspond au type de retour
        
         if (!res.typeName.equals(dec.type_id.name)) {
@@ -282,6 +282,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         Entry e = findEntryByName(dec.idf1.name, pileRO.peek());
         if (e != null) {
             if (!e.getClass().getName().equals("tds.Fonction")) {
+                
                 System.out.println(ANSI_TAB + ANSI_RED+"The id "+dec.idf1.name+" already exists "+ANSI_RESET+"ligne "+lig);
 
             }
@@ -768,18 +769,41 @@ public class tdsVisitor implements AstVisitor<Result>{
         Entry e = findEntryByName(d.idf.name, pileRO.peek());
         Result result = new Result();
         
-        
+        Result lis =  d.exprList.accept(this);
         if (e == null) {
+            String resf = "";
+                        
+            for (int p = 0;p<lis.exprList.size();p++) {
+                            
+                resf += lis.exprList.get(p).accept(this).name+",";
+
+                        
+            }          
+            resf = resf.substring(0,resf.length()-1);
+                        
+            int lig = this.numberLine(d.idf.name+"("+resf+")");
             
-            System.out.println(ANSI_RED + "name of function undefined"+ANSI_RESET);
+            System.out.println(ANSI_RED + "name of function undefined"+ANSI_RESET+" ligne "+lig);
 
              
         }
         else if (!e.getClass().getName().equals("tds.Fonction")) {
-            System.out.println(ANSI_RED + "The identifier must refer to a function"+ANSI_RESET);
+            String resf = "";
+            for (int p = 0;p<lis.exprList.size();p++) {
+                            
+                resf += lis.exprList.get(p).accept(this).name+",";
+
+                        
+            }          
+            resf = resf.substring(0,resf.length()-1);
+                        
+            int lig = this.numberLine(d.idf.name+"("+resf+")");
+            
+            System.out.println(ANSI_RED + "name of function undefined"+ANSI_RESET+" ligne "+lig);
+            System.out.println(ANSI_RED + "The identifier must refer to a function"+ANSI_RESET+" ligne "+lig);
         }
         else {
-            Result lis =  d.exprList.accept(this);
+            
             Fonction f = (Fonction) e;
             result.typeName = f.getType();
             Tds tds = tdsGlobal.get(f.gettdsFils()-1);

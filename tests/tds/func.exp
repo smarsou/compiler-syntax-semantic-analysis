@@ -6,7 +6,7 @@ let
   
 in
 
-add("MAIN",2);set("ok")
+add("MAIN",2);set(1)
 
 
 
