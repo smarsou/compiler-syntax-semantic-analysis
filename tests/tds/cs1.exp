@@ -1,0 +1,13 @@
+let
+	var a:= 10
+in
+	for i:=0 to test do
+		(if i>0 then i:=i+1;
+		if i=test then while i<test do
+				let var x:=0 in x := x+1 end
+		else print("test erreur"));
+	if test then a:=2 else print("test erreur 2);
+	while a>0 do a:=a-1
+	
+	
+end
