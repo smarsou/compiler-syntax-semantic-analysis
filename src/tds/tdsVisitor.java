@@ -24,6 +24,7 @@ import ast.ArrayCreate;
 import ast.ArrayTypeNode;
 import ast.Ast;
 import ast.AstVisitor;
+import ast.Break;
 import ast.CallExpr;
 import ast.Couple;
 import ast.DecFunctVoid;
@@ -84,6 +85,7 @@ public class tdsVisitor implements AstVisitor<Result>{
 
     public ArrayList<Tds> tdsGlobal = new ArrayList<>(); // La liste de toutes les TDS
     public Stack<Integer> pileRO = new Stack<>(); // La pile des régions ouverte;
+    int boucle = 0;
 
     public tdsVisitor(String testFile) {
         this.file = testFile;
@@ -211,6 +213,8 @@ public class tdsVisitor implements AstVisitor<Result>{
         pileRO.push(newRegion);
         tdsGlobal.add(tds);
     }
+
+
 
     @Override
     public Result visit(RecField affect) {
@@ -681,25 +685,28 @@ public class tdsVisitor implements AstVisitor<Result>{
 
         // On créer une nouvelle TDS
         createNewTds();
+        Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
         //On parcours la boucle for et on récupère les infos du resultat dans Result. (on peut ajouter des attributs à Result si necessaire)
 
         Result c = f.expr1.accept(this);
         Result l = f.expr2.accept(this);
 
 
-        //On créer l'entrée pour la variable d'increment
-        Var increment = new Var(f.idf.name, "int", c.intValue, l.intValue);
-        //On ajoute en entrée la variable d'increment
-        Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
-        currentTds.addEntry(increment);
-        
+
+        boucle++;
+
         Result r = f.expr3.accept(this);
         if (c.typeName == "int" && l.typeName == "int") {
+            //On créer l'entrée pour la variable d'increment
+            Var increment = new Var(f.idf.name, "int", c.intValue, l.intValue);
+            //On ajoute en entrée la variable d'increment
+            currentTds.addEntry(increment);
             if (r.typeName != "void") {
                 int lig = this.numberLine("for"+f.idf.name+":="+this.getAttr(c)+"to"+this.getAttr(l));
                 System.err.println(
                         ANSI_RED + "For Error: The body must be of type void" + ANSI_RESET+" "+"ligne"+" "+lig);
                 pileRO.pop();
+                boucle--;
                 return r;
             }
 
@@ -709,8 +716,10 @@ public class tdsVisitor implements AstVisitor<Result>{
             System.err.println(
                     ANSI_RED + "For Error: The start and end index of boucle for must be of type int" + ANSI_RESET+" "+"ligne"+" "+lig);
             pileRO.pop();
+            boucle--;
             return r;
         }
+
         
 
         //TODO: COntroles sémantiques
@@ -740,7 +749,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result r = d.expr2.accept(this);
 
         // TODO: COntrole sémantqie 2
-        // The body type must be void. En gros c'est le Result r qui doit être de type
+        // The body type must be void. En gros c'est le Result r qui doit être de t
         // void je crois
 
         if (c.typeName.equals("int")) {
@@ -1995,6 +2004,19 @@ public class tdsVisitor implements AstVisitor<Result>{
         // TODO Auto-generated method stub
         return null;
         
+    }
+
+
+    @Override
+    public Result visit(Break ctx) {
+
+        Result r = new Result();
+        if (boucle == 0){
+            System.err.println(ANSI_RED + "Break error: Argument must be type of string");
+        }
+        r.typeName = "string";
+        r.strValue = "break";
+        return r;
     }
 
 }
