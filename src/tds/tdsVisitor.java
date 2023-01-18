@@ -750,7 +750,7 @@ public class tdsVisitor implements AstVisitor<Result>{
     public Result visit(While d) {
 
         // On créer une nouvelle TDS
-        createNewTds();
+        // createNewTds();
 
         // TODO: COntrole sémantique 1
         // The condition type must be int
@@ -783,7 +783,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         }
         boucle--;
         // On remonte dans le bloc père
-        pileRO.pop();
+        // pileRO.pop();
 
         return r;
 
@@ -795,7 +795,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result res = new Result();
         Result lv = d.lvalue.accept(this);
         Result expr = d.lvalue_call_or_declare.accept(this);
-        res.typeName = expr.typeName;   
+        res.typeName = "void";   
        
         if (!lv.lvalueCorrect) {
             // int lig = this.numberLine(this.getAttr(lv)+":=");

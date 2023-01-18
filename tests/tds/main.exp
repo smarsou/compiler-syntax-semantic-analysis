@@ -1,13 +1,4 @@
 let
-var a := 1
-var b := "salut"
-in
-end
-
-let 
-var b := 2
-in
-    let 
         type couple = {a : int, b : int}
         type couple = {a : string, b :string}
         type reference = uplet
@@ -19,8 +10,6 @@ in
         var premier : string := "salut" 
         var premier := "aurevoir"
         var deuxieme : uplet := 15
-
-        var a := 10
 
         var couple1 := couple {a = "goerge", b = "zizou"}
         var couple1 := uplet {un = "o", deux="oo", trois="ooo"}
@@ -37,7 +26,52 @@ in
         var tab2 := tableauInt[5] of -1
         var tab3 : tableauCpl := tableauInt[5] of -1
 
-    in
+	var a:= 10
+	var n:= "mady"
+    var add := 1
+    var k := 6
+
+    function add(a : int,p:string,b:int) : int = 1
+    function pop() : int = 4
+    function set(a:int) = "papa"
+    function take():int = "no"
+in	
+	if a=10 then a:=a+1;
+	if a=10 then print("PCL");
+	if a=10 then n:= "mady wagué";
+	if a>5 then a:=a+1 else n:="mady wagué";
+	if a=20 then print("PCL complete") else ("PCL failed");
+	for i:=0 to "str" do (a := a+10);
+	for i:="str" to "str" do (a := a+10);
+	for i:=0 to 10 do (a);
+	
+	for i:=0 to 100 do (a := a+10);
+	
+	for j:=0 to 100 do (
+		a := a+10;
+		while 10>0 do (n; break)
+	);
+	while "sa" do (a:=a+1);
+	while n do (a);
+	while n do (a:=a+1);
+	let var x:= 0 in break end;
+
+
+    add("MAIN",2);
+    set("ok");
+    pop();
+    remove("a");
+    add := add - k;
+    add > "main";
+    add / 0;
+    "main" | "ol";
+    -"ok";
+    add + "pl";
+    add * "no";
+    add >= "papa";
+    add <= "mam";
+    "tata"<>51;
+    "papa" < add;
 
         c;
         b[0];
@@ -46,7 +80,6 @@ in
         tab[0].d;
         b.c[0];
         premier := 10;
-        couple2 := couple1;
-        coupl := couple1
-    end
+        couple2 := couple1
+	
 end
