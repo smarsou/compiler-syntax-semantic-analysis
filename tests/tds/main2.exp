@@ -1,0 +1,38 @@
+let
+  var add := 1
+  var k := 6
+  type first = array of int
+
+  function add(a : int,p:string,b:int) : int = 1
+  function pop() : int = 4
+  function set(a:int) = "papa"
+  function take():int = "no"
+  
+  
+  
+  
+in
+
+add("MAIN",2);
+set("ok");
+pop();
+remove("a");
+add := add - k;
+add > "main";
+add / 0;
+"main" | "ol";
+-"ok";
+add + "pl";
+add * "no";
+add >= "papa";
+add <= "mam";
+"tata"<>51;
+"papa" < add
+
+
+
+
+
+
+
+end

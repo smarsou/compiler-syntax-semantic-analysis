@@ -17,32 +17,37 @@ in
 
         var premier : string := 10
         var premier : string := "salut" 
-        var premier := 10
+        var premier := "aurevoir"
         var deuxieme : uplet := 15
+
+        var a := 10
 
         var couple1 := couple {a = "goerge", b = "zizou"}
         var couple1 := uplet {un = "o", deux="oo", trois="ooo"}
-        var couple1 := tableau {j="j"}
+        var couple1 := tableauInt {j="j"}
         var couple1 := couple {a = 0}
         var couple1 := couple {a = 0, c = 0}
         var couple1 := couple {a = 0, b = 0}
+        var couple2 : couple := couple1
 
         var tab := couple [3] of 0
         var tab := tableauCpl["cinq"] of 0
         var tab := tableauCpl[3] of 0
         var tab := tableauCpl[3] of couple1
         var tab2 := tableauInt[5] of -1
+        var tab3 : tableauCpl := tableauInt[5] of -1
 
     in
 
         c;
         b[0];
         couple1.c;
-        tab["String"].a;
+        tab["String"];
         tab[0].d;
-        b.c[0]
-
+        b.c[0];
+        premier := 10;
+        couple2 := couple1;
+        coupl := couple1
         
-
     end
 end

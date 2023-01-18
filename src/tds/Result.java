@@ -12,6 +12,7 @@ public class Result  {
    
     //typeName = 'int', 'array' pour les tableau de même type, 'rec' pour les tableaux avec différents types
     String typeName;
+    String typeName2;
 
     String name;
     String strValue;
