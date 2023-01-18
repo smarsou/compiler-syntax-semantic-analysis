@@ -1,17 +1,36 @@
 let
-  
+  var add := 1
+  var k := 6
+  type first = array of int
+
   function add(a : int,p:string,b:int) : int = 1
   function pop() : int = 4
   function set(a:int) = "papa"
   function take():int = "no"
-  function add(index:int) = "OL"
+  
+  
   
 in
 
 add("MAIN",2);
 set("ok");
 pop();
-remove("a")
+remove("a");
+
+1-2 > "main";
+1+6-2 / 0;
+"main" | "ol";
+-"ok";
+add + "pl";
+add * "no"
+add >= "papa"
+
+
+
+
+
+
+
 
 
 
