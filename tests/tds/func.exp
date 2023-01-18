@@ -1,10 +1,10 @@
 let
-  var add := 1
+  
   function add(a : int,p:string,b:int) : int = 1
   function pop() : int = 4
   function set(a:int) = "papa"
   function take():int = "no"
-  function add() = "OL"
+  function add(index:int) = "OL"
   
 in
 

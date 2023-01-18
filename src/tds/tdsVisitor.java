@@ -293,14 +293,24 @@ public class tdsVisitor implements AstVisitor<Result>{
         if (e != null) {
             if (e.getClass().getName().equals("tds.Fonction")) {
                 
-                System.out.println(ANSI_TAB + ANSI_YELLOW+"The id "+dec.idf1.name+" already exists "+ANSI_RESET+"ligne "+lig);
+                System.out.println(ANSI_TAB + ANSI_RED+"The id "+dec.idf1.name+" already exists "+ANSI_RESET+"ligne "+lig);
+
+            }
+            else {
+                currentTds.addEntry(func);
 
             }
             
+            
+            
+        }
+        else {
+            currentTds.addEntry(func);
 
         }
         
-        currentTds.addEntry(func);
+        
+        
         
         
         // On revient au père
@@ -362,16 +372,24 @@ public class tdsVisitor implements AstVisitor<Result>{
         
         Entry e = findEntryByName(dec.idf.name, pileRO.peek());
         if (e != null) {
-            if (!e.getClass().getName().equals("tds.Fonction")) {
-                System.out.println(ANSI_TAB + ANSI_YELLOW+"The id "+dec.idf.name+" already exists "+"ligne "+lig);
+            if (e.getClass().getName().equals("tds.Fonction")) {
+                System.out.println(ANSI_TAB + ANSI_RED+"The id "+dec.idf.name+" already exists "+ANSI_RESET+"ligne "+lig);
+
+            }
+            else {
+                currentTds.addEntry(func);
 
             }
             
             
             
         }
+        else {
+            currentTds.addEntry(func);
+
+        }
         
-        currentTds.addEntry(func);
+        
         
         
 
