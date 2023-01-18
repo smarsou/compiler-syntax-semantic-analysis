@@ -24,7 +24,6 @@ astrun :
 	java -cp ./lib/antlr-4.9.2-complete.jar:./bin MainAST $(target)
 	echo } >> out/tree.dot
 	dot -Tsvg ./out/tree.dot -o ./out/tree.svg
-	
 
 tdsrun:
 	make astparser

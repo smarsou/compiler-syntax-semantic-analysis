@@ -112,8 +112,13 @@ public class tdsVisitor implements AstVisitor<Result>{
                             System.out.print(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" de type " + ((Var) e).rec.type_id+ " | ");
                             printRec(((Var) e).rec);
                         }
-                        else {
-                            
+                        else if (((Var) e).valeur.getClass().getName() == "tds.Rec"){
+                            System.out.print(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | rec de type " + ((Rec) ((Var) e).valeur).type_id+ " | ");
+                            printRec(((Rec) ((Var) e).valeur));
+                        }else if (((Var) e).valeur.getClass().getName() == "tds.Array"){
+                            System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | array de type " + ((Array) ((Var) e).valeur).type+ " | ");
+                            printArray((Array) ((Var) e).valeur);
+                        }else {
                         System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | "+((Var) e).valeur.toString());
                         }                        
 
@@ -222,11 +227,11 @@ public class tdsVisitor implements AstVisitor<Result>{
 
         String typeOfIdf = entry.typeFieldDict.get(idf);
         if (typeOfIdf == null){
-            System.err.println(ANSI_TAB + ANSI_RED + "Création de Record: Le champ \""+idf+"\" n'est pas un champ du Record de type \""+type+"\"."+ANSI_RESET);
+            System.err.println(ANSI_RED + "Record Create Error: \""+idf+"\" is not a field from the Record type \""+type+"\"."+ANSI_RESET);
             return r;
         }
         if (!typeDeExpr.equals(typeOfIdf)) {
-            System.err.println(ANSI_TAB+ANSI_RED + "Création de Record: Les types ne correspondent pas pour le champ \""+ idf + "\" (" + typeOfIdf + "/" + typeDeExpr +")."+ ANSI_RESET);
+            System.err.println(ANSI_RED + "Record Create Error: Types mismatch for \""+ idf + "\" : (" + typeOfIdf + "/" + typeDeExpr +")."+ ANSI_RESET);
             return r;
         }
         r.strValue = idf;
@@ -395,16 +400,25 @@ public class tdsVisitor implements AstVisitor<Result>{
         int lig = this.numberLine("var"+dec.idf1.name+":"+dec.idf2.name);
         if (e == null || e.getClass().getName() != "tds.Var") {
             // dec.idf2.name.equals(result.typeName);
+            // if (result.typeName == "rec"){
+            //     if (dec.idf2.name.equals(result.typeName2) || compareType(dec.idf2.name, result.typeName2, lig)) {
+            //         var = new Var(dec.idf1.name, "rec", result.objValue);
+            //         currentTds.addEntry(var);
+            //     } else {
+            //         System.err.println(ANSI_TAB + ANSI_RED + "Déclaration de variable: Les types ne correspondent pas pour la variable \"" + dec.idf1.name
+            //                 + "\". (" + dec.idf2.name + " / " + result.typeName2 + ")." + ANSI_RESET+" "+"ligne"+" "+lig);
+            //     }
+            // }else 
             if (dec.idf2.name.equals(result.typeName) || compareType(dec.idf2.name, result.typeName, lig)) {
                 var = new Var(dec.idf1.name, dec.idf2.name, result.objValue);
                 currentTds.addEntry(var);
-            } else {
-                System.err.println(ANSI_TAB + ANSI_RED + "Déclaration de variable: Les types ne correspondent pas pour la variable \"" + dec.idf1.name
-                        + "\". (" + dec.idf2.name + " / " + result.typeName + ")." + ANSI_RESET+" "+"ligne"+" "+lig);
+            }else {
+                System.err.println(ANSI_RED + "Variable Declaration Error: Type mismatch error for the variable \"" + dec.idf1.name
+                        + "\" : (" + dec.idf2.name + " / " + result.typeName + ")." + ANSI_RESET+" "+"ligne"+" "+lig);
             }
         } else {
-            System.err.println(ANSI_TAB + ANSI_RED + "Déclaration de variable: L'identifiant \"" + dec.idf1.name
-                    + "\" est déja utilisé." + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED + "Variable Declaration Error: \"" + dec.idf1.name
+                    + "\" is already used." + ANSI_RESET+" "+"ligne"+" "+lig);
         }
 
         // On ajoute l'entrée à la TDS courante
@@ -421,7 +435,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         }
         Entry e = findEntryByName(typeTDS, pileRO.peek());
         if ((e == null || e.getClass().getName() != "tds.Type")) {
-            System.err.println(ANSI_TAB + ANSI_RED + "Déclaration de variable: Le type " + typeTDS + " n'existe pas. " + ANSI_RESET  +"ligne "+ligne);
+            System.err.println(ANSI_RED + "Variable Declaration Error: Type " + typeTDS + " doesn't exist. " + ANSI_RESET  +"ligne "+ligne);
             return false;
         }
         Type t = (Type) e;
@@ -448,21 +462,22 @@ public class tdsVisitor implements AstVisitor<Result>{
             if (result.objValue != null){
                 var = new Var(dec.idf.name, result.typeName, result.objValue);
                 if (result.typeName == "array"){
-                    var.array = result.ar;
+                    var.array = (Array) result.objValue;
                 }if (result.typeName == "rec"){
-                    var.rec = result.rc;
+                    var.rec = (Rec) result.objValue;
                 }
                 currentTds.addEntry(var);
             }
         } else {
             int lig = this.numberLine("var"+dec.idf.name+":="+this.getAttr(result));
-            System.err.println(ANSI_TAB + ANSI_RED + "Déclaration de variable: L'identifiant \"" + dec.idf.name
-                    + "\" est déja utilisé." + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED + "Variable Declaration Error: \"" + dec.idf.name
+                    + "\" is already used." + ANSI_RESET+" "+"ligne"+" "+lig);
         }
 
         // On ajoute l'entrée à la TDS courante
         Result res = new Result();
         res.typeName = result.typeName;
+        res.typeName2 = result.typeName2;
         res.name = dec.idf.name;
         res.objValue = result.objValue;
         
@@ -484,7 +499,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         if (e2 != null && e2.getClass().getName() == "tds.Type") {
             int lig = this.numberLine("type"+dec.idf.accept(this).strValue+"=");
             System.err.println(
-                    ANSI_TAB + ANSI_RED + "Déclaration de Type: L'identifiant \"" + dec.idf.accept(this).strValue + "\" est déja utilisé."+ANSI_RESET+" ligne "+" "+lig);
+                    ANSI_RED + "Type Declaration Error: \"" + dec.idf.accept(this).strValue + "\" is already used."+ANSI_RESET+" ligne "+" "+lig);
             return new Result();
         }
         // On créer une nouvelle entrée
@@ -511,7 +526,7 @@ public class tdsVisitor implements AstVisitor<Result>{
                     type.typeDeType = "???";
                     type.typeid = typeExpr.strValue;
                     int lig = this.numberLine("type"+type.typeid+"=");
-                    System.err.println(ANSI_TAB + ANSI_RED + "Déclaration de type: \"" + typeExpr.strValue+"\" n'existe pas. " +ANSI_RESET+"ligne"+" "+lig);
+                    System.err.println(ANSI_RED + "Type Declaration Error: \"" + typeExpr.strValue+"\" doesn't exist. " +ANSI_RESET+"ligne"+" "+lig);
                     return new Result();
                 }
             }
@@ -541,12 +556,14 @@ public class tdsVisitor implements AstVisitor<Result>{
         r.strValue = dec.id;
         r.typeName = "LvalueSub";
         ArrayList<Result> a = new ArrayList<>();
+        
         for (Ast d : dec.successiveSub) {
-            if (!d.accept(this).typeName.equals("int")) {
+            Result resu = d.accept(this);
+            if (!resu.typeName.equals("int")) {
                 int lig = this.numberLine(r.strValue);
-                System.err.println(ANSI_TAB+ANSI_RED + "Accès à un Tableau: L'élément entre crochets [_] doit être un entier." + ANSI_RESET+" "+"ligne"+" "+lig);
+                System.err.println(ANSI_RED + "Subscript Error: subscript value is not an integer." + ANSI_RESET+" "+"ligne"+" "+lig);
             }
-            a.add(d.accept(this));
+            a.add(resu);
         }
         r.subscript = a;
         return r;
@@ -565,7 +582,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result expr1 = a.expr1.accept(this);
         if (expr1.typeName != "int") {
             int lig = this.numberLine("[" +this.getAttr(expr1)+"]"+"of");
-            System.err.println(ANSI_TAB+ANSI_RED + "Création de Tableau: l'objet entre crochets [_] doit être de type int. " + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED + "Array Create Error: Value in [_] has to be an integer. " + ANSI_RESET+" "+"ligne"+" "+lig);
             return res;
         }
         
@@ -574,7 +591,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         Entry e = findEntryByName(a.typeid.accept(this).strValue, pileRO.peek());
         
         if (e == null || e.getClass().getName() != "tds.Type" || ((Type) e).arrayOf == null){
-            System.err.println(ANSI_TAB+ANSI_RED+"Création de Tableau: Le type \""+a.typeid.accept(this).strValue+"\" n'existe pas ou n'est pas un type de Tableau." + ANSI_RESET);
+            System.err.println(ANSI_RED+"Array Create Error: \""+a.typeid.accept(this).strValue+"\" is not an Array type OR doesn't exist." + ANSI_RESET);
             return res;
         }
         String arrayof = second.typeName;
@@ -591,7 +608,7 @@ public class tdsVisitor implements AstVisitor<Result>{
 
         if (!compareType(a.typeid.accept(this).strValue,arrayof,-1)){
             int lig = this.numberLine("[" +this.getAttr(expr1)+"]"+"of");
-            System.err.println(ANSI_TAB+ANSI_RED + "Création de Tableau: Un Tableau de type \""+a.typeid.accept(this).strValue +"\" ne peut contenir un élement de type \""+ arrayof+"\"." + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED + "Array Create Error: An array of type \""+a.typeid.accept(this).strValue +"\" has only elements of type \""+ arrayof+"\"." + ANSI_RESET+" "+"ligne"+" "+lig);
             return res;
         }
 
@@ -606,6 +623,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         
         res.ar = tableau;
         res.objValue = tableau;
+        res.typeName = tableau.type;
 
         return res;
 
@@ -747,17 +765,22 @@ public class tdsVisitor implements AstVisitor<Result>{
         res.typeName = expr.typeName;   
        
         if (!lv.lvalueCorrect) {
-            int lig = this.numberLine(this.getAttr(lv)+":=");
-            System.err.println(ANSI_RED + "Affect Error: Can't find variable" + ANSI_RESET+" "+"ligne"+" "+lig);
+            // int lig = this.numberLine(this.getAttr(lv)+":=");
+            // System.err.println(ANSI_RED + "Affect Error: Can't find variable \""+ lv.strValue +"\"." + ANSI_RESET+" ligne"+" "+lig);
             return res;
         }
         if ( (lv.lvalueType == "java.lang.Integer" && expr.typeName == "int") || (lv.lvalueType == "java.lang.String" && expr.typeName == "string")){
 
         }else
-        if (!lv.lvalueType.equals(expr.typeName)) {
+        if (!lv.typeName.equals(expr.typeName)) {
+            if (lv.lvalueType.equalsIgnoreCase("java.lang.String")){
+                lv.lvalueType = "string";
+            }if(lv.lvalueType.equalsIgnoreCase("java.lang.Integer")){
+                lv.lvalueType = "int";
+            }
             int lig1 = this.numberLine(":="+this.getAttr(expr));
             System.err.println(
-                    ANSI_RED + "Affect Error: Type mismatch for the variable " +lv.lvalueType + "/" + expr.typeName + ANSI_RESET+" "+"ligne"+" "+lig1);
+                    ANSI_RED + "Affect Error: Type mismatch for the variable " +lv.typeName + "/" + expr.typeName + ANSI_RESET+" "+"ligne"+" "+lig1);
             return res;
         }
         
@@ -1398,22 +1421,22 @@ public class tdsVisitor implements AstVisitor<Result>{
 
         Entry e = findEntryByName(type, pileRO.peek());
         if (e == null) {
-            System.err.println(ANSI_TAB + ANSI_RED + "Création de Record: Le type \"" + type + "\" n'existe pas." + ANSI_RESET);
+            System.err.println(ANSI_RED + "Record Create Error: Type \"" + type + "\" doesn't exist." + ANSI_RESET);
             return res;
         }
         if (e.getClass().getName() != "tds.Type") {
-            System.err.println(ANSI_TAB + ANSI_RED + "Type Not found Error: " + type + " is the name of a variable or a function."
+            System.err.println(ANSI_RED + "Type Not found Error: " + type + " is the name of a variable or a function."
                     + ANSI_RESET);
             return res;
         }
         Type entry = (Type) e;
         if (entry.typeDeType != "rectype") {
-            System.err.println(ANSI_TAB+ANSI_RED + "Création de Record: Le type \"" + type + "\" n'est pas un type Record." + ANSI_RESET);
+            System.err.println(ANSI_RED + "Record Create Error: Type \"" + type + "\" is not a Record type." + ANSI_RESET);
             return res;
         }
 
         if (recFieldList.astList.size() != entry.typeFieldDict.size()){
-            System.err.println(ANSI_TAB+ ANSI_RED + "Création de Record: Pas assez de champs initialisés." + ANSI_RESET);
+            System.err.println(ANSI_RED + "Record Create Error: There are more fields to initialize." + ANSI_RESET);
             return res;
         }
 
@@ -1464,13 +1487,13 @@ public class tdsVisitor implements AstVisitor<Result>{
         int lig = this.numberLine(idf);
         // Si on ne trouve pas cette idf
         if (e == null) {
-            System.err.println(ANSI_TAB+ ANSI_RED + "Variable Non trouvée: \"" + idf + "\" n'existe pas." + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED + "Variable Not Found: \"" + idf + "\" doesn't exist." + ANSI_RESET+" "+"ligne"+" "+lig);
             returnRes.lvalueCorrect = false;
             return returnRes;
         }
         // Si ce n'est pas une variable
         if (e.getClass().getName() != "tds.Var") {
-            System.err.println(ANSI_RED + "Variable Non trouvée: " + idf + " n'est pas une variable." + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED + "Variable Not Found: " + idf + " is not a variable." + ANSI_RESET+" "+"ligne"+" "+lig);
             returnRes.lvalueCorrect = false;
             return returnRes;
         }
@@ -1482,6 +1505,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         // System.out.println(res);
         if (res == null){
             returnRes.lvalueCorrect = false;
+            returnRes.strValue = idf;
             return returnRes;
         }
         returnRes.lvalueCorrect = true;
@@ -1490,11 +1514,29 @@ public class tdsVisitor implements AstVisitor<Result>{
         // System.out.println("2:"+lvalueInit.lvalue2.size());
         returnRes.linkToLvalue = lvalueInit.lvalue2;
         returnRes.varObject = ((Var) e).valeur;
+        returnRes.objValue = res;
+        // ((Var) e).valeur;
         returnRes.varIdf = idf;
         returnRes.strValue = idf;
-        returnRes.typeName = ((Var) e).type;
+        // System.out.println(returnRes.lvalueType);
+        if (returnRes.lvalueType == "java.lang.Integer"){
+            returnRes.typeName = "int";
+        }else if (returnRes.lvalueType == "java.lang.String"){
+            returnRes.typeName = "string";
+        }else if (returnRes.lvalueType == "tds.Rec"){
+            returnRes.typeName = ((Rec) res).type_id;
+        }else if (returnRes.lvalueType == "tds.Array"){
+            returnRes.typeName = ((Array) res).type;
+        }else{
+            returnRes.typeName = returnRes.lvalueType;
+        }
+        // ((Var) e).type;
+        // if (returnRes.typeName == "rec"){
+        //     returnRes.typeName2 = ((Rec) ((Var) e).valeur).type_id;
+        // }if (returnRes.typeName == "array"){
+        //     returnRes.typeName2 = ((Array) ((Var) e).valeur).type;
+        // }
         return returnRes;
-
     }
 
     public void AffectLvalue(String idf,Entry e, Object value, ArrayList<Ast> lvalue, Boolean print){
@@ -1624,7 +1666,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         // sous idf
         if (obj.getClass().getName() != "tds.Rec") {
             if (print) {
-                System.err.println(ANSI_TAB+ANSI_RED + "Accès à un Record: \""+id+"\" ne peut pas être trouvé car la varible père n'est pas un Record." + ANSI_RESET);
+                System.err.println(ANSI_RED + "Record Acces Error: \""+id+"\" ne peut pas être trouvé car la varible père n'est pas un Record." + ANSI_RESET);
             }
             return null;
         }
@@ -1655,7 +1697,7 @@ public class tdsVisitor implements AstVisitor<Result>{
                 } else {
                     if (print) {
                         System.err.println(
-                                ANSI_TAB+ANSI_RED + "Accès à un Tableau: " + id + " n'est pas un Tableau (En anglais: Not subscriptable)." + ANSI_RESET);
+                                ANSI_RED + "Not Subscriptable Error: \"" + id + "\" is not an Array." + ANSI_RESET);
                     }
                     return null;
                 }
@@ -1678,7 +1720,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         } else {
             if (print) {
                 System.err
-                        .println(ANSI_TAB+ANSI_RED + "Accès à un Record: \"" + name + "\" n'est pas un champ de la variable." + ANSI_RESET);
+                        .println(ANSI_RED + "Record Access Error: \"" + name + "\" is not a field." + ANSI_RESET);
             }
             return null;
         }
@@ -1687,7 +1729,7 @@ public class tdsVisitor implements AstVisitor<Result>{
     public Object getSubObjInArray(Integer i, Array tab, Boolean print) {
         if (i == null) {
             if (print) {
-                System.err.println(ANSI_RED + "Accès à un Tableau: le champ entre [_] est inccorect." + ANSI_RESET);
+                System.err.println(ANSI_RED + "Subscript Error: subscript value not allowed." + ANSI_RESET);
             }
             return null;
         }
