@@ -1,0 +1,48 @@
+let
+var a := 1
+var b := "salut"
+in
+end
+
+let 
+var b := 2
+in
+    let 
+        type couple = {a : int, b : int}
+        type couple = {a : string, b :string}
+        type reference = uplet
+        type reference = int
+        type tableauInt = array of int
+        type tableauCpl = array of couple
+
+        var premier : string := 10
+        var premier : string := "salut" 
+        var premier := 10
+        var deuxieme : uplet := 15
+
+        var couple1 := couple {a = "goerge", b = "zizou"}
+        var couple1 := uplet {un = "o", deux="oo", trois="ooo"}
+        var couple1 := tableau {j="j"}
+        var couple1 := couple {a = 0}
+        var couple1 := couple {a = 0, c = 0}
+        var couple1 := couple {a = 0, b = 0}
+
+        var tab := couple [3] of 0
+        var tab := tableauCpl["cinq"] of 0
+        var tab := tableauCpl[3] of 0
+        var tab := tableauCpl[3] of couple1
+        var tab2 := tableauInt[5] of -1
+
+    in
+
+        c;
+        b[0];
+        couple1.c;
+        tab["String"].a;
+        tab[0].d;
+        b.c[0]
+
+        
+
+    end
+end
