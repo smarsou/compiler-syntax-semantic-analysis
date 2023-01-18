@@ -11,6 +11,7 @@ import ast.ArrayCreate;
 import ast.ArrayTypeNode;
 import ast.Ast;
 import ast.AstVisitor;
+import ast.Break;
 import ast.CallExpr;
 import ast.Couple;
 import ast.DecFunctVoid;
@@ -733,6 +734,15 @@ public class GraphVizVisitor implements AstVisitor<String> {
     public String visit(Entry e) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public String visit(Break brk) {
+        String nodeIdentifier = this.nextState();
+
+        this.addNode(nodeIdentifier, brk.strValue);
+
+        return nodeIdentifier;
     }
 
 
