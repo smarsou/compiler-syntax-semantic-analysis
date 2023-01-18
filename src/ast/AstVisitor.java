@@ -32,7 +32,7 @@ public interface AstVisitor<T> {
 
     public T visit(For ctx);
 
-    // public T visit(Break ctx);
+    public T visit(Break ctx);
 
     public T visit(LetInEnd ctx);
 

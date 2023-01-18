@@ -42,4 +42,5 @@ public class Result  {
     String conditionBlockReturn;
     Result thenBlock;
     Result elseBlock;
+    ArrayList<String> orderedParams;
 }

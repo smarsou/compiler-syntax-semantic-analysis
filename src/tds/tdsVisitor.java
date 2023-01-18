@@ -24,6 +24,7 @@ import ast.ArrayCreate;
 import ast.ArrayTypeNode;
 import ast.Ast;
 import ast.AstVisitor;
+import ast.Break;
 import ast.CallExpr;
 import ast.Couple;
 import ast.DecFunctVoid;
@@ -84,6 +85,7 @@ public class tdsVisitor implements AstVisitor<Result>{
 
     public ArrayList<Tds> tdsGlobal = new ArrayList<>(); // La liste de toutes les TDS
     public Stack<Integer> pileRO = new Stack<>(); // La pile des régions ouverte;
+    int boucle = 0;
 
     public tdsVisitor(String testFile) {
         this.file = testFile;
@@ -123,6 +125,11 @@ public class tdsVisitor implements AstVisitor<Result>{
                         }                        
 
                     }
+
+                    if (k.debut != null) {           
+                        System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | "+((Var) e).debut.toString() + " | "+((Var) e).fin.toString());
+                    }                        
+
                     else {
                         if (k.isParm) {
                             
@@ -130,6 +137,7 @@ public class tdsVisitor implements AstVisitor<Result>{
                             
 
                         }
+                        
                     }
                     
                 }
@@ -210,6 +218,8 @@ public class tdsVisitor implements AstVisitor<Result>{
         tdsGlobal.add(tds);
     }
 
+
+
     @Override
     public Result visit(RecField affect) {
         // Field names, expression types, and the order thereof must exactly
@@ -263,18 +273,24 @@ public class tdsVisitor implements AstVisitor<Result>{
         // On visit le bloc de la fonction
         Result res = dec.expr.accept(this);
         HashMap<String,String> parms = new HashMap<>();
+        ArrayList<String> orderParms = new ArrayList<>();
 
         if (dec.type_field_list.accept(this).typeFieldList != null) {
             parms = dec.type_field_list.accept(this).typeFieldList;
+            orderParms = dec.type_field_list.accept(this).orderedParams;
         }
         String pm = "";
         for (Map.Entry m : parms.entrySet()) {
             
             Var e = new Var(m.getKey().toString(),m.getValue().toString(),true);
             tdsGlobal.get(tdsGlobal.size() - 1).addEntry(e);
-            pm += m.getKey().toString() + ":"+m.getValue().toString()+",";
+            
 
         }
+        for (String k : orderParms) {
+            pm += k + ":"+parms.get(k)+",";
+        }
+        
         if (!pm.equals("")) {
             pm = pm.substring(0, pm.length()-1);
 
@@ -282,7 +298,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         
         
         int lig = this.numberLine("function"+dec.idf1.name+"("+pm+")");
-        System.out.println(lig);
+        
         // TODO Controle sémantique pour vérifier si l'exp correspond au type de retour
        
         if (!res.typeName.equals(dec.type_id.name)) {
@@ -290,17 +306,27 @@ public class tdsVisitor implements AstVisitor<Result>{
         }
         Entry e = findEntryByName(dec.idf1.name, pileRO.peek());
         if (e != null) {
-            if (!e.getClass().getName().equals("tds.Fonction")) {
+            if (e.getClass().getName().equals("tds.Fonction")) {
                 
                 System.out.println(ANSI_TAB + ANSI_RED+"The id "+dec.idf1.name+" already exists "+ANSI_RESET+"ligne "+lig);
 
             }
-            
+            else {
+                currentTds.addEntry(func);
 
+            }
+            
+            
+            
         }
         else {
             currentTds.addEntry(func);
+
         }
+        
+        
+        
+        
         
         // On revient au père
         pileRO.pop();
@@ -331,18 +357,27 @@ public class tdsVisitor implements AstVisitor<Result>{
         // On visit le bloc de la fonction
         Result res = func.accept(this);
         HashMap<String,String> parms = new HashMap<>();
+        ArrayList<String> orderParms = new ArrayList<>();
 
-        if (dec.type_field_list.accept(this).typeFieldList != null) {
-            parms = dec.type_field_list.accept(this).typeFieldList;
+        if (dec.type_field_list != null) {
+            if (dec.type_field_list.accept(this).typeFieldList != null) {
+                parms = dec.type_field_list.accept(this).typeFieldList;
+             
+                orderParms = dec.type_field_list.accept(this).orderedParams;
+
+            }
+            
         }
         String pm = "";
         for (Map.Entry m : parms.entrySet()) {
             Var e = new Var(m.getKey().toString(),m.getValue().toString(),true);
             tdsGlobal.get(tdsGlobal.size() - 1).addEntry(e);
-            pm += m.getKey().toString() + ":"+m.getValue().toString()+",";
             
-
         }
+        for (String k : orderParms) {
+            pm += k + ":"+parms.get(k)+",";
+        }
+        
         if (!pm.equals("")) {
             pm = pm.substring(0, pm.length()-1);
 
@@ -352,8 +387,12 @@ public class tdsVisitor implements AstVisitor<Result>{
         
         Entry e = findEntryByName(dec.idf.name, pileRO.peek());
         if (e != null) {
-            if (!e.getClass().getName().equals("tds.Fonction")) {
-                System.out.println(ANSI_TAB + ANSI_RED+"The id "+dec.idf.name+" already exists "+"ligne "+lig);
+            if (e.getClass().getName().equals("tds.Fonction")) {
+                System.out.println(ANSI_TAB + ANSI_RED+"The id "+dec.idf.name+" already exists "+ANSI_RESET+"ligne "+lig);
+
+            }
+            else {
+                currentTds.addEntry(func);
 
             }
             
@@ -362,7 +401,11 @@ public class tdsVisitor implements AstVisitor<Result>{
         }
         else {
             currentTds.addEntry(func);
+
         }
+        
+        
+        
         
 
         // On revient au père
@@ -497,7 +540,7 @@ public class tdsVisitor implements AstVisitor<Result>{
 
         Entry e2 = findEntryInTds(dec.idf.accept(this).strValue, pileRO.peek());
         if (e2 != null && e2.getClass().getName() == "tds.Type") {
-            int lig = this.numberLine("type"+dec.idf.accept(this).strValue+"=");
+            int lig = this.numberLine("type"+dec.idf.accept(this).name+"="+dec.type.accept(this).name);
             System.err.println(
                     ANSI_RED + "Type Declaration Error: \"" + dec.idf.accept(this).strValue + "\" is already used."+ANSI_RESET+" ligne "+" "+lig);
             return new Result();
@@ -658,53 +701,41 @@ public class tdsVisitor implements AstVisitor<Result>{
 
         // On créer une nouvelle TDS
         createNewTds();
+        Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
         //On parcours la boucle for et on récupère les infos du resultat dans Result. (on peut ajouter des attributs à Result si necessaire)
 
         Result c = f.expr1.accept(this);
         Result l = f.expr2.accept(this);
 
 
-        //On créer l'entrée pour la variable d'increment
-        Var increment = new Var(f.idf.name, "int", c.intValue);
-        //On ajoute en entrée la variable d'increment
-        Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
-        currentTds.addEntry(increment);
-        
+
+        boucle++;
+
         Result r = f.expr3.accept(this);
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaa : " + r);
         if (c.typeName == "int" && l.typeName == "int") {
+            //On créer l'entrée pour la variable d'increment
+            Var increment = new Var(f.idf.name, "int", c.intValue, l.intValue);
+            //On ajoute en entrée la variable d'increment
+            currentTds.addEntry(increment);
             if (r.typeName != "void") {
                 int lig = this.numberLine("for"+f.idf.name+":="+this.getAttr(c)+"to"+this.getAttr(l));
                 System.err.println(
                         ANSI_RED + "For Error: The body must be of type void" + ANSI_RESET+" "+"ligne"+" "+lig);
                 pileRO.pop();
+                boucle--;
                 return r;
             }
-            else{
-                createNewTds();
-                Tds currentTds1 = tdsGlobal.get(tdsGlobal.size()-1);
-                int v = findIndexInTds(f.idf.name, pileRO.peek());
-                Var v1 = (Var) currentTds.rows.get(v);
-                Result a = new Result();
-                for (int x=c.intValue; x<l.intValue;x++) {
-                    Result exprBlock = f.expr3.accept(this);
-                    int index = pileRO.peek();
-                    Entry e = findEntryByName(f.idf.name, index);
-                    v1.valeur = (Integer) v1.valeur + 1;
-                    a = exprBlock;
-                 }
-                //On remonte dans le bloc père
-                pileRO.pop();
-                return a;
-            }
+
         }
         else {
             int lig = this.numberLine("for"+f.idf.name+":="+this.getAttr(c)+"to"+this.getAttr(l));
             System.err.println(
                     ANSI_RED + "For Error: The start and end index of boucle for must be of type int" + ANSI_RESET+" "+"ligne"+" "+lig);
             pileRO.pop();
+            boucle--;
             return r;
         }
+
         
 
         //TODO: COntroles sémantiques
@@ -715,6 +746,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         
 
         // On remonte dans le bloc père
+        return r;
 
 
     }
@@ -733,7 +765,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result r = d.expr2.accept(this);
 
         // TODO: COntrole sémantqie 2
-        // The body type must be void. En gros c'est le Result r qui doit être de type
+        // The body type must be void. En gros c'est le Result r qui doit être de t
         // void je crois
 
         if (c.typeName.equals("int")) {
@@ -817,20 +849,37 @@ public class tdsVisitor implements AstVisitor<Result>{
         // The number and types of actual and formal parameters must be the same. The
         // type of the call is
         // the return type of the function
-        Entry e = findEntryByName(d.idf.name, pileRO.peek());
+        ArrayList<Entry> e = findAllEntryByName(d.idf.name, pileRO.peek());
+        
         Result result = new Result();
         
-        Result lis =  d.exprList.accept(this);
+        Result lis = new Result();
+        if (d.exprList != null) {
+            lis =  d.exprList.accept(this);
+    
+        }
+        else {
+            lis.exprList = new ArrayList<>();
+                
+        }
+        
         if (e == null) {
             String resf = "";
+            
                         
             for (int p = 0;p<lis.exprList.size();p++) {
                             
                 resf += lis.exprList.get(p).accept(this).name+",";
 
                         
-            }          
-            resf = resf.substring(0,resf.length()-1);
+            }
+             
+            if (!resf.equals("")) {
+                resf = resf.substring(0,resf.length()-1);
+
+
+            }
+            
                         
             int lig = this.numberLine(d.idf.name+"("+resf+")");
             
@@ -838,25 +887,44 @@ public class tdsVisitor implements AstVisitor<Result>{
 
              
         }
-        else if (!e.getClass().getName().equals("tds.Fonction")) {
+       
+        else {
             String resf = "";
             for (int p = 0;p<lis.exprList.size();p++) {
                             
                 resf += lis.exprList.get(p).accept(this).name+",";
 
                         
+            }
+            if (!resf.equals("")) {
+                resf = resf.substring(0,resf.length()-1);
+
             }          
-            resf = resf.substring(0,resf.length()-1);
+            
                         
             int lig = this.numberLine(d.idf.name+"("+resf+")");
+            boolean t = false;
+            Fonction f = null;
+            for (Entry ent : e) {
+                if (ent.getClass().getName().equals("tds.Fonction")) {
+                    t = true;
+                    f = (Fonction)ent;
+                    break;
+
+                }
+            }
+            if (t == false) {
+                System.out.print(ANSI_RED + "Name of function undefined; ");
             
-            System.out.println(ANSI_RED + "name of function undefined"+ANSI_RESET+" ligne "+lig);
-            System.out.println(ANSI_RED + "The identifier must refer to a function"+ANSI_RESET+" ligne "+lig);
-        }
-        else {
-            Fonction f = (Fonction) e;
+                System.out.println(ANSI_RED + "The identifier must refer to a function"+ANSI_RESET+" ligne "+lig);
+                return result;
+
+            }
+            
+            
+            
             result.typeName = f.getType();
-            Tds tds = tdsGlobal.get(f.gettdsFils()-1);
+            Tds tds = tdsGlobal.get(f.gettdsFils());
             int count = 0;
             for (Entry m : tds.rows) {
                 if (m instanceof Var) {
@@ -867,6 +935,7 @@ public class tdsVisitor implements AstVisitor<Result>{
                 }
 
             }
+           
             
             if (count == lis.exprList.size()) {
                 for (int i = 0;i<count;i++) {
@@ -875,13 +944,7 @@ public class tdsVisitor implements AstVisitor<Result>{
 
                     }
                     else {
-                        String resf = "";
-                        for (int p = 0;p<lis.exprList.size();p++) {
-                            resf += lis.exprList.get(i).accept(this).name+",";
-
-                        }
-                        resf = resf.substring(0,resf.length()-1);
-                        int lig = this.numberLine(d.idf.name+"("+resf+")");
+                       
                         System.out.println(ANSI_RED + "The types of actual and formal parameters must be the same" +  ANSI_RESET+" ligne "+lig);
 
                     }
@@ -891,16 +954,8 @@ public class tdsVisitor implements AstVisitor<Result>{
             
 
 
-            if (count != lis.exprList.size()) {
-                String resf = "";
-                        
-                for (int p = 0;p<lis.exprList.size();p++) {
-                    resf += lis.exprList.get(p).accept(this).name+",";
-
-                }
-                resf = resf.substring(0,resf.length()-1);
+            else {
                 
-                int lig = this.numberLine(d.idf.name+"("+resf+")");
                 System.out.println(ANSI_RED + "The number of actual and formal parameters must be the same" +  ANSI_RESET+" ligne "+lig);
 
             }
@@ -935,6 +990,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result r = mult.right.accept(this);
         Result n = new Result();
         n.typeName = "int";
+        n.name = l.name + "*" + r.name;
         String vl = this.getAttr(l);
         String vr = this.getAttr(r);
         int lig = this.numberLine(vl+"*"+vr);
@@ -942,13 +998,13 @@ public class tdsVisitor implements AstVisitor<Result>{
             n.intValue = l.intValue * r.intValue;
             return n;
         } else {
-            if (l.typeName.equals("int")) {
+            if (!l.typeName.equals("int")) {
                 System.err.println(
-                        ANSI_RED + "Type Error: Left side of the multiplication is not of type int" + ANSI_RESET+" "+"ligne"+" "+lig);
+                        ANSI_RED + "Type Error: Left side of the multiplication is not of type int for the mult operation" + ANSI_RESET+" "+"ligne"+" "+lig);
             }
-            if (r.typeName != "int") {
+            if (!r.typeName.equals("int")) {
                 System.err.println(
-                        ANSI_RED + "Type Error: Right side of the multiplication is not of type int" + ANSI_RESET+" "+"ligne"+" "+lig);
+                        ANSI_RED + "Type Error: Right side of the multiplication is not of type int for the mult operation" + ANSI_RESET+" "+"ligne"+" "+lig);
             }
             return n;
         }
@@ -963,6 +1019,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         
         Result n = new Result();
         n.typeName = "int";
+        n.name = l.name + "+" + r.name;
         String vl = this.getAttr(l);
         String vr = this.getAttr(r);
         
@@ -973,10 +1030,10 @@ public class tdsVisitor implements AstVisitor<Result>{
             return n;
         } else {
             if (!l.typeName.equals("int")) {
-                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET+" "+"ligne"+" "+ lig);
+                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int for the plus operation" + ANSI_RESET+" "+"ligne"+" "+ lig);
             }
             if (!r.typeName.equals("int")) {
-                System.err.println(ANSI_RED + "\u001B[33m Type Error: Right side of the operation is not of type int"
+                System.err.println(ANSI_RED + "Type Error: Right side of the operation is not of type int for the plus operation"
                         + ANSI_RESET+" "+"ligne"+ " "+lig);
             }
             return n;
@@ -995,6 +1052,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         String vl = this.getAttr(l);
         String vr = this.getAttr(r);
         int lig = this.numberLine(vl+"="+vr);
+        n.name = l.name + "=" + r.name;
         if (l.typeName.equals(r.typeName)) {
             if (l.typeName.equals("int")) {
                 if (l.intValue == r.intValue) {
@@ -1015,7 +1073,7 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return n;
             }
         } else {
-            System.err.println(ANSI_RED + "Type Error: Not the same type for operands" + ANSI_RESET+" "+"ligne"+lig);
+            System.err.println(ANSI_RED + "Type Error: Not the same type for operands for the equal operation" + ANSI_RESET+" "+"ligne"+lig);
             return n;
         }
 
@@ -1028,6 +1086,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result r = and.right.accept(this);
         Result n = new Result();
         n.typeName = "int";
+        n.name = l.name + "&" + r.name;
         String vl = this.getAttr(l);
         String vr = this.getAttr(r);
         int lig = this.numberLine(vl+"&"+vr);
@@ -1036,11 +1095,11 @@ public class tdsVisitor implements AstVisitor<Result>{
             return n;
         } else {
             if (!l.typeName.equals("int")) {
-                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET+" "+"ligne"+" "+ lig);
+                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int for the and operation" + ANSI_RESET+" "+"ligne"+" "+ lig);
             }
             if (!r.typeName.equals("int")) {
                 System.err
-                        .println(ANSI_RED + "Type Error: Right side of the operation is not of type int" + ANSI_RESET+" "+"ligne"+lig);
+                        .println(ANSI_RED + "Type Error: Right side of the operation is not of type int for the and operation" + ANSI_RESET+" "+"ligne "+lig);
             }
             return n;
         }
@@ -1056,6 +1115,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         String vl = this.getAttr(l);
         String vr = this.getAttr(r);
         int lig = this.numberLine(vl+"|"+vr);
+        n.name = l.name + "|" + r.name;
         
         if (l.typeName.equals("int") && r.typeName.equals("int")) {
             n.intValue = l.intValue | r.intValue;
@@ -1063,11 +1123,11 @@ public class tdsVisitor implements AstVisitor<Result>{
             return n;
         } else {
             if (!l.typeName.equals("int")) {
-                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET+" "+"ligne"+lig);
+                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int for the Or operation" + ANSI_RESET+" "+"ligne "+lig);
             }
             if (!r.typeName.equals("int")) {
                 System.err
-                        .println(ANSI_RED + "Type Error: Right side of the operation is not of type int" + ANSI_RESET+" "+"ligne"+lig);
+                        .println(ANSI_RED + "Type Error: Right side of the operation is not of type int for the Or operation" + ANSI_RESET+" "+"ligne "+lig);
             }
             return n;
         }
@@ -1082,6 +1142,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result r = supeq.right.accept(this);
         Result n = new Result();
         n.typeName = "int";
+        n.name = l.name + ">=" + r.name;
         String vl = this.getAttr(l);
         String vr = this.getAttr(r);
         int lig = this.numberLine(vl+">="+vr);
@@ -1103,12 +1164,12 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return n;
 
             } else {
-                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET + " "+ "ligne" +lig);
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int for the sup_equal operation" + ANSI_RESET + " "+ "ligne " +lig);
                 return n;
             }
 
         } else {
-            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET + " "+ "ligne" +lig);
+            System.err.println(ANSI_RED + "Type Error: the operands types must match for the sup_equal operation" + ANSI_RESET + " "+ "ligne " +lig);
             return n;
 
         }
@@ -1128,6 +1189,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         int lig = this.numberLine(vl+"<="+vr);
         
         n.typeName = "int";
+        n.name = l.name + "<=" + r.name;
         if (l.typeName.equals(r.typeName)) {
             if (l.typeName.equals("int")) {
                 if (l.intValue <= r.intValue) {
@@ -1146,12 +1208,12 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return n;
 
             } else {
-                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET+ " " + "ligne" + " " + lig);
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int for the inf_equal operation" + ANSI_RESET+ " " + "ligne" + " " + lig);
                 return n;
             }
 
         } else {
-            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET+" " + "ligne" + " " + lig);
+            System.err.println(ANSI_RED + "Type Error: the operands types must match for the inf_equal operation" + ANSI_RESET+" " + "ligne" + " " + lig);
             return n;
 
         }
@@ -1166,12 +1228,15 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result l = sup.left.accept(this);
         Result r = sup.right.accept(this);
         Result n = new Result();
+        n.name = l.name + ">" + r.name;
         String vl = this.getAttr(l);
         String vr = this.getAttr(r);
         int lig = this.numberLine(vl+">"+vr);
         
         
         n.typeName = "int";
+       
+        //System.out.println(n.name);
         if (l.typeName.equals(r.typeName)) {
             if (l.typeName.equals("int")) {
                 if (l.intValue > r.intValue) {
@@ -1189,12 +1254,12 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return n;
 
             } else {
-                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET + " " + "ligne" + " " + lig);
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int for the superior operation" + ANSI_RESET + " " + "ligne" + " " + lig);
                 return n;
             }
 
         } else {
-            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET+ " " + "ligne" + " " + lig);
+            System.err.println(ANSI_RED + "Type Error: the operands types must match for the superior operation" + ANSI_RESET+ " " + "ligne" + " " + lig);
             return n;
 
         }
@@ -1210,6 +1275,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result r = inf.right.accept(this);
         Result n = new Result();
         n.typeName = "int";
+        n.name = l.name + "<" + r.name;
         String vl = this.getAttr(l);
         String vr = this.getAttr(r);
         int lig = this.numberLine(vl+"<"+vr);
@@ -1231,12 +1297,12 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return n;
 
             } else {
-                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET+" "+"ligne"+lig);
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int for the inferior operation" + ANSI_RESET+" "+"ligne"+lig);
                 return n;
             }
 
         } else {
-            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED + "Type Error: the operands types must match for the inferior operation" + ANSI_RESET+" "+"ligne"+" "+lig);
             return n;
 
         }
@@ -1252,6 +1318,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result r = sinf.right.accept(this);
         Result n = new Result();
         n.typeName = "int";
+        n.name = l.name + "<>" + r.name;
         String vl = this.getAttr(l);
         String vr = this.getAttr(r);
         int lig = this.numberLine(vl+"<>"+vr);
@@ -1263,12 +1330,12 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return n;
 
             } else {
-                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int" + ANSI_RESET+" "+"ligne"+" "+lig);
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int for the sup_inf operation" + ANSI_RESET+" "+"ligne"+" "+lig);
                 return n;
             }
 
         } else {
-            System.err.println(ANSI_RED + "Type Error: the operands types must match" + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED + "Type Error: the operands types must match for the sup_inf operation" + ANSI_RESET+" "+"ligne"+" "+lig);
             return n;
 
         }
@@ -1281,13 +1348,14 @@ public class tdsVisitor implements AstVisitor<Result>{
         String vl = this.getAttr(Ne);
         
         int lig = this.numberLine("-"+vl);
+        Ne.name = "-" + Ne.name;
         
         if (Ne.typeName == "int"){
             Ne.intValue = -Ne.intValue;
             Ne.objValue = - (Integer) Ne.objValue;
             return Ne;
         }else{
-            System.err.println(ANSI_RED+"Type Error: The operand type is not int"+ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED+"Type Error: The operand type is not int for the operation negate_instruction"+ANSI_RESET+" "+"ligne"+" "+lig);
             return Ne;
         }
 
@@ -1358,6 +1426,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         String vl = this.getAttr(l);
         String vr = this.getAttr(r);
         int lig = this.numberLine(vl+"/"+vr);
+        n.name = l.name + "/" + r.name;
         
         n.typeName = "int";
         if (l.typeName.equals("int") && r.typeName.equals("int")) {
@@ -1397,7 +1466,10 @@ public class tdsVisitor implements AstVisitor<Result>{
     public Result visit(ExprList exprlist) {
         Result res = new Result();
         res.exprList = new ArrayList<>();
+        
         res.exprList.addAll(exprlist.astList);
+        
+        
         return res;
     }
 
@@ -1406,10 +1478,12 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result r = new Result();
         r.typeDeType = "rectype";
         r.typeFieldList = new HashMap<>();
+        r.orderedParams = new ArrayList<>();
 
         for (Ast a : typeFieldList.astList) {
             Result typefield = a.accept(this);
             r.typeFieldList.put(typefield.typeFieldidf, typefield.typeFieldType);
+            r.orderedParams.add(typefield.typeFieldidf);
         }
         return r;
     }
@@ -1768,6 +1842,36 @@ public class tdsVisitor implements AstVisitor<Result>{
 
     }
 
+    public ArrayList<Entry> findAllEntryByName(String id, int tdsStartIndex) {
+        
+
+        ArrayList<Entry> ents = new ArrayList<>();
+        int tdsIndex = tdsStartIndex;
+        Tds currentTds = tdsGlobal.get(tdsIndex);
+
+        while (tdsIndex != 0) {
+
+            tdsIndex = currentTds.numRegion;
+            // Je cherche dans la TDS si le nom existe de la variable
+            ArrayList<Entry> e = findAllEntryInTds(id, tdsIndex);  
+
+            if (e == null && currentTds.pere != -1) {
+                // Si ce n'est pas le cas je passe à la TDS père
+                if (tdsIndex != 0) {currentTds = tdsGlobal.get(currentTds.pere);}
+            }
+            else{
+                
+                ents.addAll(e);
+                tdsIndex--;
+                
+            }
+        }
+        // Si je ne trouve rien, je renvoie null
+        return ents;
+
+    }
+
+
     public Entry findEntryInTds(String id, int tdsIndex) {
         Tds currentTds = tdsGlobal.get(tdsIndex);
         String idf;
@@ -1780,6 +1884,25 @@ public class tdsVisitor implements AstVisitor<Result>{
             }
         }
         return null;
+    }
+
+    public ArrayList<Entry> findAllEntryInTds(String id,int tdsIndex) {
+        ArrayList<Entry> res = new ArrayList<>();
+        Tds currentTds = tdsGlobal.get(tdsIndex);
+        String idf;
+        Entry goodOne;
+        for (Entry e : currentTds.rows) {
+            idf = e.getName();
+            if (idf.equals(id)) {
+                goodOne = e;
+                res.add(goodOne);
+            }
+        }
+        return res;
+
+
+
+
     }
 
     public int findIndexInTds(String id, int tdsIndex){
@@ -1866,6 +1989,11 @@ public class tdsVisitor implements AstVisitor<Result>{
 
     public String getAttr(Result r) {
         String res = "";
+        if (r.name != null) {
+            res += r.name;
+            
+            return res;
+        }
         if (r.strValue != null) {
             res += r.strValue;
             return res;
@@ -1916,6 +2044,19 @@ public class tdsVisitor implements AstVisitor<Result>{
         // TODO Auto-generated method stub
         return null;
         
+    }
+
+
+    @Override
+    public Result visit(Break ctx) {
+
+        Result r = new Result();
+        if (boucle == 0){
+            System.err.println(ANSI_RED + "Break error: Argument must be type of string");
+        }
+        r.typeName = "string";
+        r.strValue = "break";
+        return r;
     }
 
 }
