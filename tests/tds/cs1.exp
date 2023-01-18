@@ -1,13 +1,20 @@
 let
 	var a:= 10
-in
-	for i:=0 to test do
-		(if i>0 then i:=i+1;
-		if i=test then while i<test do
-				let var x:=0 in x := x+1 end
-		else print("test erreur"));
-	if test then a:=2 else print("test erreur 2);
-	while a>0 do a:=a-1
+	var n:= "mady"
+in	
+	break;
+	if a=10 then a:=a+1;
+	if a=10 then print("PCL");
+	if a=10 then n:= "mady wagué";
+	if a>5 then a:=a+1 else n:="mady wagué";
+	if a=20 then print("PCL complete") else ("PCL failed");
+	for i:=0 to 100 do (a := a+"main";break);
+	for j:=0 to 100 do (
+		a := a+"main";
+		while 10>0 do (n; break)
+	);
 	
+	while n do (a:=a+1);
+	let var x:= 0 in break end
 	
 end

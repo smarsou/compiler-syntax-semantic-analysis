@@ -705,9 +705,6 @@ public class tdsVisitor implements AstVisitor<Result>{
                 int lig = this.numberLine("for"+f.idf.name+":="+this.getAttr(c)+"to"+this.getAttr(l));
                 System.err.println(
                         ANSI_RED + "For Error: The body must be of type void" + ANSI_RESET+" "+"ligne"+" "+lig);
-                pileRO.pop();
-                boucle--;
-                return r;
             }
 
         }
@@ -715,9 +712,6 @@ public class tdsVisitor implements AstVisitor<Result>{
             int lig = this.numberLine("for"+f.idf.name+":="+this.getAttr(c)+"to"+this.getAttr(l));
             System.err.println(
                     ANSI_RED + "For Error: The start and end index of boucle for must be of type int" + ANSI_RESET+" "+"ligne"+" "+lig);
-            pileRO.pop();
-            boucle--;
-            return r;
         }
 
         
@@ -728,7 +722,8 @@ public class tdsVisitor implements AstVisitor<Result>{
         // assigned to in the body. The body must be of type
         // void. The result type is void.
         
-
+        pileRO.pop();
+        boucle--;
         // On remonte dans le bloc père
         return r;
 
@@ -751,10 +746,11 @@ public class tdsVisitor implements AstVisitor<Result>{
         // TODO: COntrole sémantqie 2
         // The body type must be void. En gros c'est le Result r qui doit être de t
         // void je crois
-
+        boucle++;
         if (c.typeName.equals("int")) {
+            int lig = this.numberLine("while"+this.getAttr(c)+"do");
             if (r.typeName != "void") {
-                System.err.println(ANSI_RED + "While Error: The body type must be void" + ANSI_RESET);
+                System.err.println(ANSI_RED + "While Error: The body type must be void" + ANSI_RESET +" "+ "ligne"+" "+lig);
             }
 
         }
@@ -765,6 +761,11 @@ public class tdsVisitor implements AstVisitor<Result>{
                     ANSI_RED + "While Error: The condition type must be int" + ANSI_RESET+ " "+ "ligne"+" "+lig);
         }
 
+        if (r.typeName != "void") {
+            int lig = this.numberLine("while"+this.getAttr(c)+"do");
+            System.err.println(ANSI_RED + "While Error: The body type must be void" + ANSI_RESET+" "+ "ligne"+" "+lig);
+        }
+        boucle--;
         // On remonte dans le bloc père
         pileRO.pop();
 
@@ -1989,12 +1990,11 @@ public class tdsVisitor implements AstVisitor<Result>{
 
     @Override
     public Result visit(Break ctx) {
-
         Result r = new Result();
         if (boucle == 0){
-            System.err.println(ANSI_RED + "Break error: Argument must be type of string");
+            System.err.println(ANSI_RED + "Break error: A break must be enclosed by a loop");
         }
-        r.typeName = "string";
+        r.typeName = "void";
         r.strValue = "break";
         return r;
     }
