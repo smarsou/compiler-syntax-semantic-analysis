@@ -526,7 +526,7 @@ public class tdsVisitor implements AstVisitor<Result>{
 
         Entry e2 = findEntryInTds(dec.idf.accept(this).strValue, pileRO.peek());
         if (e2 != null && e2.getClass().getName() == "tds.Type") {
-            int lig = this.numberLine("type"+dec.idf.accept(this).strValue+"=");
+            int lig = this.numberLine("type"+dec.idf.accept(this).name+"="+dec.type.accept(this).name);
             System.err.println(
                     ANSI_TAB + ANSI_RED + "Déclaration de Type: L'identifiant \"" + dec.idf.accept(this).strValue + "\" est déja utilisé."+ANSI_RESET+" ligne "+" "+lig);
             return new Result();
@@ -554,7 +554,8 @@ public class tdsVisitor implements AstVisitor<Result>{
                 } else {
                     type.typeDeType = "???";
                     type.typeid = typeExpr.strValue;
-                    int lig = this.numberLine("type"+type.typeid+"=");
+                    int lig = this.numberLine("type"+dec.idf.accept(this).name+"=" + dec.type.accept(this).name);
+                    
                     System.err.println(ANSI_TAB + ANSI_RED + "Déclaration de type: \"" + typeExpr.strValue+"\" n'existe pas. " +ANSI_RESET+"ligne"+" "+lig);
                     return new Result();
                 }
@@ -587,7 +588,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         ArrayList<Result> a = new ArrayList<>();
         for (Ast d : dec.successiveSub) {
             if (!d.accept(this).typeName.equals("int")) {
-                int lig = this.numberLine(r.strValue);
+                int lig = this.numberLine(r.strValue+"["+d.accept(this).name+"]");
                 System.err.println(ANSI_TAB+ANSI_RED + "Accès à un Tableau: L'élément entre crochets [_] doit être un entier." + ANSI_RESET+" "+"ligne"+" "+lig);
             }
             a.add(d.accept(this));
