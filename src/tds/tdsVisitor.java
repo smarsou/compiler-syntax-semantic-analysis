@@ -1193,7 +1193,6 @@ public class tdsVisitor implements AstVisitor<Result>{
         String vl = this.getAttr(l);
         String vr = this.getAttr(r);
         int lig = this.numberLine(vl+">"+vr);
-        System.out.println("aaaaaaaaaa" + l.strValue);
         
         n.typeName = "int";
         if (l.typeName.equals(r.typeName)) {
