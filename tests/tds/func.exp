@@ -3,10 +3,15 @@ let
   function add(a : int,p:string,b:int) : int = 1
   function pop() : int = 4
   function set(a:int) = "papa"
+  function take():int = "no"
+  function add() = "OL"
   
 in
 
-add("MAIN",2);set(1)
+add("MAIN",2);
+set("ok");
+pop();
+remove("a")
 
 
 

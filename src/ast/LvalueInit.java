@@ -18,7 +18,7 @@ public class LvalueInit implements Ast{
 
     public LvalueInit(ArrayList<Ast> lvalue, ArrayList<Ast> lvalue2){
         this.lvalue = lvalue;
-        this.lvalue2 = (ArrayList<Ast>) lvalue2.clone();
+        this.lvalue2 = lvalue2;
     }
 
     public LvalueInit(Ast ast){
