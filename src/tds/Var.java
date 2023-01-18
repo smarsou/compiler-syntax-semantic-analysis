@@ -12,6 +12,8 @@ public class Var implements Entry{
     public Rec rec;
     public Array array;
     public boolean isParm;
+    public Object debut;
+    public Object fin;
     
     public <T> T accept(AstVisitor<T> visitor){
         return visitor.visit(this);
@@ -42,6 +44,14 @@ public class Var implements Entry{
 
     }
     public void arrayCreate(int nbr, Object obj){
+
+    }
+
+    public Var(String nom,String type, Object debut, Object fin) {
+        this.nom = nom;
+        this.type = type;
+        this.debut = debut;
+        this.fin = fin;
 
     }
 

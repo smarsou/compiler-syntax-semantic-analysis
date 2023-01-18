@@ -112,12 +112,18 @@ public class tdsVisitor implements AstVisitor<Result>{
                             System.out.print(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" de type " + ((Var) e).rec.type_id+ " | ");
                             printRec(((Var) e).rec);
                         }
+                        
                         else {
                             
                         System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | "+((Var) e).valeur.toString());
                         }                        
 
                     }
+
+                    if (k.debut != null) {           
+                        System.out.println(ANSI_TAB + ANSI_CYAN+ "| Var  | "+e.getName()+" | "+((Var) e).type +" | "+((Var) e).debut.toString() + " | "+((Var) e).fin.toString());
+                    }                        
+
                     else {
                         if (k.isParm) {
                             
@@ -125,6 +131,7 @@ public class tdsVisitor implements AstVisitor<Result>{
                             
 
                         }
+                        
                     }
                     
                 }
@@ -681,13 +688,12 @@ public class tdsVisitor implements AstVisitor<Result>{
 
 
         //On créer l'entrée pour la variable d'increment
-        Var increment = new Var(f.idf.name, "int", c.intValue);
+        Var increment = new Var(f.idf.name, "int", c.intValue, l.intValue);
         //On ajoute en entrée la variable d'increment
         Tds currentTds = tdsGlobal.get(tdsGlobal.size()-1);
         currentTds.addEntry(increment);
         
         Result r = f.expr3.accept(this);
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaa : " + r);
         if (c.typeName == "int" && l.typeName == "int") {
             if (r.typeName != "void") {
                 int lig = this.numberLine("for"+f.idf.name+":="+this.getAttr(c)+"to"+this.getAttr(l));
@@ -696,23 +702,7 @@ public class tdsVisitor implements AstVisitor<Result>{
                 pileRO.pop();
                 return r;
             }
-            else{
-                createNewTds();
-                Tds currentTds1 = tdsGlobal.get(tdsGlobal.size()-1);
-                int v = findIndexInTds(f.idf.name, pileRO.peek());
-                Var v1 = (Var) currentTds.rows.get(v);
-                Result a = new Result();
-                for (int x=c.intValue; x<l.intValue;x++) {
-                    Result exprBlock = f.expr3.accept(this);
-                    int index = pileRO.peek();
-                    Entry e = findEntryByName(f.idf.name, index);
-                    v1.valeur = (Integer) v1.valeur + 1;
-                    a = exprBlock;
-                 }
-                //On remonte dans le bloc père
-                pileRO.pop();
-                return a;
-            }
+
         }
         else {
             int lig = this.numberLine("for"+f.idf.name+":="+this.getAttr(c)+"to"+this.getAttr(l));
@@ -731,6 +721,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         
 
         // On remonte dans le bloc père
+        return r;
 
 
     }
@@ -1203,7 +1194,6 @@ public class tdsVisitor implements AstVisitor<Result>{
         String vl = this.getAttr(l);
         String vr = this.getAttr(r);
         int lig = this.numberLine(vl+">"+vr);
-        
         
         n.typeName = "int";
         if (l.typeName.equals(r.typeName)) {
