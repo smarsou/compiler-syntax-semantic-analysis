@@ -10,23 +10,24 @@ let
   
   
   
+  
 in
 
 add("MAIN",2);
 set("ok");
 pop();
 remove("a");
-
-1-2 > "main";
-1+6-2 / 0;
+add := add - k;
+add > "main";
+add / 0;
 "main" | "ol";
 -"ok";
 add + "pl";
-add * "no"
-add >= "papa"
-
-
-
+add * "no";
+add >= "papa";
+add <= "mam";
+"tata"<>51;
+"papa" < add
 
 
 
