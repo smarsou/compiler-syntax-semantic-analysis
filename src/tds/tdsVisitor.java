@@ -253,7 +253,9 @@ public class tdsVisitor implements AstVisitor<Result>{
 
     @Override
     public Result visit(DecFunctWithReturnType dec) {
-        
+
+        Tds currentTds = tdsGlobal.get(pileRO.peek());
+
         // On créer une nouvelle entrée et on l'ajoute à la TDS du bloc courant
         Fonction func = new Fonction(dec.idf1.name, dec.type_id.name);
         
@@ -262,9 +264,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         int imb = tdsGlobal.get(tdsGlobal.size()-1).numImbrication;
         //System.out.println(imb);
         
-        Tds currentTds = tdsGlobal.get(imb);
         
-
 
         // On ajoute cette Tds à l'entrée
         int numRegiontTds = tdsGlobal.get(tdsGlobal.size() - 1).numRegion;
@@ -337,6 +337,9 @@ public class tdsVisitor implements AstVisitor<Result>{
     @Override
     public Result visit(DecFunctVoid dec) {
         
+
+        Tds currentTds = tdsGlobal.get(pileRO.peek());
+
         // On créer une nouvelle entrée et on l'ajoute à la TDS du bloc courant
         Fonction func = new Fonction(dec.idf.name, "void");
         
@@ -346,7 +349,6 @@ public class tdsVisitor implements AstVisitor<Result>{
         int imb = tdsGlobal.get(tdsGlobal.size()-1).numImbrication;
         
         
-        Tds currentTds = tdsGlobal.get(imb);
         
 
 
