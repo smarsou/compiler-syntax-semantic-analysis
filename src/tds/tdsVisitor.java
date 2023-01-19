@@ -237,11 +237,11 @@ public class tdsVisitor implements AstVisitor<Result>{
 
         String typeOfIdf = entry.typeFieldDict.get(idf);
         if (typeOfIdf == null){
-            System.err.println(ANSI_RED + "Record Create Error: \""+idf+"\" is not a field from the Record type \""+type+"\"."+ANSI_RESET);
+            System.err.println(ANSI_RED + "Record Create Error: \""+idf+"\" is not a field from the Record type \""+type+"\"."+ANSI_RESET + " ligne " +affect.line);
             return r;
         }
         if (!typeDeExpr.equals(typeOfIdf)) {
-            System.err.println(ANSI_RED + "Record Create Error: Types mismatch for \""+ idf + "\" : (" + typeOfIdf + "/" + typeDeExpr +")."+ ANSI_RESET);
+            System.err.println(ANSI_RED + "Record Create Error: Types mismatch for \""+ idf + "\" : (" + typeOfIdf + "/" + typeDeExpr +")."+ ANSI_RESET + " ligne " +affect.line);
             return r;
         }
         r.strValue = idf;
@@ -636,7 +636,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         Entry e = findEntryByName(a.typeid.accept(this).strValue, pileRO.peek());
         
         if (e == null || e.getClass().getName() != "tds.Type" || ((Type) e).arrayOf == null){
-            System.err.println(ANSI_RED+"Array Create Error: \""+a.typeid.accept(this).strValue+"\" is not an Array type OR doesn't exist." + ANSI_RESET);
+            System.err.println(ANSI_RED+"Array Create Error: \""+a.typeid.accept(this).strValue+"\" is not an Array type OR doesn't exist." + ANSI_RESET+ " ligne " +a.line);
             return res;
         }
         String arrayof = second.typeName;
@@ -1496,25 +1496,26 @@ public class tdsVisitor implements AstVisitor<Result>{
     public Result visit(RecFieldList recFieldList) {
         Result res = new Result();
         String type = recFieldList.type.accept(this).strValue;
+        
 
         Entry e = findEntryByName(type, pileRO.peek());
         if (e == null) {
-            System.err.println(ANSI_RED + "Record Create Error: Type \"" + type + "\" doesn't exist." + ANSI_RESET);
+            System.err.println(ANSI_RED + "Record Create Error: Type \"" + type + "\" doesn't exist." + ANSI_RESET +" ligne "+recFieldList.line);
             return res;
         }
         if (e.getClass().getName() != "tds.Type") {
             System.err.println(ANSI_RED + "Type Not found Error: " + type + " is the name of a variable or a function."
-                    + ANSI_RESET);
+                    + ANSI_RESET +" ligne "+recFieldList.line);
             return res;
         }
         Type entry = (Type) e;
         if (entry.typeDeType != "rectype") {
-            System.err.println(ANSI_RED + "Record Create Error: Type \"" + type + "\" is not a Record type." + ANSI_RESET);
+            System.err.println(ANSI_RED + "Record Create Error: Type \"" + type + "\" is not a Record type." + ANSI_RESET +" ligne "+recFieldList.line);
             return res;
         }
 
         if (recFieldList.astList.size() != entry.typeFieldDict.size()){
-            System.err.println(ANSI_RED + "Record Create Error: There are more fields to initialize." + ANSI_RESET);
+            System.err.println(ANSI_RED + "Record Create Error: There are more fields to initialize." + ANSI_RESET +" ligne "+recFieldList.line);
             return res;
         }
 
