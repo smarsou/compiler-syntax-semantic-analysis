@@ -48,6 +48,5 @@ in
         premier := 10;
         couple2 := couple1;
         coupl := couple1
-        
     end
 end
