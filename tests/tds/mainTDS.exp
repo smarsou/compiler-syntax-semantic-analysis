@@ -6,6 +6,7 @@ end
 
 
 let
+    type tab = array of int
 
 	var a:= 10
 	var n:= "mady"
