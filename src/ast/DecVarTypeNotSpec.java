@@ -10,10 +10,12 @@ public class DecVarTypeNotSpec implements Ast {
     
     public StrNode idf;
     public Ast expr;
+    public int line;
 
-    public DecVarTypeNotSpec(StrNode idf, Ast expr){
+    public DecVarTypeNotSpec(StrNode idf, Ast expr, int line){
         this.idf = idf;
         this.expr = expr;
+        this.line = line;
     }
 
 

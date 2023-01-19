@@ -11,10 +11,12 @@ public class RecFieldList implements Ast {
     
     public ArrayList<Ast>  astList;
     public Ast type;
+    public int line;
 
-    public RecFieldList(ArrayList<Ast> astList,Ast type){
+    public RecFieldList(ArrayList<Ast> astList,Ast type, int line){
         this.astList = astList;
         this.type = type;
+        this.line = line;
     }
 
 }

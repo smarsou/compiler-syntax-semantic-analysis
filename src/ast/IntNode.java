@@ -8,8 +8,10 @@ public class IntNode implements Ast {
     }
     
     public int value;
+    public int line;
     
-    public IntNode(int value){
+    public IntNode(int value, int line){
         this.value = value;
+        this.line = line;
     }
 }   

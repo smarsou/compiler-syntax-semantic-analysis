@@ -6,9 +6,11 @@ public class Negate_instruction implements Ast {
     }
 
     public Ast exp;
+    public int line;
 
-    public Negate_instruction(Ast exp) {
+    public Negate_instruction(Ast exp, int line) {
         this.exp = exp;
+        this.line = line;
 
     }
 

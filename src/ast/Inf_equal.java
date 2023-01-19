@@ -7,10 +7,12 @@ public class Inf_equal implements Ast {
 
     public Ast left;
     public Ast right;
+    public int line;
 
-    public Inf_equal(Ast l, Ast r) {
+    public Inf_equal(Ast l, Ast r, int line) {
         this.right = r;
         this.left = l;
+        this.line = line;
 
     }
 

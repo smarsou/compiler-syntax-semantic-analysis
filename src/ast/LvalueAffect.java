@@ -10,10 +10,12 @@ public class LvalueAffect implements Ast {
     
     public Ast lvalue;
     public Ast lvalue_call_or_declare;
+    public int line;
 
-    public LvalueAffect(Ast lvalue, Ast lvalue_call_or_declare){
+    public LvalueAffect(Ast lvalue, Ast lvalue_call_or_declare, int line){
         this.lvalue = lvalue;
         this.lvalue_call_or_declare = lvalue_call_or_declare;
+        this.line = line;
     }
 
 }

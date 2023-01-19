@@ -8,9 +8,11 @@ public class Print implements Ast{
     }
 
     public StrNode str;
+    public int line;
 
-    public Print(StrNode str){
+    public Print(StrNode str, int line){
         this.str=str;
+        this.line=line;
     }
 
 }

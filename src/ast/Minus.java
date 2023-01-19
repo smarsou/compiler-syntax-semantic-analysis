@@ -7,10 +7,12 @@ public class Minus implements Ast {
 
     public Ast left;
     public Ast right;
+    public int line;
 
-    public Minus(Ast l, Ast r) {
+    public Minus(Ast l, Ast r, int line) {
         this.right = r;
         this.left = l;
+        this.line = line;
 
     }
 

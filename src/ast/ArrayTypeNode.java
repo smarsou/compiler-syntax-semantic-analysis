@@ -6,9 +6,11 @@ public class ArrayTypeNode implements Ast{
     }
     
     public Ast arrayType;
+    public int line;
 
-    public ArrayTypeNode(Ast arrayType) {
+    public ArrayTypeNode(Ast arrayType, int line) {
         this.arrayType = arrayType;
+        this.line = line;
     }
 
 }

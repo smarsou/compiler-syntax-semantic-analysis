@@ -10,11 +10,13 @@ public class RecField implements Ast{
     public Ast idf;
     public Ast expression;
     public Ast lvTname;
+    public int line;
     
-    public RecField(StrNode idf, Ast expression, Ast lvTname){
+    public RecField(StrNode idf, Ast expression, Ast lvTname, int line){
         this.idf = idf;
         this.expression = expression;
         this.lvTname = lvTname;
+        this.line = line;
 
     }
 }

@@ -8,9 +8,11 @@ public class StrNode implements Ast{
     }
 
     public String name;
+    public int line;
 
-    public StrNode(String name){
+    public StrNode(String name, int line){
         this.name=name;
+        this.line = line;
     }
     
 

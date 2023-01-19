@@ -10,9 +10,11 @@ public class ExprList implements Ast {
     }
     
     public ArrayList<Ast> astList;
+    public int line;
 
-    public ExprList(ArrayList<Ast> astList){
+    public ExprList(ArrayList<Ast> astList, int line){
         this.astList = astList;
+        this.line = line;
     }
 
 }

@@ -10,14 +10,17 @@ public class CallExpr implements Ast {
     
     public StrNode idf;
     public Ast exprList;
+    public int line;
 
-    public CallExpr(StrNode idf, Ast exprList){
+    public CallExpr(StrNode idf, Ast exprList, int line){
         this.idf = idf;
         this.exprList = exprList;
+        this.line = line;
     }
 
-    public CallExpr(StrNode idf){
+    public CallExpr(StrNode idf, int line){
         this.idf = idf;
+        this.line = line;
     }
 
 }

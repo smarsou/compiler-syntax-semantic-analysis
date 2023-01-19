@@ -10,9 +10,11 @@ public class TypeFieldList implements Ast {
     }
     
     public ArrayList<Ast> astList;
+    public int line;
 
-    public TypeFieldList(ArrayList<Ast> astList){
+    public TypeFieldList(ArrayList<Ast> astList, int line){
         this.astList = astList;
+        this.line = line;
     }
 
 }

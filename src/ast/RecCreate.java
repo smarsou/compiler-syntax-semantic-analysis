@@ -9,10 +9,12 @@ public class RecCreate implements Ast {
 
     public Ast typeid;
     public Ast fieldList;
+    public int line;
 
-    public RecCreate(Ast typeid, Ast fieldList){
+    public RecCreate(Ast typeid, Ast fieldList, int line){
         this.typeid = typeid;
         this.fieldList = fieldList;
+        this.line = line;
     }
 
 }

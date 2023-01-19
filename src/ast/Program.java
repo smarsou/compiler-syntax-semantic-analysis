@@ -8,9 +8,11 @@ public class Program implements Ast{
     }
     
     public ArrayList<Ast> exprList;
+    public int line;
 
-    public Program() {
+    public Program(int line) {
         this.exprList = new ArrayList<>();
+        this.line = line;
     }
 
 }

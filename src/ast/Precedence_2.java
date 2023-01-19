@@ -7,10 +7,12 @@ public class Precedence_2 implements Ast {
 
     public Ast left;
     public Ast right;
+    public int line;
 
-    public Precedence_2(Ast l, Ast r) {
+    public Precedence_2(Ast l, Ast r, int line) {
         this.right = r;
         this.left = l;
+        this.line=line;
 
     }
 

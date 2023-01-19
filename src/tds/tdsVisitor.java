@@ -302,13 +302,13 @@ public class tdsVisitor implements AstVisitor<Result>{
         // TODO Controle sémantique pour vérifier si l'exp correspond au type de retour
        
         if (!res.typeName.equals(dec.type_id.name)) {
-            System.out.println(ANSI_TAB + ANSI_RED + "Type of expression does not match the type of function"+ANSI_RESET+" ligne "+lig);
+            System.out.println(ANSI_TAB + ANSI_RED + "Type of expression does not match the type of function"+ANSI_RESET+" ligne "+dec.idf1.line);
         }
         Entry e = findEntryByName(dec.idf1.name, pileRO.peek());
         if (e != null) {
             if (e.getClass().getName().equals("tds.Fonction")) {
                 
-                System.out.println(ANSI_TAB + ANSI_RED+"The id "+dec.idf1.name+" already exists "+ANSI_RESET+"ligne "+lig);
+                System.out.println(ANSI_TAB + ANSI_RED+"The id "+dec.idf1.name+" already exists "+ANSI_RESET+"ligne "+dec.idf1.line);
 
             }
             else {
@@ -388,7 +388,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         Entry e = findEntryByName(dec.idf.name, pileRO.peek());
         if (e != null) {
             if (e.getClass().getName().equals("tds.Fonction")) {
-                System.out.println(ANSI_TAB + ANSI_RED+"The id "+dec.idf.name+" already exists "+ANSI_RESET+"ligne "+lig);
+                System.out.println(ANSI_TAB + ANSI_RED+"The id "+dec.idf.name+" already exists "+ANSI_RESET+"ligne "+dec.idf.line);
 
             }
             else {
@@ -457,11 +457,11 @@ public class tdsVisitor implements AstVisitor<Result>{
                 currentTds.addEntry(var);
             }else {
                 System.err.println(ANSI_RED + "Variable Declaration Error: Type mismatch error for the variable \"" + dec.idf1.name
-                        + "\" : (" + dec.idf2.name + " / " + result.typeName + ")." + ANSI_RESET+" "+"ligne"+" "+lig);
+                        + "\" : (" + dec.idf2.name + " / " + result.typeName + ")." + ANSI_RESET+" "+"ligne"+" "+dec.idf1.line);
             }
         } else {
             System.err.println(ANSI_RED + "Variable Declaration Error: \"" + dec.idf1.name
-                    + "\" is already used." + ANSI_RESET+" "+"ligne"+" "+lig);
+                    + "\" is already used." + ANSI_RESET+" "+"ligne"+" "+dec.idf1.line);
         }
 
         // On ajoute l'entrée à la TDS courante
@@ -514,7 +514,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         } else {
             int lig = this.numberLine("var"+dec.idf.name+":="+this.getAttr(result));
             System.err.println(ANSI_RED + "Variable Declaration Error: \"" + dec.idf.name
-                    + "\" is already used." + ANSI_RESET+" "+"ligne"+" "+lig);
+                    + "\" is already used." + ANSI_RESET+" "+"ligne"+" "+dec.idf.line);
         }
 
         // On ajoute l'entrée à la TDS courante
@@ -542,7 +542,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         if (e2 != null && e2.getClass().getName() == "tds.Type") {
             int lig = this.numberLine("type"+dec.idf.accept(this).name+"="+dec.type.accept(this).name);
             System.err.println(
-                    ANSI_RED + "Type Declaration Error: \"" + dec.idf.accept(this).strValue + "\" is already used."+ANSI_RESET+" ligne "+" "+lig);
+                    ANSI_RED + "Type Declaration Error: \"" + dec.idf.accept(this).strValue + "\" is already used."+ANSI_RESET+" ligne "+" "+dec.line);
             return new Result();
         }
         // On créer une nouvelle entrée
@@ -569,7 +569,7 @@ public class tdsVisitor implements AstVisitor<Result>{
                     type.typeDeType = "???";
                     type.typeid = typeExpr.strValue;
                     int lig = this.numberLine("type"+type.typeid+"=");
-                    System.err.println(ANSI_RED + "Type Declaration Error: \"" + typeExpr.strValue+"\" doesn't exist. " +ANSI_RESET+"ligne"+" "+lig);
+                    System.err.println(ANSI_RED + "Type Declaration Error: \"" + typeExpr.strValue+"\" doesn't exist. " +ANSI_RESET+"ligne"+" "+dec.line);
                     return new Result();
                 }
             }
@@ -604,7 +604,7 @@ public class tdsVisitor implements AstVisitor<Result>{
             Result resu = d.accept(this);
             if (!resu.typeName.equals("int")) {
                 int lig = this.numberLine(r.strValue);
-                System.err.println(ANSI_RED + "Subscript Error: subscript value is not an integer." + ANSI_RESET+" "+"ligne"+" "+lig);
+                System.err.println(ANSI_RED + "Subscript Error: subscript value is not an integer." + ANSI_RESET+" "+"ligne"+" "+dec.line);
             }
             a.add(resu);
         }
@@ -625,7 +625,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result expr1 = a.expr1.accept(this);
         if (expr1.typeName != "int") {
             int lig = this.numberLine("[" +this.getAttr(expr1)+"]"+"of");
-            System.err.println(ANSI_RED + "Array Create Error: Value in [_] has to be an integer. " + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED + "Array Create Error: Value in [_] has to be an integer. " + ANSI_RESET+" "+"ligne"+" "+a.line);
             return res;
         }
         
@@ -651,7 +651,7 @@ public class tdsVisitor implements AstVisitor<Result>{
 
         if (!compareType(a.typeid.accept(this).strValue,arrayof,-1)){
             int lig = this.numberLine("[" +this.getAttr(expr1)+"]"+"of");
-            System.err.println(ANSI_RED + "Array Create Error: An array of type \""+a.typeid.accept(this).strValue +"\" has only elements of type \""+ arrayof+"\"." + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED + "Array Create Error: An array of type \""+a.typeid.accept(this).strValue +"\" has only elements of type \""+ arrayof+"\"." + ANSI_RESET+" "+"ligne"+" "+a.line);
             return res;
         }
 
@@ -720,14 +720,14 @@ public class tdsVisitor implements AstVisitor<Result>{
             if (r.typeName != "void") {
                 int lig = this.numberLine("for"+f.idf.name+":="+this.getAttr(c)+"to"+this.getAttr(l));
                 System.err.println(
-                        ANSI_RED + "For Error: The body must be of type void" + ANSI_RESET+" "+"ligne"+" "+lig);
+                        ANSI_RED + "For Error: The body must be of type void" + ANSI_RESET+" "+"ligne"+" "+f.line);
             }
 
         }
         else {
             int lig = this.numberLine("for"+f.idf.name+":="+this.getAttr(c)+"to"+this.getAttr(l));
             System.err.println(
-                    ANSI_RED + "For Error: The start and end index of boucle for must be of type int" + ANSI_RESET+" "+"ligne"+" "+lig);
+                    ANSI_RED + "For Error: The start and end index of boucle for must be of type int" + ANSI_RESET+" "+"ligne"+" "+f.line);
         }
 
         
@@ -766,7 +766,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         if (c.typeName.equals("int")) {
             int lig = this.numberLine("while"+this.getAttr(c)+"do");
             if (r.typeName != "void") {
-                System.err.println(ANSI_RED + "While Error: The body type must be void" + ANSI_RESET +" "+ "ligne"+" "+lig);
+                System.err.println(ANSI_RED + "While Error: The body type must be void" + ANSI_RESET +" "+ "ligne"+" "+d.line);
             }
 
         }
@@ -774,12 +774,12 @@ public class tdsVisitor implements AstVisitor<Result>{
         else {
             int lig = this.numberLine("while"+this.getAttr(c)+"do");
             System.err.println(
-                    ANSI_RED + "While Error: The condition type must be int" + ANSI_RESET+ " "+ "ligne"+" "+lig);
+                    ANSI_RED + "While Error: The condition type must be int" + ANSI_RESET+ " "+ "ligne"+" "+d.line);
         }
 
         if (r.typeName != "void") {
             int lig = this.numberLine("while"+this.getAttr(c)+"do");
-            System.err.println(ANSI_RED + "While Error: The body type must be void" + ANSI_RESET+" "+ "ligne"+" "+lig);
+            System.err.println(ANSI_RED + "While Error: The body type must be void" + ANSI_RESET+" "+ "ligne"+" "+d.line);
         }
         boucle--;
         // On remonte dans le bloc père
@@ -813,7 +813,7 @@ public class tdsVisitor implements AstVisitor<Result>{
             }
             int lig1 = this.numberLine(":="+this.getAttr(expr));
             System.err.println(
-                    ANSI_RED + "Affect Error: Type mismatch for the variable " +lv.typeName + "/" + expr.typeName + ANSI_RESET+" "+"ligne"+" "+lig1);
+                    ANSI_RED + "Affect Error: Type mismatch for the variable " +lv.typeName + "/" + expr.typeName + ANSI_RESET+" "+"ligne"+" "+d.line);
             return res;
         }
         
@@ -884,7 +884,7 @@ public class tdsVisitor implements AstVisitor<Result>{
                         
             int lig = this.numberLine(d.idf.name+"("+resf+")");
             
-            System.out.println(ANSI_RED + "name of function undefined"+ANSI_RESET+" ligne "+lig);
+            System.out.println(ANSI_RED + "name of function undefined"+ANSI_RESET+" ligne "+d.line);
 
              
         }
@@ -917,7 +917,7 @@ public class tdsVisitor implements AstVisitor<Result>{
             if (t == false) {
                 System.out.print(ANSI_RED + "Name of function undefined; ");
             
-                System.out.println(ANSI_RED + "The identifier must refer to a function"+ANSI_RESET+" ligne "+lig);
+                System.out.println(ANSI_RED + "The identifier must refer to a function"+ANSI_RESET+" ligne "+d.line);
                 return result;
 
             }
@@ -946,7 +946,7 @@ public class tdsVisitor implements AstVisitor<Result>{
                     }
                     else {
                        
-                        System.out.println(ANSI_RED + "The types of actual and formal parameters must be the same" +  ANSI_RESET+" ligne "+lig);
+                        System.out.println(ANSI_RED + "The types of actual and formal parameters must be the same" +  ANSI_RESET+" ligne "+d.line);
 
                     }
                 }
@@ -957,7 +957,7 @@ public class tdsVisitor implements AstVisitor<Result>{
 
             else {
                 
-                System.out.println(ANSI_RED + "The number of actual and formal parameters must be the same" +  ANSI_RESET+" ligne "+lig);
+                System.out.println(ANSI_RED + "The number of actual and formal parameters must be the same" +  ANSI_RESET+" ligne "+d.line);
 
             }
 
@@ -1001,11 +1001,11 @@ public class tdsVisitor implements AstVisitor<Result>{
         } else {
             if (!l.typeName.equals("int")) {
                 System.err.println(
-                        ANSI_RED + "Type Error: Left side of the multiplication is not of type int for the mult operation" + ANSI_RESET+" "+"ligne"+" "+lig);
+                        ANSI_RED + "Type Error: Left side of the multiplication is not of type int for the mult operation" + ANSI_RESET+" "+"ligne"+" "+mult.line);
             }
             if (!r.typeName.equals("int")) {
                 System.err.println(
-                        ANSI_RED + "Type Error: Right side of the multiplication is not of type int for the mult operation" + ANSI_RESET+" "+"ligne"+" "+lig);
+                        ANSI_RED + "Type Error: Right side of the multiplication is not of type int for the mult operation" + ANSI_RESET+" "+"ligne"+" "+mult.line);
             }
             return n;
         }
@@ -1031,11 +1031,11 @@ public class tdsVisitor implements AstVisitor<Result>{
             return n;
         } else {
             if (!l.typeName.equals("int")) {
-                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int for the plus operation" + ANSI_RESET+" "+"ligne"+" "+ lig);
+                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int for the plus operation" + ANSI_RESET+" "+"ligne"+" "+ plus.line);
             }
             if (!r.typeName.equals("int")) {
                 System.err.println(ANSI_RED + "Type Error: Right side of the operation is not of type int for the plus operation"
-                        + ANSI_RESET+" "+"ligne"+ " "+lig);
+                        + ANSI_RESET+" "+"ligne"+ " "+plus.line);
             }
             return n;
         }
@@ -1074,7 +1074,7 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return n;
             }
         } else {
-            System.err.println(ANSI_RED + "Type Error: Not the same type for operands for the equal operation" + ANSI_RESET+" "+"ligne"+lig);
+            System.err.println(ANSI_RED + "Type Error: Not the same type for operands for the equal operation" + ANSI_RESET+" "+"ligne"+equal.line);
             return n;
         }
 
@@ -1096,11 +1096,11 @@ public class tdsVisitor implements AstVisitor<Result>{
             return n;
         } else {
             if (!l.typeName.equals("int")) {
-                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int for the and operation" + ANSI_RESET+" "+"ligne"+" "+ lig);
+                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int for the and operation" + ANSI_RESET+" "+"ligne"+" "+ and.line);
             }
             if (!r.typeName.equals("int")) {
                 System.err
-                        .println(ANSI_RED + "Type Error: Right side of the operation is not of type int for the and operation" + ANSI_RESET+" "+"ligne "+lig);
+                        .println(ANSI_RED + "Type Error: Right side of the operation is not of type int for the and operation" + ANSI_RESET+" "+"ligne "+and.line);
             }
             return n;
         }
@@ -1124,11 +1124,11 @@ public class tdsVisitor implements AstVisitor<Result>{
             return n;
         } else {
             if (!l.typeName.equals("int")) {
-                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int for the Or operation" + ANSI_RESET+" "+"ligne "+lig);
+                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int for the Or operation" + ANSI_RESET+" "+"ligne "+or.line);
             }
             if (!r.typeName.equals("int")) {
                 System.err
-                        .println(ANSI_RED + "Type Error: Right side of the operation is not of type int for the Or operation" + ANSI_RESET+" "+"ligne "+lig);
+                        .println(ANSI_RED + "Type Error: Right side of the operation is not of type int for the Or operation" + ANSI_RESET+" "+"ligne "+or.line);
             }
             return n;
         }
@@ -1165,12 +1165,12 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return n;
 
             } else {
-                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int for the sup_equal operation" + ANSI_RESET + " "+ "ligne " +lig);
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int for the sup_equal operation" + ANSI_RESET + " "+ "ligne " +supeq.line);
                 return n;
             }
 
         } else {
-            System.err.println(ANSI_RED + "Type Error: the operands types must match for the sup_equal operation" + ANSI_RESET + " "+ "ligne " +lig);
+            System.err.println(ANSI_RED + "Type Error: the operands types must match for the sup_equal operation" + ANSI_RESET + " "+ "ligne " +supeq.line);
             return n;
 
         }
@@ -1209,12 +1209,12 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return n;
 
             } else {
-                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int for the inf_equal operation" + ANSI_RESET+ " " + "ligne" + " " + lig);
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int for the inf_equal operation" + ANSI_RESET+ " " + "ligne" + " " + infeq.line);
                 return n;
             }
 
         } else {
-            System.err.println(ANSI_RED + "Type Error: the operands types must match for the inf_equal operation" + ANSI_RESET+" " + "ligne" + " " + lig);
+            System.err.println(ANSI_RED + "Type Error: the operands types must match for the inf_equal operation" + ANSI_RESET+" " + "ligne" + " " + infeq.line);
             return n;
 
         }
@@ -1255,12 +1255,12 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return n;
 
             } else {
-                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int for the superior operation" + ANSI_RESET + " " + "ligne" + " " + lig);
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int for the superior operation" + ANSI_RESET + " " + "ligne" + " " + sup.line);
                 return n;
             }
 
         } else {
-            System.err.println(ANSI_RED + "Type Error: the operands types must match for the superior operation" + ANSI_RESET+ " " + "ligne" + " " + lig);
+            System.err.println(ANSI_RED + "Type Error: the operands types must match for the superior operation" + ANSI_RESET+ " " + "ligne" + " " + sup.line);
             return n;
 
         }
@@ -1298,12 +1298,12 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return n;
 
             } else {
-                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int for the inferior operation" + ANSI_RESET+" "+"ligne"+lig);
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int for the inferior operation" + ANSI_RESET+" "+"ligne"+inf.line);
                 return n;
             }
 
         } else {
-            System.err.println(ANSI_RED + "Type Error: the operands types must match for the inferior operation" + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED + "Type Error: the operands types must match for the inferior operation" + ANSI_RESET+" "+"ligne"+" "+inf.line);
             return n;
 
         }
@@ -1331,12 +1331,12 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return n;
 
             } else {
-                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int for the sup_inf operation" + ANSI_RESET+" "+"ligne"+" "+lig);
+                System.err.println(ANSI_RED + "Type Error: Both operands types must be string or int for the sup_inf operation" + ANSI_RESET+" "+"ligne"+" "+sinf.line);
                 return n;
             }
 
         } else {
-            System.err.println(ANSI_RED + "Type Error: the operands types must match for the sup_inf operation" + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED + "Type Error: the operands types must match for the sup_inf operation" + ANSI_RESET+" "+"ligne"+" "+sinf.line);
             return n;
 
         }
@@ -1356,7 +1356,7 @@ public class tdsVisitor implements AstVisitor<Result>{
             Ne.objValue = - (Integer) Ne.objValue;
             return Ne;
         }else{
-            System.err.println(ANSI_RED+"Type Error: The operand type is not int for the operation negate_instruction"+ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED+"Type Error: The operand type is not int for the operation negate_instruction"+ANSI_RESET+" "+"ligne"+" "+Ni.line);
             return Ne;
         }
 
@@ -1374,12 +1374,12 @@ public class tdsVisitor implements AstVisitor<Result>{
                 return b;
             } else {
                 int lig = this.numberLine("then"+this.getAttr(b));
-                System.err.println(ANSI_RED + "Ifthen Error: The then-clause must be of type void" + ANSI_RESET+" "+"ligne"+" "+lig);
+                System.err.println(ANSI_RED + "Ifthen Error: The then-clause must be of type void" + ANSI_RESET+" "+"ligne"+" "+ifThen.line);
                 return b;
             }
         } else {
             int lig = this.numberLine("if" +this.getAttr(c));
-            System.err.println(ANSI_RED + "Ifthen Error: The condition type must be int" + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED + "Ifthen Error: The condition type must be int" + ANSI_RESET+" "+"ligne"+" "+ifThen.line);
             return b;
         }
 
@@ -1396,6 +1396,7 @@ public class tdsVisitor implements AstVisitor<Result>{
         Result n = new Result();
         n.thenBlock = t;
         n.elseBlock = e;
+        n.line = ifThenElse.line;
 
         
         if (c.typeName.equals("int")) {
@@ -1406,14 +1407,14 @@ public class tdsVisitor implements AstVisitor<Result>{
                 int lig1 = this.numberLine("then"+this.getAttr(t));
                 int lig2 = this.numberLine("else"+this.getAttr(e));
 
-                System.err.println(ANSI_RED + "IfthenElse error : The then-clause and else-clause must have the same type" + ANSI_RESET+" "+"ligne"+" "+lig1 + " "+"et ligne"+" "+lig2);
+                System.err.println(ANSI_RED + "IfthenElse error : The then-clause and else-clause must have the same type" + ANSI_RESET+" "+"ligne"+" "+t.line + " "+"et ligne"+" "+ifThenElse.line);
                 return n;
             }
         }
 
         else {
             int lig = this.numberLine("if"+this.getAttr(c));
-            System.err.println(ANSI_RED + "IfthenElse Error: The condition type must be int" + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED + "IfthenElse Error: The condition type must be int" + ANSI_RESET+" "+"ligne"+" "+ifThenElse.line);
             return n;
         }
     }
@@ -1432,17 +1433,17 @@ public class tdsVisitor implements AstVisitor<Result>{
         n.typeName = "int";
         if (l.typeName.equals("int") && r.typeName.equals("int")) {
             if (r.intValue == 0) {
-                System.err.println(ANSI_RED + "Divide by zero error !" + ANSI_RESET+" "+"ligne"+" "+lig);
+                System.err.println(ANSI_RED + "Divide by zero error !" + ANSI_RESET+" "+"ligne"+" "+divide.line);
                 return n;
             }
             n.intValue = l.intValue / r.intValue;
             return n;
         } else {
             if (!l.typeName.equals("int")) {
-                System.err.println(ANSI_RED + "Type Error: Left side of the division is not of type int" + ANSI_RESET+" "+"ligne"+" "+lig);
+                System.err.println(ANSI_RED + "Type Error: Left side of the division is not of type int" + ANSI_RESET+" "+"ligne"+" "+divide.line);
             }
             if (!r.typeName.equals("int")) {
-                System.err.println(ANSI_RED + "Type Error: Right side of the division is not of type int" + ANSI_RESET+" "+"ligne"+" "+lig);
+                System.err.println(ANSI_RED + "Type Error: Right side of the division is not of type int" + ANSI_RESET+" "+"ligne"+" "+divide.line);
             }
             return n;
         }
@@ -1562,13 +1563,13 @@ public class tdsVisitor implements AstVisitor<Result>{
         int lig = this.numberLine(idf);
         // Si on ne trouve pas cette idf
         if (e == null) {
-            System.err.println(ANSI_RED + "Variable Not Found: \"" + idf + "\" doesn't exist." + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED + "Variable Not Found: \"" + idf + "\" doesn't exist." + ANSI_RESET+" "+"ligne"+" "+lvalueInit.line);
             returnRes.lvalueCorrect = false;
             return returnRes;
         }
         // Si ce n'est pas une variable
         if (e.getClass().getName() != "tds.Var") {
-            System.err.println(ANSI_RED + "Variable Not Found: " + idf + " is not a variable." + ANSI_RESET+" "+"ligne"+" "+lig);
+            System.err.println(ANSI_RED + "Variable Not Found: " + idf + " is not a variable." + ANSI_RESET+" "+"ligne"+" "+lvalueInit.line);
             returnRes.lvalueCorrect = false;
             return returnRes;
         }
@@ -1947,11 +1948,11 @@ public class tdsVisitor implements AstVisitor<Result>{
             return n;
         } else {
             if (l.typeName != "int") {
-                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET+" "+"ligne"+" "+lig);
+                System.err.println(ANSI_RED + "Type Error: Left side of the operation is not of type int" + ANSI_RESET+" "+"ligne"+" "+minus.line);
             }
             if (r.typeName != "int") {
                 System.err.println(ANSI_RED + "\u001B[33m Type Error: Right side of the operation is not of type int"
-                        + ANSI_RESET+" "+"ligne"+" "+lig);
+                        + ANSI_RESET+" "+"ligne"+" "+minus.line);
             }
             return n;
         }
@@ -2052,7 +2053,7 @@ public class tdsVisitor implements AstVisitor<Result>{
     public Result visit(Break ctx) {
         Result r = new Result();
         if (boucle == 0){
-            System.err.println(ANSI_RED + "Break error: A break must be enclosed by a loop");
+            System.err.println(ANSI_RED + "Break error: A break must be enclosed by a loop" + ANSI_RESET+" "+"ligne"+" "+ctx.line);
         }
         r.typeName = "void";
         r.strValue = "break";
