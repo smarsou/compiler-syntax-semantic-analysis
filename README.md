@@ -1,3 +1,15 @@
+# Compilateur
+
+Vous êtes sur le dépot git d'un projet de compilation pour le langage Tiger.
+
+Ce projet comporte les phases d'analyse syntaxique et sémantiques. La génération de code en langage assembleur ne fait pas partie de ce projet.
+
+L'analyse syntaxique a pu se faire grâce à la mise en place d'une grammaire en LL, qui nous a permis de pouvoir construire l'abre abstrait syntaxique (AST).
+
+Ensuite, à partir de cette arbre abstrait, nous avons implémenter les contrôles sémantiques en JAVA à l'aide du design pattern Visiteur. 
+
+Ce qui nous a permis de construire pour terminer la table des symboles. 
+
 # Utilisation du Makefile
 
 ### Pour tout nettoyer
