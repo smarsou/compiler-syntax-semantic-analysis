@@ -1,5 +1,17 @@
 # Compilateur
 
+**English:**
+
+This project involves implementing the syntax and semantic analysis phases of a compiler. The chosen language is Tiger. Code generation in assembly language is not part of this project.
+
+The syntax analysis was carried out by establishing an LL grammar, which allowed us to construct the abstract syntax tree (AST).
+
+Next, based on this abstract tree, we implemented semantic checks in Java using the Visitor design pattern.
+
+This enabled us to build the symbol table in the end.
+
+**French:**
+
 Vous êtes sur le dépot git d'un projet de compilation pour le langage Tiger.
 
 Ce projet comporte les phases d'analyse syntaxique et sémantiques. La génération de code en langage assembleur ne fait pas partie de ce projet.
